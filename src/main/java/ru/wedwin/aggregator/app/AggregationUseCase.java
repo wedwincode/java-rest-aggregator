@@ -11,7 +11,6 @@ import ru.wedwin.aggregator.port.out.ApiClient;
 import ru.wedwin.aggregator.port.out.HttpExecutor;
 import ru.wedwin.aggregator.port.out.OutputWriter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

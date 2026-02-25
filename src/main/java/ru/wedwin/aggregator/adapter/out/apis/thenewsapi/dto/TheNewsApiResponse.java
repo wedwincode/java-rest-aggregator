@@ -1,5 +1,42 @@
 package ru.wedwin.aggregator.adapter.out.apis.thenewsapi.dto;
 
-public record TheNewsApiResponse(
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 
-) {}
+import java.util.List;
+
+// JsonProperty (@JsonProperty("published_at")) alternative:
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record TheNewsApiResponse(
+        Meta meta,
+        List<Data> data
+) {
+    // todo check medium page about records dto
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Meta(
+           int found, // todo what to do if we want to rename field (check annotations for jackson)
+           int returned,
+           int limit,
+           int page,
+           List<Data> data
+    ) {}
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Data(
+           String uuid,
+           String title,
+           String description,
+           String keywords,
+           String snippet,
+           String url,
+           String image_url,
+           String language,
+           String publishedAt,
+           String source,
+           List<String> categories,
+           String relevanceScore,
+           String locale
+    ) {}
+}

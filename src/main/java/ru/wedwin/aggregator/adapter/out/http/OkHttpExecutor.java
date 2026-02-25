@@ -25,7 +25,7 @@ public class OkHttpExecutor implements HttpExecutor {
             }
             throw new UnsuccessfulResponseException();
         } catch (IOException e) {
-            throw new ExecutorException("execution failed");
+            throw new RuntimeException("execution failed", e);
         }
     }
 }
