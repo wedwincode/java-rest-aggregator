@@ -8,6 +8,7 @@ import ru.wedwin.aggregator.domain.model.AggregatedRecord;
 import ru.wedwin.aggregator.domain.model.ApiId;
 import ru.wedwin.aggregator.domain.model.ApiParams;
 import ru.wedwin.aggregator.domain.model.ParamSpec;
+import ru.wedwin.aggregator.domain.model.Payload;
 import ru.wedwin.aggregator.port.out.ApiClient;
 import ru.wedwin.aggregator.port.out.HttpExecutor;
 
@@ -17,7 +18,7 @@ public class NewsApiClient implements ApiClient {
 
     @Override
     public ApiId id() {
-        return new ApiId("newsapiclient");
+        return new ApiId("newsapi");
     }
 
     @Override
@@ -40,10 +41,11 @@ public class NewsApiClient implements ApiClient {
     }
 
     @Override
-    public List<AggregatedRecord> getApiResponse(ApiParams params, HttpExecutor executor) {
+    public AggregatedRecord getApiResponse(ApiParams params, HttpExecutor executor) {
         params.addDefaultParams(supportedParams());
         String response = executor.execute(RequestBuilder.build(url(), params));
         NewsApiResponse mappedResponse = JacksonObjectMapper.map(response, NewsApiResponse.class);
-        return List.of();
+        Payload payload = JacksonObjectMapper.fromDto(mappedResponse);
+        return new AggregatedRecord(id(), payload);
     }
 }

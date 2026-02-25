@@ -12,6 +12,5 @@ public interface ApiClient {
     String url();
     String displayName();
     List<ParamSpec> supportedParams();
-
-    List<AggregatedRecord> getApiResponse(ApiParams params, HttpExecutor executor);
+    AggregatedRecord getApiResponse(ApiParams params, HttpExecutor executor);
 }

@@ -11,6 +11,7 @@ import ru.wedwin.aggregator.port.out.ApiClient;
 import ru.wedwin.aggregator.port.out.HttpExecutor;
 import ru.wedwin.aggregator.port.out.OutputWriter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,11 +42,10 @@ public class AggregationUseCase {
         for (ApiId id: runRequest.apisWithParams().keySet()) {
             ApiClient client = apiRegistry.require(id);
             ApiParams params = runRequest.apisWithParams().getOrDefault(id, ApiParams.of(null));
-            responseList.addAll(client.getApiResponse(params, httpExecutor));
+            responseList.add(client.getApiResponse(params, httpExecutor));
         }
-
-        OutputWriter writer = writerRegistry.require(runRequest.outputSpec().mode().name()); // todo better
+        OutputWriter writer = writerRegistry.require(runRequest.outputSpec().format().name().toLowerCase()); // todo better
+//        OutputWriter writer = writerRegistry.require("console"); // todo better
         writer.write(responseList, runRequest.outputSpec());
-
     }
 }

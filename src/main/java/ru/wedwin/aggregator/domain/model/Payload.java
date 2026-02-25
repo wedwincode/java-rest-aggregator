@@ -2,7 +2,7 @@ package ru.wedwin.aggregator.domain.model;
 
 import java.util.List;
 import java.util.Map;
-
+// todo int
 public sealed interface Payload permits Payload.PNull, Payload.PBool, Payload.PNumber,
                                         Payload.PString, Payload.PArray, Payload.PObject {
     record PNull() implements Payload {}

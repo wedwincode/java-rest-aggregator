@@ -120,7 +120,8 @@ public class ArgsParser {
         return switch (normalizedFormat) {
             case "csv" -> OutputFormat.CSV;
             case "json" -> OutputFormat.JSON;
-            default -> throw new IllegalArgumentException("format is incorrect: " + rawFormat);
+            default -> OutputFormat.JSON;
+//            default -> throw new IllegalArgumentException("format is incorrect: " + rawFormat);
         };
     }
 
