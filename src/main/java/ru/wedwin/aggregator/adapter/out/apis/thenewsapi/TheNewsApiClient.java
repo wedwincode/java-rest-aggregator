@@ -1,4 +1,6 @@
 package ru.wedwin.aggregator.adapter.out.apis.thenewsapi;
 
-public class TheNewsApiClient {
+import ru.wedwin.aggregator.port.out.ApiClient;
+
+public class TheNewsApiClient implements ApiClient {
 }

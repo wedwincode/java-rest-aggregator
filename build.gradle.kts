@@ -16,6 +16,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
     // Source: https://mvnrepository.com/artifact/org.apache.commons/commons-csv
     implementation("org.apache.commons:commons-csv:1.14.1")
+    implementation("io.github.cdimascio:dotenv-java:3.2.0")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

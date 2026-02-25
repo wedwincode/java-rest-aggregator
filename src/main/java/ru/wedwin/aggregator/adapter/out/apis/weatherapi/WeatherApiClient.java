@@ -1,4 +1,6 @@
 package ru.wedwin.aggregator.adapter.out.apis.weatherapi;
 
-public class WeatherApiClient {
+import ru.wedwin.aggregator.port.out.ApiClient;
+
+public class WeatherApiClient implements ApiClient {
 }
