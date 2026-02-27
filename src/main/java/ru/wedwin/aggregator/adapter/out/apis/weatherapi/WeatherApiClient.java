@@ -1,37 +1,41 @@
 package ru.wedwin.aggregator.adapter.out.apis.weatherapi;
 
-import ru.wedwin.aggregator.domain.model.AggregatedRecord;
+import ru.wedwin.aggregator.adapter.out.apis.AbstractApiClient;
+import ru.wedwin.aggregator.adapter.out.apis.weatherapi.dto.WeatherApiResponse;
+import ru.wedwin.aggregator.adapter.out.common.EnvReader;
 import ru.wedwin.aggregator.domain.model.ApiId;
-import ru.wedwin.aggregator.domain.model.ApiParams;
 import ru.wedwin.aggregator.domain.model.ParamSpec;
-import ru.wedwin.aggregator.port.out.ApiClient;
-import ru.wedwin.aggregator.port.out.HttpExecutor;
 
 import java.util.List;
 
-public class WeatherApiClient implements ApiClient {
+public class WeatherApiClient extends AbstractApiClient<WeatherApiResponse> {
     @Override
     public ApiId id() {
-        return null;
+        return new ApiId("weatherapi");
     }
 
     @Override
     public String url() {
-        return "";
+        return "https://api.weatherapi.com/v1/current.json";
     }
 
     @Override
     public String displayName() {
-        return "";
+        return "Weather API Client";
     }
 
     @Override
     public List<ParamSpec> supportedParams() {
-        return List.of();
+        return List.of(
+                new ParamSpec("key", true, EnvReader.get("WEATHER_API_KEY"), "api key (put it in the .env file)"),
+                new ParamSpec("q", true, "Saint-Petersburg", "IP address, Latitude/Longitude (decimal degree) or city name"),
+                new ParamSpec("lang", false, "RU", "response language")
+        );
     }
 
     @Override
-    public AggregatedRecord getApiResponse(ApiParams params, HttpExecutor executor) {
-        return null;
+    protected Class<WeatherApiResponse> dtoClass() {
+        return WeatherApiResponse.class;
     }
+
 }
