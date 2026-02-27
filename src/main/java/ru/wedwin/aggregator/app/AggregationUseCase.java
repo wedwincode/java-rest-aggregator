@@ -1,11 +1,11 @@
 package ru.wedwin.aggregator.app;
 
 import ru.wedwin.aggregator.domain.model.AggregatedRecord;
-import ru.wedwin.aggregator.domain.model.ApiId;
-import ru.wedwin.aggregator.domain.model.ApiParams;
-import ru.wedwin.aggregator.domain.model.ApiRegistry;
-import ru.wedwin.aggregator.domain.model.RunRequest;
-import ru.wedwin.aggregator.domain.model.WriterRegistry;
+import ru.wedwin.aggregator.domain.model.api.ApiId;
+import ru.wedwin.aggregator.domain.model.api.ApiParams;
+import ru.wedwin.aggregator.app.registry.ApiRegistry;
+import ru.wedwin.aggregator.domain.model.in.RunRequest;
+import ru.wedwin.aggregator.app.registry.WriterRegistry;
 import ru.wedwin.aggregator.port.in.RunRequestRetriever;
 import ru.wedwin.aggregator.port.out.ApiClient;
 import ru.wedwin.aggregator.port.out.HttpExecutor;

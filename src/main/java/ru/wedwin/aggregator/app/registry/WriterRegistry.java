@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.domain.model;
+package ru.wedwin.aggregator.app.registry;
 
 import ru.wedwin.aggregator.port.out.OutputWriter;
 

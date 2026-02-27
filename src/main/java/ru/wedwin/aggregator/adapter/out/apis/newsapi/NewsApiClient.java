@@ -3,8 +3,8 @@ package ru.wedwin.aggregator.adapter.out.apis.newsapi;
 import ru.wedwin.aggregator.adapter.out.apis.AbstractApiClient;
 import ru.wedwin.aggregator.adapter.out.apis.newsapi.dto.NewsApiResponse;
 import ru.wedwin.aggregator.adapter.out.common.EnvReader;
-import ru.wedwin.aggregator.domain.model.ApiId;
-import ru.wedwin.aggregator.domain.model.ParamSpec;
+import ru.wedwin.aggregator.domain.model.api.ApiId;
+import ru.wedwin.aggregator.domain.model.api.ParamSpec;
 
 import java.util.List;
 

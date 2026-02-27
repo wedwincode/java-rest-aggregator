@@ -1,6 +1,6 @@
 package ru.wedwin.aggregator.adapter.out.common;
 
-import ru.wedwin.aggregator.domain.model.ApiParams;
+import ru.wedwin.aggregator.domain.model.api.ApiParams;
 
 import java.util.Map;
 

@@ -1,7 +1,7 @@
 package ru.wedwin.aggregator.port.out;
 
 import ru.wedwin.aggregator.domain.model.AggregatedRecord;
-import ru.wedwin.aggregator.domain.model.OutputSpec;
+import ru.wedwin.aggregator.domain.model.out.OutputSpec;
 
 import java.util.List;
 

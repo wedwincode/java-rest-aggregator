@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.domain.model;
+package ru.wedwin.aggregator.domain.model.out;
 
 import java.nio.file.Path;
 

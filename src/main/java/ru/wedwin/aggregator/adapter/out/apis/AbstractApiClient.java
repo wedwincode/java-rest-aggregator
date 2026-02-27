@@ -3,7 +3,7 @@ package ru.wedwin.aggregator.adapter.out.apis;
 import ru.wedwin.aggregator.adapter.out.common.JacksonObjectMapper;
 import ru.wedwin.aggregator.adapter.out.common.RequestBuilder;
 import ru.wedwin.aggregator.domain.model.AggregatedRecord;
-import ru.wedwin.aggregator.domain.model.ApiParams;
+import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.Payload;
 import ru.wedwin.aggregator.port.out.ApiClient;
 import ru.wedwin.aggregator.port.out.HttpExecutor;

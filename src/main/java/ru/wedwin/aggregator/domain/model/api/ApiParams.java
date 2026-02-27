@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.domain.model;
+package ru.wedwin.aggregator.domain.model.api;
 
 import java.util.LinkedHashMap;
 import java.util.List;

@@ -1,9 +1,9 @@
 package ru.wedwin.aggregator.port.out;
 
 import ru.wedwin.aggregator.domain.model.AggregatedRecord;
-import ru.wedwin.aggregator.domain.model.ApiId;
-import ru.wedwin.aggregator.domain.model.ApiParams;
-import ru.wedwin.aggregator.domain.model.ParamSpec;
+import ru.wedwin.aggregator.domain.model.api.ApiId;
+import ru.wedwin.aggregator.domain.model.api.ApiParams;
+import ru.wedwin.aggregator.domain.model.api.ParamSpec;
 
 import java.util.List;
 

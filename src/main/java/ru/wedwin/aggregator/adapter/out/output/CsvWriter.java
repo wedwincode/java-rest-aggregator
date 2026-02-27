@@ -4,12 +4,13 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
 import ru.wedwin.aggregator.domain.model.AggregatedRecord;
-import ru.wedwin.aggregator.domain.model.OutputSpec;
+import ru.wedwin.aggregator.domain.model.out.OutputSpec;
 import ru.wedwin.aggregator.port.out.OutputWriter;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -27,36 +28,53 @@ public class CsvWriter implements OutputWriter {
 
     @Override
     public void write(List<AggregatedRecord> records, OutputSpec spec) {
-        Set<String> headersSet = new LinkedHashSet<>();
         List<Map<String, String>> rows = flattenRecords(records);
-        for (Map<String, String> rowMap: rows) {
-            headersSet.addAll(rowMap.keySet());
-        }
-        List<String> headers = new ArrayList<>(headersSet);
+        List<String> header = buildHeader(rows);
         try {
             if (spec.path().getParent() != null) {
                 Files.createDirectories(spec.path().getParent()); // todo нужно ли
             }
-            CSVFormat format = CSVFormat.DEFAULT.builder()
-                    .setHeader(headers.toArray(String[]::new))
-                    .get();
-            try (BufferedWriter writer = Files.newBufferedWriter(spec.path());
-                 CSVPrinter printer = new CSVPrinter(writer, format)) {
-                for (Map<String, String> rowMap: rows) {
-                    List<String> record = new ArrayList<>(headers.size());
-                    for (String header: headers) {
-                        record.add(rowMap.getOrDefault(header, ""));
-                    }
-                    printer.printRecord(record);
-                }
-            }
-
+            writeHeaderAndRows(header, rows, spec.path());
         } catch (IOException e) {
             throw new RuntimeException("failed to write output to " + spec.path(), e);
         }
     }
 
-    private List<Map<String, String>> flattenRecords(List<AggregatedRecord> records) {
+    private static List<String> buildHeader(List<Map<String, String>> rows) {
+        Set<String> headerSet = new LinkedHashSet<>();
+        for (Map<String, String> row: rows) {
+            headerSet.addAll(row.keySet());
+        }
+        return new ArrayList<>(headerSet);
+    }
+
+    private static List<String> toRecord(List<String> header, Map<String, String> row) {
+        List<String> record = new ArrayList<>(header.size());
+        for (String h: header) {
+            record.add(row.getOrDefault(h, ""));
+        }
+        return record;
+    }
+
+    private static void writeHeaderAndRows(List<String> header, List<Map<String, String>> rows, Path path) throws IOException {
+        CSVFormat format = CSVFormat.DEFAULT.builder().setHeader(header.toArray(String[]::new)).get();
+        try (BufferedWriter writer = Files.newBufferedWriter(path);
+             CSVPrinter printer = new CSVPrinter(writer, format)) {
+            for (Map<String, String> row: rows) {
+                printer.printRecord(toRecord(header, row));
+            }
+        }
+    }
+
+    private static boolean headerNeedsUpdate(List<String> oldHeader, List<Map<String, String>> newRows) {
+        Set<String> set = new LinkedHashSet<>(oldHeader);
+        for (Map<String, String> row: newRows) {
+            set.addAll(row.keySet());
+        }
+        return set.size() != oldHeader.size();
+    }
+
+    private static List<Map<String, String>> flattenRecords(List<AggregatedRecord> records) {
         List<Map<String, String>> rows = new ArrayList<>();
         for (AggregatedRecord record: records) {
             Map<String, String> row = new LinkedHashMap<>();

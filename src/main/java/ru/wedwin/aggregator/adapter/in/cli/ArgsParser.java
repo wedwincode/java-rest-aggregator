@@ -1,11 +1,11 @@
 package ru.wedwin.aggregator.adapter.in.cli;
 
-import ru.wedwin.aggregator.domain.model.ApiId;
-import ru.wedwin.aggregator.domain.model.ApiParams;
-import ru.wedwin.aggregator.domain.model.OutputFormat;
-import ru.wedwin.aggregator.domain.model.OutputSpec;
-import ru.wedwin.aggregator.domain.model.RunRequest;
-import ru.wedwin.aggregator.domain.model.WriteMode;
+import ru.wedwin.aggregator.domain.model.api.ApiId;
+import ru.wedwin.aggregator.domain.model.api.ApiParams;
+import ru.wedwin.aggregator.domain.model.out.OutputFormat;
+import ru.wedwin.aggregator.domain.model.out.OutputSpec;
+import ru.wedwin.aggregator.domain.model.in.RunRequest;
+import ru.wedwin.aggregator.domain.model.out.WriteMode;
 
 import java.nio.file.Path;
 import java.util.HashMap;

@@ -1,6 +1,6 @@
 package ru.wedwin.aggregator.adapter.in.cli;
 
-import ru.wedwin.aggregator.domain.model.RunRequest;
+import ru.wedwin.aggregator.domain.model.in.RunRequest;
 import ru.wedwin.aggregator.port.in.RunRequestRetriever;
 
 public class CliApp implements RunRequestRetriever {

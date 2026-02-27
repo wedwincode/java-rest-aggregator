@@ -23,8 +23,11 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
         if (node.isBoolean()) {
             return new Payload.PBool(node.booleanValue());
         }
+        if (node.isInt()) {
+            return new Payload.PInt(node.intValue());
+        }
         if (node.isNumber()) {
-            return new Payload.PNumber(node.doubleValue());
+            return new Payload.PDouble(node.doubleValue());
         }
         if (node.isString()) {
             return new Payload.PString(node.asString());
@@ -57,7 +60,8 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
         return switch (payload) {
             case Payload.PNull _ -> f.nullNode();
             case Payload.PBool b -> f.booleanNode(b.value());
-            case Payload.PNumber num -> f.numberNode(num.value());
+            case Payload.PInt num -> f.numberNode(num.value());
+            case Payload.PDouble num -> f.numberNode(num.value());
             case Payload.PString s -> f.stringNode(s.value());
 
             case Payload.PArray a -> {
@@ -96,7 +100,11 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
                 out.put(path, String.valueOf(b.value()));
                 return;
             }
-            case Payload.PNumber n -> {
+            case Payload.PInt n -> {
+                out.put(path, String.valueOf(n.value()));
+                return;
+            }
+            case Payload.PDouble n -> {
                 out.put(path, String.valueOf(n.value()));
                 return;
             }

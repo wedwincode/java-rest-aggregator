@@ -2,7 +2,7 @@ package ru.wedwin.aggregator.adapter.out.output;
 
 import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
 import ru.wedwin.aggregator.domain.model.AggregatedRecord;
-import ru.wedwin.aggregator.domain.model.OutputSpec;
+import ru.wedwin.aggregator.domain.model.out.OutputSpec;
 import ru.wedwin.aggregator.port.out.OutputWriter;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -27,8 +27,13 @@ public class JsonWriter implements OutputWriter {
         return "json";
     }
 
+    // todo null checks everywhere
     @Override
     public void write(List<AggregatedRecord> records, OutputSpec spec) {
+        if (records == null || spec == null) {
+            return;
+        }
+
         try {
             if (spec.path().getParent() != null) {
                 Files.createDirectories(spec.path().getParent());

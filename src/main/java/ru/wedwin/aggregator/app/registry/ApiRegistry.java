@@ -1,5 +1,6 @@
-package ru.wedwin.aggregator.domain.model;
+package ru.wedwin.aggregator.app.registry;
 
+import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.port.out.ApiClient;
 
 import java.util.ArrayList;
