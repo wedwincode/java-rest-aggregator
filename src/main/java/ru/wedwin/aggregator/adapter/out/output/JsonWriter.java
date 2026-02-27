@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-public class JsonFileWriter implements OutputWriter {
+public class JsonWriter implements OutputWriter {
 
     @Override
     public String id() {

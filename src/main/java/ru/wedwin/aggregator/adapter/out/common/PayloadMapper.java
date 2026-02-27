@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 // todo разобраться что здесь происходит
-public final class PayloadMapper {
+public final class PayloadMapper { // todo rename to smth more common (e.g. PayloadTools)
     private PayloadMapper() {
     }
     public static Payload fromJsonNode(JsonNode node) {
@@ -74,6 +74,66 @@ public final class PayloadMapper {
                 yield obj;
             }
         };
+    }
+
+    public static Map<String, String> flatten(Payload payload) {
+        Map<String, String> out = new LinkedHashMap<>();
+        flattenInto(out, "payload", payload);
+        return out;
+    }
+
+    private static void flattenInto(Map<String, String> out, String path, Payload p) {
+        switch (p) {
+            case null -> {
+                out.put(path, "");
+                return;
+            }
+            case Payload.PNull _ -> {
+                out.put(path, "");
+                return;
+            }
+            case Payload.PBool b -> {
+                out.put(path, String.valueOf(b.value()));
+                return;
+            }
+            case Payload.PNumber n -> {
+                out.put(path, String.valueOf(n.value()));
+                return;
+            }
+            case Payload.PString s -> {
+                out.put(path, s.value() == null ? "" : s.value());
+                return;
+            }
+            case Payload.PObject o -> {
+                if (o.fields() == null || o.fields().isEmpty()) {
+                    out.put(path, "");
+                    return;
+                }
+                for (var e : o.fields().entrySet()) {
+                    String childPath = path + "." + e.getKey();
+                    flattenInto(out, childPath, e.getValue());
+                }
+                return;
+            }
+            case Payload.PArray a -> {
+                if (a.items() == null || a.items().isEmpty()) {
+                    out.put(path, "");
+                    return;
+                }
+
+                for (int i = 0; i < a.items().size(); i++) {
+                    String childPath = path + "[" + i + "]";
+                    flattenInto(out, childPath, a.items().get(i));
+                }
+
+                // вариант b: можно вместо индексации писать json строкой в одну ячейку
+                // out.put(path, payloadToJsonString(p));
+                return;
+            }
+            default -> {}
+        }
+
+        out.put(path, String.valueOf(p));
     }
 
 }

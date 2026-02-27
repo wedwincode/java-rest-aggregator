@@ -34,7 +34,7 @@ public class ArgsParser {
     // TODO: help, print output, custom exceptions
     public ParsedArgs parse(String[] args) {
 
-        Path outputPath = Path.of("out.json");
+        Path outputPath = null;
         OutputFormat outputFormat = OutputFormat.JSON;
         WriteMode writeMode = WriteMode.NEW;
 
@@ -80,6 +80,13 @@ public class ArgsParser {
                         params.put(parsedParam.param, parsedParam.value); // todo better?
                     }
                 }
+            }
+        }
+
+        if (outputPath == null) {
+            switch (outputFormat) {
+                case JSON -> outputPath = Path.of("out.json");
+                case CSV -> outputPath = Path.of("out.csv");
             }
         }
 

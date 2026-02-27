@@ -5,7 +5,8 @@ import ru.wedwin.aggregator.adapter.out.apis.newsapi.NewsApiClient;
 import ru.wedwin.aggregator.adapter.out.apis.thenewsapi.TheNewsApiClient;
 import ru.wedwin.aggregator.adapter.out.apis.weatherapi.WeatherApiClient;
 import ru.wedwin.aggregator.adapter.out.http.OkHttpExecutor;
-import ru.wedwin.aggregator.adapter.out.output.JsonFileWriter;
+import ru.wedwin.aggregator.adapter.out.output.CsvWriter;
+import ru.wedwin.aggregator.adapter.out.output.JsonWriter;
 import ru.wedwin.aggregator.app.AggregationUseCase;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class Main {
                 new CliApp(args),
                 new OkHttpExecutor(),
                 List.of(new NewsApiClient(), new TheNewsApiClient(), new WeatherApiClient()),
-                List.of(new JsonFileWriter())
+                List.of(new JsonWriter(), new CsvWriter())
         );
 
         useCase.run();
