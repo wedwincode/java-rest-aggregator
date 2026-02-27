@@ -1,8 +1,6 @@
 package ru.wedwin.aggregator.adapter.out.apis.newsapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import tools.jackson.databind.PropertyNamingStrategies;
-import tools.jackson.databind.annotation.JsonNaming;
 
 import java.util.List;
 
@@ -14,7 +12,6 @@ public record NewsApiResponse(
 ) {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public record Article(
             Source source,
             String author,
