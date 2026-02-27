@@ -33,15 +33,15 @@ public class JsonWriter implements OutputWriter {
         if (records == null || spec == null) {
             return;
         }
-
         try {
             if (spec.path().getParent() != null) {
                 Files.createDirectories(spec.path().getParent());
             }
-            ArrayNode array = null;
+            ArrayNode array;
             switch (spec.mode()) {
                 case NEW -> array = om.createArrayNode();
                 case APPEND -> array = readArrayOrCreateEmpty(spec.path());
+                case null, default -> throw new RuntimeException("null!!"); // todo everywhere
             }
             records.stream().map(this::recordToObjectNode).forEach(array::add);
             om.writerWithDefaultPrettyPrinter().writeValue(spec.path().toFile(), array);

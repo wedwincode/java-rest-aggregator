@@ -16,6 +16,7 @@ import java.util.Map;
 public final class PayloadMapper { // todo rename to smth more common (e.g. PayloadTools)
     private PayloadMapper() {
     }
+
     public static Payload fromJsonNode(JsonNode node) {
         if (node == null || node.isNull()) {
             return new Payload.PNull();
@@ -87,6 +88,7 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
     }
 
     private static void flattenInto(Map<String, String> out, String path, Payload p) {
+        ObjectMapper om = new ObjectMapper();
         switch (p) {
             case null -> {
                 out.put(path, "");
@@ -129,13 +131,12 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
                     return;
                 }
 
-                for (int i = 0; i < a.items().size(); i++) {
-                    String childPath = path + "[" + i + "]";
-                    flattenInto(out, childPath, a.items().get(i));
-                }
+//                for (int i = 0; i < a.items().size(); i++) {
+//                    String childPath = path + "[" + i + "]";
+//                    flattenInto(out, childPath, a.items().get(i));
+//                }
 
-                // вариант b: можно вместо индексации писать json строкой в одну ячейку
-                // out.put(path, payloadToJsonString(p));
+                out.put(path, om.writeValueAsString(a));
                 return;
             }
             default -> {}
