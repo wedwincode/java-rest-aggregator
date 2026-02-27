@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+// todo append
 public class CsvWriter implements OutputWriter {
 
     @Override
@@ -36,11 +37,9 @@ public class CsvWriter implements OutputWriter {
             if (spec.path().getParent() != null) {
                 Files.createDirectories(spec.path().getParent()); // todo нужно ли
             }
-
             CSVFormat format = CSVFormat.DEFAULT.builder()
                     .setHeader(headers.toArray(String[]::new))
                     .get();
-
             try (BufferedWriter writer = Files.newBufferedWriter(spec.path());
                  CSVPrinter printer = new CSVPrinter(writer, format)) {
                 for (Map<String, String> rowMap: rows) {
@@ -55,12 +54,10 @@ public class CsvWriter implements OutputWriter {
         } catch (IOException e) {
             throw new RuntimeException("failed to write output to " + spec.path(), e);
         }
-
     }
 
-    private static List<Map<String, String>> flattenRecords(List<AggregatedRecord> records) {
+    private List<Map<String, String>> flattenRecords(List<AggregatedRecord> records) {
         List<Map<String, String>> rows = new ArrayList<>();
-
         for (AggregatedRecord record: records) {
             Map<String, String> row = new LinkedHashMap<>();
             row.put("itemId", record.itemId().toString());
@@ -69,7 +66,6 @@ public class CsvWriter implements OutputWriter {
             row.putAll(PayloadMapper.flatten(record.payload()));
             rows.add(row);
         }
-
         return rows;
     }
 }
