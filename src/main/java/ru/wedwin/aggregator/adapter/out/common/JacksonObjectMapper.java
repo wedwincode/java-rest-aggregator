@@ -16,7 +16,7 @@ public class JacksonObjectMapper {
         try {
             return mapper.readValue(content, clazz);
         } catch (JacksonException e) {
-            throw new RuntimeException("Failed to deserialize JSON to " + clazz.getSimpleName(), e);
+            throw new RuntimeException("Failed to deserialize JSON to " + clazz.getSimpleName() + "\n raw body:" + content, e);
         }
     }
 

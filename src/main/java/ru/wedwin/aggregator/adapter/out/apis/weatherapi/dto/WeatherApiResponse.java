@@ -5,61 +5,62 @@ import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.annotation.JsonNaming;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record WeatherApiResponse(
         Location location,
         Current current
 ) {
     @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public record Location(
             String name,
             String region,
             String country,
-            double lat,
-            double lon,
+            Double lat,
+            Double lon,
             String tzId,
             String localtimeEpoch,
             String localtime
     ) {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public record Current(
             String lastUpdatedEpoch,
             String lastUpdated,
-            double tempC,
-            double tempF,
-            int isDay,
+            Double tempC,
+            Double tempF,
+            Integer isDay,
             Condition condition,
-            double windMph,
-            double windKph,
-            int windDegree,
-            String wingDir,
-            int pressureMb,
-            double pressureIn,
-            double precipMm,
-            int precipIn,
-            int humidity,
-            int cloud,
-            double feelslikeC,
-            double feelslikeF,
-            double windchillC,
-            double windchillF,
-            double heatindexC,
-            double heatindexF,
-            double dewpointC,
-            double dewpointF,
-            int visKm,
-            int visMiles,
-            double uv,
-            double gustMph,
-            double gustKph
+            Double windMph,
+            Double windKph,
+            Integer windDegree,
+            String windDir,
+            Integer pressureMb,
+            Double pressureIn,
+            Double precipMm,
+            Integer precipIn,
+            Integer humidity,
+            Integer cloud,
+            Double feelslikeC,
+            Double feelslikeF,
+            Double windchillC,
+            Double windchillF,
+            Double heatindexC,
+            Double heatindexF,
+            Double dewpointC,
+            Double dewpointF,
+            Integer visKm,
+            Integer visMiles,
+            Double uv,
+            Double gustMph,
+            Double gustKph
 
     ) {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public record Condition(
                 String text,
                 String icon,
-                int code
+                Integer code
         ) {}
     }
 }
