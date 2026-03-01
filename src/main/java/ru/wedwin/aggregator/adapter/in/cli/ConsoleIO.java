@@ -28,35 +28,6 @@ public class ConsoleIO {
 
     public String readLine(String promptToShow) {
         print(promptToShow);
-        return scanner.nextLine().strip();
-    }
-
-    public int readInt(String promptToShow, int min, int max) {
-        while (true) {
-            String s = readLine(promptToShow);
-            try {
-                int value = Integer.parseInt(s);
-                if (value < min || value > max) {
-                    println("value is out of range [" + min + ", " + max + "]");
-                    continue;
-                }
-                return value;
-            } catch (NumberFormatException e) {
-                println("not a number");
-            }
-        }
-    }
-
-    public boolean readDecision(String promptToShow) {
-        while (true) {
-            String s = readLine(promptToShow + " (y/n): ").strip().toLowerCase();
-            if (s.equals("y") || s.equals("yes")) {
-                return true;
-            }
-            if (s.equals("n") || s.equals("no")) {
-                return false;
-            }
-            println("enter \"yes\" (y) or \"no\" (n)");
-        }
+        return scanner.nextLine().trim();
     }
 }

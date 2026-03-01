@@ -1,54 +1,50 @@
 package ru.wedwin.aggregator.domain.model.api;
 
+import ru.wedwin.aggregator.domain.model.api.exception.InvalidApiParamsException;
+
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class ApiParams {
     // TODO: change string to smth more special (param, value)
-    private final Map<String, String> values;
+    private final Map<String, String> params;
 
-    private ApiParams(Map<String, String> values) {
-        this.values = new LinkedHashMap<>(values);
+    private ApiParams(Map<String, String> params) {
+        this.params = new LinkedHashMap<>(params);
     }
 
     public static ApiParams of() {
         return new ApiParams(Map.of());
     }
 
-    public static ApiParams of(Map<String, String> values) {
-        return new ApiParams(values == null ? Map.of() : values);
+    public static ApiParams of(Map<String, String> params) {
+        return new ApiParams(params == null ? Map.of() : params);
     }
 
-    public String get(String key) {
-        return values.get(key);
-    }
-
-    public String getOrDefault(String key, String def) {
-        String v = values.get(key);
-        return v == null || v.isBlank() ? def : v;
-    }
-
-    public void addDefaultParams(List<ParamMeta> spec) {
-        for (ParamMeta param: spec) {
-            if (!values.containsKey(param.key()) && param.required()) {
-                values.put(param.key(), param.defaultValue());
+    public void addDefaultParams(List<ParamMeta> paramMetas) {
+        if (paramMetas == null) {
+            return;
+        }
+        for (ParamMeta param: paramMetas) {
+            if (!params.containsKey(param.key()) && param.required()) {
+                if (param.defaultValue() == null || param.defaultValue().isBlank()) {
+                    throw new InvalidApiParamsException("param " + param.key() + " is null");
+                }
+                params.put(param.key(), param.defaultValue());
             }
         }
     }
 
-    public String put(String key, String value) {
-        return values.put(key, value);
-    }
-
     public Map<String, String> asMap() {
-        return values;
+        return Collections.unmodifiableMap(params);
     }
 
     @Override
     public String toString() {
         return "ApiParams{" +
-                "values=" + values +
+                "params=" + params +
                 '}';
     }
 }

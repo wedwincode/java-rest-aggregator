@@ -7,7 +7,7 @@ public record WriterId(
 ) {
     public WriterId(String value) {
         if (value == null || value.isBlank()) throw new IllegalArgumentException("writer id is empty");
-        this.value = value.strip().toLowerCase();
+        this.value = value.trim().toLowerCase();
     }
 
     @Override

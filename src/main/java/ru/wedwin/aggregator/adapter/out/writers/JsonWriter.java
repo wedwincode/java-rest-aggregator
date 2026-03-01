@@ -65,7 +65,7 @@ public class JsonWriter implements Writer {
             return om.createArrayNode();
         }
         String content = Files.readString(file, StandardCharsets.UTF_8).trim();
-        if (content.isEmpty()) {
+        if (content.isBlank()) {
             return om.createArrayNode();
         }
         JsonNode root = om.readTree(content);

@@ -6,7 +6,7 @@ import ru.wedwin.aggregator.domain.model.out.OutputSpec;
 
 import java.util.Map;
 
-public record RunRequest(
+public record RunConfig(
         Map<ApiId, ApiParams> apisWithParams,
         OutputSpec outputSpec
 ) {}

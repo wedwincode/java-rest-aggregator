@@ -1,10 +1,15 @@
 package ru.wedwin.aggregator.domain.model.api;
 
+import ru.wedwin.aggregator.domain.model.api.exception.InvalidApiIdException;
+
 import java.util.Objects;
 
 public record ApiId(String value) {
-    public ApiId {
-        if (value == null || value.isBlank()) throw new IllegalArgumentException("api id is empty");
+    public ApiId(String value) {
+        if (value == null || value.isBlank()) {
+            throw new InvalidApiIdException();
+        }
+        this.value = value.trim().toLowerCase();
     }
 
     @Override

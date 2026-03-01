@@ -4,7 +4,7 @@ import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.out.WriterId;
 import ru.wedwin.aggregator.domain.model.out.OutputSpec;
-import ru.wedwin.aggregator.domain.model.in.RunRequest;
+import ru.wedwin.aggregator.domain.model.in.RunConfig;
 import ru.wedwin.aggregator.domain.model.out.WriteMode;
 
 import java.nio.file.Path;
@@ -17,7 +17,7 @@ import java.util.Set;
 public class ArgsParser {
     public record ParsedArgs(
             boolean interactive,
-            RunRequest runRequest
+            RunConfig runConfig
     ) {}
 
     public record Param(
@@ -90,7 +90,7 @@ public class ArgsParser {
 
         return new ParsedArgs(
                 isInteractive,
-                new RunRequest(paramsByApi, new OutputSpec(outputPath, writerId, writeMode)));
+                new RunConfig(paramsByApi, new OutputSpec(outputPath, writerId, writeMode)));
     }
 
     private static String requireValue(String[] args, int idx, String flag) {
@@ -121,7 +121,7 @@ public class ArgsParser {
     }
 
     private static WriteMode parseMode(String rawMode) {
-        String normalizedMode = rawMode.strip().toLowerCase();
+        String normalizedMode = rawMode.trim().toLowerCase();
         return switch (normalizedMode) {
             case "new" -> WriteMode.NEW;
             case "append" -> WriteMode.APPEND;

@@ -4,7 +4,7 @@ import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.api.ParamMeta;
-import ru.wedwin.aggregator.domain.model.in.RunRequest;
+import ru.wedwin.aggregator.domain.model.in.RunConfig;
 import ru.wedwin.aggregator.domain.model.out.OutputSpec;
 import ru.wedwin.aggregator.domain.model.out.WriteMode;
 import ru.wedwin.aggregator.domain.model.out.WriterId;
@@ -34,7 +34,7 @@ public class InteractiveMenu {
         this.paramsByApi = new HashMap<>();
     }
 
-    public RunRequest getRunRequest() throws IOException { // todo: wrap with try/catch
+    public RunConfig getRunRequest() throws IOException { // todo: wrap with try/catch
         try {
             io.println("Available APIs:");
             io.println("id, name, url");
@@ -69,7 +69,7 @@ public class InteractiveMenu {
             WriteMode mode = WriteMode.valueOf(rawMode);
             String rawPath = io.readLine("Enter output path: ");
             Path path = Path.of(rawPath);
-            return new RunRequest(
+            return new RunConfig(
                     paramsByApi, new OutputSpec(path, writer, mode) // todo: without OutputFormat enum
             );
         } catch (Exception e) {
@@ -90,7 +90,7 @@ public class InteractiveMenu {
 
     private Set<ApiId> parseIds(String string) {
         Set<ApiId> allowedIds = apiCatalog.list().stream().map(ApiDefinition::id).collect(Collectors.toSet());
-        if (string == null || string.isEmpty()) {
+        if (string == null || string.isBlank()) {
             throw new IllegalArgumentException("at least one id must be specified");
         }
         Set<ApiId> ids = new HashSet<>();

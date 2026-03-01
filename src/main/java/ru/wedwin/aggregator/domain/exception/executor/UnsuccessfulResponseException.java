@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.domain.exceptions.executor;
+package ru.wedwin.aggregator.domain.exception.executor;
 
 public class UnsuccessfulResponseException extends RuntimeException {
     public UnsuccessfulResponseException() {

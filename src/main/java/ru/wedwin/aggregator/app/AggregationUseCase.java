@@ -4,9 +4,9 @@ import ru.wedwin.aggregator.domain.model.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.app.registry.ApiRegistry;
-import ru.wedwin.aggregator.domain.model.in.RunRequest;
+import ru.wedwin.aggregator.domain.model.in.RunConfig;
 import ru.wedwin.aggregator.app.registry.WriterRegistry;
-import ru.wedwin.aggregator.port.in.RunRequestRetriever;
+import ru.wedwin.aggregator.port.in.RunConfigProvider;
 import ru.wedwin.aggregator.port.out.ApiClient;
 import ru.wedwin.aggregator.port.out.Executor;
 import ru.wedwin.aggregator.port.out.Writer;
@@ -15,33 +15,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AggregationUseCase {
-    private final RunRequestRetriever runRequestRetriever;
+    private final RunConfigProvider runConfigProvider;
     private final Executor executor;
     private final ApiRegistry apiRegistry;
     private final WriterRegistry writerRegistry;
 
     public AggregationUseCase(
-            RunRequestRetriever runRequestRetriever,
+            RunConfigProvider runConfigProvider,
             Executor executor,
             ApiRegistry apiRegistry,
             WriterRegistry writerRegistry
     ) {
-        this.runRequestRetriever = runRequestRetriever;
+        this.runConfigProvider = runConfigProvider;
         this.executor = executor;
         this.apiRegistry = apiRegistry;
         this.writerRegistry = writerRegistry;
     }
 
     public void run() throws Exception {
-        RunRequest runRequest = runRequestRetriever.getRunRequest();
+        RunConfig runConfig = runConfigProvider.getRunRequest();
         List<AggregatedItem> responseList = new ArrayList<>();
 
-        for (ApiId id: runRequest.apisWithParams().keySet()) {
+        for (ApiId id: runConfig.apisWithParams().keySet()) {
             ApiClient client = apiRegistry.getClient(id);
-            ApiParams params = runRequest.apisWithParams().getOrDefault(id, ApiParams.of());
+            ApiParams params = runConfig.apisWithParams().getOrDefault(id, ApiParams.of());
             responseList.add(client.getApiResponse(params, executor));
         }
-        Writer writer = writerRegistry.getWriter(runRequest.outputSpec().writerId()); // todo better
-        writer.write(responseList, runRequest.outputSpec());
+        Writer writer = writerRegistry.getWriter(runConfig.outputSpec().writerId()); // todo better
+        writer.write(responseList, runConfig.outputSpec());
     }
 }
