@@ -1,15 +1,17 @@
 package ru.wedwin.aggregator.adapter.in.cli;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
 import ru.wedwin.aggregator.port.in.RunConfigProvider;
 import ru.wedwin.aggregator.port.in.WriterCatalog;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
 public class CliApp implements RunConfigProvider {
+    private static final Logger log = LogManager.getLogger(CliApp.class);
     private final String[] args;
     private final ApiCatalog apiCatalog;
     private final WriterCatalog writerCatalog;
@@ -25,12 +27,18 @@ public class CliApp implements RunConfigProvider {
     }
 
     @Override
-    public RunConfig getRunConfig() throws IOException {
+    public RunConfig getRunConfig() {
         ArgsParser parser = new ArgsParser(args, apiCatalog);
         if (parser.isInteractive()) {
             InteractiveMenu menu = new InteractiveMenu(apiCatalog, writerCatalog, new ConsoleIO(in, out));
             return menu.getRunRequest();
         }
-        return parser.parse();
+        try {
+            return parser.parse();
+        } catch (ArgsParseException e) {
+            out.println("arguments error: " + e.getMessage());
+            log.error("arguments error: {}", e.getMessage());
+            throw e;
+        }
     }
 }

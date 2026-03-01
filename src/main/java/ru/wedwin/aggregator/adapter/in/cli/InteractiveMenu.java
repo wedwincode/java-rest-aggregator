@@ -34,7 +34,7 @@ public class InteractiveMenu {
         this.paramsByApi = new HashMap<>();
     }
     // todo: print result
-    public RunConfig getRunRequest() throws IOException { // todo: wrap with try/catch
+    public RunConfig getRunRequest() { // todo: wrap with try/catch
         try {
             io.println("Available APIs:");
             io.println("id, name, url");

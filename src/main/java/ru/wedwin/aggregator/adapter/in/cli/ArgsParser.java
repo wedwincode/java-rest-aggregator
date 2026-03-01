@@ -3,10 +3,12 @@ package ru.wedwin.aggregator.adapter.in.cli;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.api.ParamMeta;
-import ru.wedwin.aggregator.domain.model.output.WriterId;
-import ru.wedwin.aggregator.domain.model.output.OutputSpec;
+import ru.wedwin.aggregator.domain.model.api.exception.InvalidApiIdException;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
+import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
+import ru.wedwin.aggregator.domain.model.output.WriterId;
+import ru.wedwin.aggregator.domain.model.output.exception.InvalidWriterIdException;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
 
 import java.nio.file.Path;
@@ -37,6 +39,48 @@ public class ArgsParser {
         this.rawParamsByApi = new HashMap<>();
     }
 
+    private static String requireValue(String[] args, int idx, String flag) {
+        if (idx < 0 || idx >= args.length) {
+            throw new ArgsParseException("missing value for: " + flag);
+        }
+        String value = args[idx];
+        if (value.startsWith("-")) {
+            throw new ArgsParseException("missing value for: " + flag);
+        }
+        return value;
+    }
+
+    private static ParsedValues requireOneOrMultipleValues(String[] args, int idx, String flag) {
+        if (idx < 0 || idx >= args.length) {
+            throw new ArgsParseException("incorrect values for flag: " + flag);
+        }
+        Set<String> values = new HashSet<>();
+        while (idx < args.length && !args[idx].startsWith("-")) {
+            String value = args[idx++];
+            values.add(value);
+        }
+        if (values.isEmpty()) {
+            throw new ArgsParseException("incorrect values for flag: " + flag);
+        }
+
+        return new ParsedValues(values, idx);
+    }
+
+    private static WriteMode parseMode(String rawMode) {
+        if (rawMode == null) {
+            throw new ArgsParseException("mode is null");
+        }
+        String normalized = rawMode.trim().toUpperCase();
+        if (normalized.isEmpty()) {
+            throw new ArgsParseException("mode is empty");
+        }
+        try {
+            return WriteMode.valueOf(normalized);
+        } catch (IllegalArgumentException e) {
+            throw new ArgsParseException("mode is incorrect: " + rawMode, e);
+        }
+    }
+
     public boolean isInteractive() {
         return Arrays.asList(args).contains("--interactive");
     }
@@ -48,7 +92,11 @@ public class ArgsParser {
             switch (arg) {
                 case "--writer" -> {
                     String value = requireValue(args, i + 1, arg);
-                    writerId = new WriterId(value);
+                    try {
+                        writerId = new WriterId(value);
+                    } catch (InvalidWriterIdException e) {
+                        throw new ArgsParseException("invalid --writer value: " + value, e);
+                    }
                     i += 2;
                 }
                 case "--mode" -> {
@@ -58,12 +106,25 @@ public class ArgsParser {
                 }
                 case "--path" -> {
                     String value = requireValue(args, i + 1, arg);
-                    outputPath = Path.of(value);
+                    try {
+                        outputPath = Path.of(value);
+                    } catch (RuntimeException e) {
+                        throw new ArgsParseException("invalid --path value: " + value, e);
+                    }
                     i += 2;
                 }
                 case "--apis" -> {
                     ParsedValues pv = requireOneOrMultipleValues(args, i + 1, arg);
-                    selectedApis.addAll(pv.values().stream().map(ApiId::new).collect(Collectors.toSet()));
+                    Set<ApiId> set = new HashSet<>();
+                    for (String s : pv.values()) {
+                        try {
+                            ApiId id = new ApiId(s);
+                            set.add(id);
+                        } catch (InvalidApiIdException e) {
+                            throw new ArgsParseException("invalid --apis value: " + s, e);
+                        }
+                    }
+                    selectedApis.addAll(set);
                     i = pv.nextIndex();
                 }
                 case "--params" -> {
@@ -112,48 +173,10 @@ public class ArgsParser {
             apisWithParams.put(id, ApiParams.of(params));
         });
 
-        return new RunConfig(apisWithParams, new OutputSpec(outputPath, writerId, writeMode));
-    }
-
-    private static String requireValue(String[] args, int idx, String flag) {
-        if (idx < 0 || idx >= args.length) {
-            throw new ArgsParseException("missing value for: " + flag);
-        }
-        String value = args[idx];
-        if (value.startsWith("-")) {
-            throw new ArgsParseException("missing value for: " + flag);
-        }
-        return value;
-    }
-
-    private static ParsedValues requireOneOrMultipleValues(String[] args, int idx, String flag) {
-        if (idx < 0 || idx >= args.length) {
-            throw new ArgsParseException("incorrect values for flag: " + flag);
-        }
-        Set<String> values = new HashSet<>();
-        while (idx < args.length && !args[idx].startsWith("-")) {
-            String value = args[idx++];
-            values.add(value);
-        }
-        if (values.isEmpty()) {
-            throw new ArgsParseException("incorrect values for flag: " + flag);
-        }
-
-        return new ParsedValues(values, idx);
-    }
-
-    private static WriteMode parseMode(String rawMode) {
-        if (rawMode == null) {
-            throw new ArgsParseException("mode is null");
-        }
-        String normalized = rawMode.trim().toUpperCase();
-        if (normalized.isEmpty()) {
-            throw new ArgsParseException("mode is empty");
-        }
         try {
-            return WriteMode.valueOf(normalized);
-        } catch (ArgsParseException e) {
-            throw new ArgsParseException("mode is incorrect: " + rawMode, e);
+            return new RunConfig(apisWithParams, new OutputSpec(outputPath, writerId, writeMode));
+        } catch (RuntimeException e) {
+            throw new ArgsParseException("invalid run config", e);
         }
     }
 
@@ -166,7 +189,7 @@ public class ArgsParser {
             throw new ArgsParseException("params format is incorrect: spaces are not allowed: " + rawData);
         }
         int dot = s.indexOf('.');
-        int eq  = s.indexOf('=');
+        int eq = s.indexOf('=');
 
         if (dot < 0 || eq < 0) {
             throw new ArgsParseException("params format is incorrect: expected api.param=value");
@@ -185,8 +208,12 @@ public class ArgsParser {
         String keyRaw = s.substring(dot + 1, eq);
         String valRaw = s.substring(eq + 1);
 
-        ApiId id = new ApiId(apiRaw);
-        Map<String, String> currentParams = rawParamsByApi.computeIfAbsent(id, _ -> new HashMap<>());
-        currentParams.put(keyRaw, valRaw);
+        try {
+            ApiId id = new ApiId(apiRaw);
+            Map<String, String> currentParams = rawParamsByApi.computeIfAbsent(id, _ -> new HashMap<>());
+            currentParams.put(keyRaw, valRaw);
+        } catch (InvalidApiIdException e) {
+            throw new ArgsParseException("invalid param api id: " + apiRaw, e);
+        }
     }
 }
