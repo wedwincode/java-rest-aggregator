@@ -1,20 +1,21 @@
 package ru.wedwin.aggregator.adapter.out.formatters;
 
 import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
+import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.format.FormatterId;
+import ru.wedwin.aggregator.domain.model.result.Payload;
 import ru.wedwin.aggregator.port.out.Formatter;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.Reader;
+import java.io.Writer;
+import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 public class JsonFormatter implements Formatter {
     private final ObjectMapper om;
@@ -28,30 +29,43 @@ public class JsonFormatter implements Formatter {
         return new FormatterId("json"); // todo change "new" to .of()
     }
 
-    // todo null checks everywhere
     @Override
-    public void format(List<AggregatedItem> items, OutputSpec spec) {
-        if (items == null || spec == null) {
-            return;
-        }
-        try {
-            if (spec.path().getParent() != null) {
-                Files.createDirectories(spec.path().getParent());
+    public List<AggregatedItem> read(Reader r) {
+        ArrayNode array = readArrayOrCreateEmpty(r);
+
+        List<AggregatedItem> items = new java.util.ArrayList<>(array.size());
+        for (JsonNode n: array) {
+            if (n == null || n.isNull()) {
+                continue;
             }
-            ArrayNode array;
-            switch (spec.mode()) {
-                case NEW -> array = om.createArrayNode();
-                case APPEND -> array = readArrayOrCreateEmpty(spec.path());
-                case null, default -> throw new RuntimeException("null!!"); // todo everywhere
+            if (!n.isObject()) {
+                throw new IllegalStateException("json array element is not an object");
             }
-            items.stream().map(this::itemToObjectNode).forEach(array::add);
-            om.writerWithDefaultPrettyPrinter().writeValue(spec.path().toFile(), array);
-        } catch (IOException e) {
-            throw new RuntimeException("failed to write output to " + spec.path(), e);
+            items.add(toItem((ObjectNode) n));
         }
+        return items;
     }
 
-    private ObjectNode itemToObjectNode(AggregatedItem item) {
+    @Override
+    public void write(List<AggregatedItem> items, Writer w) {
+        ArrayNode array = om.createArrayNode();
+        items.stream().map(this::toNode).forEach(array::add);
+        om.writerWithDefaultPrettyPrinter().writeValue(w, array);
+    }
+
+
+    private ArrayNode readArrayOrCreateEmpty(Reader r) {
+        JsonNode root = om.readTree(r);
+        if (root == null || root.isNull()) {
+            return om.createArrayNode();
+        }
+        if (!root.isArray()) {
+            throw new IllegalStateException("no json array found");
+        }
+        return (ArrayNode) root;
+    }
+
+    private ObjectNode toNode(AggregatedItem item) {
         ObjectNode obj = om.createObjectNode();
         obj.put("itemId", item.itemId().toString());
         obj.put("apiId", item.apiId().toString());
@@ -60,21 +74,22 @@ public class JsonFormatter implements Formatter {
         return obj;
     }
 
-    private ArrayNode readArrayOrCreateEmpty(Path file) throws IOException {
-        if (!Files.exists(file) || Files.size(file) == 0) {
-            return om.createArrayNode();
+    private AggregatedItem toItem(ObjectNode obj) {
+        UUID itemId = UUID.fromString(required(obj, "itemId"));
+        ApiId apiId = new ApiId(required(obj, "apiId"));
+        Instant fetchedAt = Instant.parse(required(obj, "fetchedAt"));
+
+        JsonNode payloadNode = obj.get("payload");
+        Payload payload = PayloadMapper.fromJsonNode(payloadNode);
+
+        return new AggregatedItem(itemId, apiId, fetchedAt, payload);
+    }
+
+    private static String required(ObjectNode obj, String field) {
+        JsonNode n = obj.get(field);
+        if (n == null || n.isNull() || !n.isString() || n.asString().isBlank()) {
+            throw new IllegalStateException("missing or invalid field: " + field);
         }
-        String content = Files.readString(file, StandardCharsets.UTF_8).trim();
-        if (content.isBlank()) {
-            return om.createArrayNode();
-        }
-        JsonNode root = om.readTree(content);
-        if (root == null || root.isNull()) {
-            return om.createArrayNode();
-        }
-        if (!root.isArray()) {
-            throw new IllegalStateException("no json array found in file:" + file);
-        }
-        return (ArrayNode) root;
+        return n.asString();
     }
 }

@@ -14,6 +14,10 @@ public class ConsoleIO {
         this.out = out;
     }
 
+    public void println() {
+        out.println();
+    }
+
     public void println(String s) {
         out.println(s);
     }

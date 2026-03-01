@@ -9,6 +9,7 @@ import ru.wedwin.aggregator.adapter.out.apis.weatherapi.WeatherApiClient;
 import ru.wedwin.aggregator.adapter.out.executors.OkHttpExecutor;
 import ru.wedwin.aggregator.adapter.out.formatters.CsvFormatter;
 import ru.wedwin.aggregator.adapter.out.formatters.JsonFormatter;
+import ru.wedwin.aggregator.adapter.out.storage.FileResultStorage;
 import ru.wedwin.aggregator.app.AggregationUseCase;
 import ru.wedwin.aggregator.app.registry.ApiRegistry;
 import ru.wedwin.aggregator.app.registry.FormatterRegistry;
@@ -26,12 +27,12 @@ public class Main {
                 new CliApp(args, apiRegistry, formatterRegistry, System.in, System.out),
                 new OkHttpExecutor(),
                 apiRegistry,
-                formatterRegistry
+                new FileResultStorage(formatterRegistry)
         );
         try {
             useCase.run();
         } catch (Exception e) {
-            log.error("interactive mode failed", e); // todo think more about logs
+            log.error("error", e); // todo think more about logs
         }
     }
 }

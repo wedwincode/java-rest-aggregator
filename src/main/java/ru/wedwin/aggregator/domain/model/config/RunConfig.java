@@ -11,7 +11,6 @@ import java.util.Map;
 
 public record RunConfig(
         Map<ApiId, ApiParams> apisWithParams, // todo change name
-        FormatterId formatterId,
         OutputSpec outputSpec,
         DisplaySpec displaySpec
 ) {
@@ -27,9 +26,6 @@ public record RunConfig(
         }
         if (apisWithParams.containsValue(null)) {
             throw new InvalidRunConfigException("api params is null");
-        }
-        if (formatterId == null) {
-            throw new InvalidRunConfigException("formatterId is null");
         }
         if (outputSpec == null) {
             throw new InvalidRunConfigException("outputSpec is null");

@@ -1,10 +1,12 @@
 package ru.wedwin.aggregator.adapter.out.formatters;
 
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.format.FormatterId;
 import ru.wedwin.aggregator.port.out.Formatter;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.List;
 
 public class ConsoleFormatter implements Formatter {
@@ -14,9 +16,12 @@ public class ConsoleFormatter implements Formatter {
     }
 
     @Override
-    public void format(List<AggregatedItem> items, OutputSpec spec) {
-        for (AggregatedItem item: items) {
-            System.out.println(item);
-        }
+    public List<AggregatedItem> read(Reader r) throws IOException {
+        return List.of();
+    }
+
+    @Override
+    public void write(List<AggregatedItem> items, Writer w) {
+
     }
 }

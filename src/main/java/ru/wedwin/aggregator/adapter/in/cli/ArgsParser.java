@@ -178,8 +178,7 @@ public class ArgsParser {
         try {
             return new RunConfig(
                     apisWithParams,
-                    formatterId,
-                    new OutputSpec(outputPath, writeMode),
+                    new OutputSpec(outputPath, formatterId, writeMode),
                     new DisplaySpec(DisplayMode.NONE) // todo validation for this shit
             );
         } catch (RuntimeException e) {

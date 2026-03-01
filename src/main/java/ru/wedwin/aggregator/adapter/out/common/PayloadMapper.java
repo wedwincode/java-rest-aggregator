@@ -145,5 +145,114 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
         out.put(path, String.valueOf(p));
     }
 
+    public static Payload unflatten(Map<String, String> flat) {
+        if (flat == null || flat.isEmpty()) {
+            return new Payload.PNull();
+        }
+
+        Map<String, String> payloadEntries = new LinkedHashMap<>();
+        for (var e : flat.entrySet()) {
+            String k = e.getKey();
+            if (k == null) continue;
+            if (k.equals("payload") || k.startsWith("payload.")) {
+                payloadEntries.put(k, e.getValue());
+            }
+        }
+        if (payloadEntries.isEmpty()) {
+            return new Payload.PNull();
+        }
+
+        if (payloadEntries.size() == 1 && payloadEntries.containsKey("payload")) {
+            return parsePayloadLeaf(payloadEntries.get("payload"));
+        }
+
+        Map<String, Payload> root = new LinkedHashMap<>();
+
+        for (var e : payloadEntries.entrySet()) {
+            String key = e.getKey();
+            if (key.equals("payload")) {
+                continue;
+            }
+
+            String path = key.substring("payload.".length());
+            String[] parts = path.split("\\.");
+
+            Map<String, Payload> current = root;
+            for (int i = 0; i < parts.length; i++) {
+                String part = parts[i];
+                boolean last = (i == parts.length - 1);
+
+                if (last) {
+                    current.put(part, parsePayloadLeaf(e.getValue()));
+                } else {
+//                    Payload existing = current.get(part);
+//                    if (existing instanceof Payload.PObject(Map<String, Payload> fields)) {
+//                        current = fields;
+//                    } else {
+//                        Map<String, Payload> next = new LinkedHashMap<>();
+//                        current.put(part, new Payload.PObject(next));
+//                        current = next;
+//                    }
+                    Payload existing = current.get(part);
+                    if (existing instanceof Payload.PObject(Map<String, Payload> fields)) {
+                        Map<String, Payload> mutableFields = (fields instanceof LinkedHashMap)
+                                ? fields
+                                : new LinkedHashMap<>(fields);
+
+                        if (mutableFields != fields) {
+                            current.put(part, new Payload.PObject(mutableFields));
+                        }
+
+                        current = mutableFields;
+                    } else {
+                        Map<String, Payload> next = new LinkedHashMap<>();
+                        current.put(part, new Payload.PObject(next));
+                        current = next;
+                    }
+                }
+            }
+        }
+
+        return new Payload.PObject(root);
+    }
+
+    private static Payload parsePayloadLeaf(String raw) {
+        if (raw == null) {
+            return new Payload.PNull();
+        }
+        String s = raw.trim();
+        if (s.isEmpty()) {
+            return new Payload.PNull();
+        }
+
+        ObjectMapper om = new ObjectMapper();
+        try {
+            JsonNode node = om.readTree(s);
+
+            if (node != null && node.isObject() && node.has("items") && node.get("items").isArray()) {
+                return fromJsonNode(node.get("items"));
+            }
+
+            if (node != null && (node.isObject() || node.isArray() || node.isBoolean() || node.isNumber() || node.isString() || node.isNull())) {
+                return fromJsonNode(node);
+            }
+        } catch (Exception _) {}
+
+        if ("true".equalsIgnoreCase(s) || "false".equalsIgnoreCase(s)) {
+            return new Payload.PBool(Boolean.parseBoolean(s));
+        }
+        try {
+            if (!s.contains(".")) {
+                return new Payload.PInt(Integer.parseInt(s));
+            }
+        } catch (NumberFormatException _) {}
+
+        try {
+            return new Payload.PDouble(Double.parseDouble(s));
+        } catch (NumberFormatException _) {}
+
+        return new Payload.PString(s);
+    }
+
 }
 

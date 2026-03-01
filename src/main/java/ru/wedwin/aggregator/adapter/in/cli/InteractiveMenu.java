@@ -5,6 +5,7 @@ import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.api.ParamMeta;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
+import ru.wedwin.aggregator.domain.model.output.DisplayMode;
 import ru.wedwin.aggregator.domain.model.output.DisplaySpec;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
@@ -12,7 +13,6 @@ import ru.wedwin.aggregator.domain.model.format.FormatterId;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
 import ru.wedwin.aggregator.port.in.FormatterCatalog;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -67,18 +67,32 @@ public class InteractiveMenu {
             io.println("Available write modes:");
             io.println(modeInfo());
             String rawMode = io.readLine("Enter output mode: ").toUpperCase();
-            WriteMode mode = WriteMode.valueOf(rawMode);
+            WriteMode writeMode = WriteMode.valueOf(rawMode);
             String rawPath = io.readLine("Enter output path: ");
             Path path = Path.of(rawPath);
+            String rawPrintDecision = io.readLine("What results do you want to print? (all/none/apiId): ").trim().toLowerCase();
+            ApiId apiToDisplay = null;
+            DisplayMode displayMode;
+            switch (rawPrintDecision) {
+                case "all" -> displayMode = DisplayMode.ALL;
+                case "none" -> displayMode = DisplayMode.NONE;
+                default -> {
+                    if (!apiCatalog.contains(new ApiId(rawPrintDecision))) {
+                        throw new RuntimeException("unknown id");
+                    }
+                    displayMode = DisplayMode.BY_API;
+                    apiToDisplay = new ApiId(rawPrintDecision);
+                }
+            }
+            io.println();
             return new RunConfig(
                     paramsByApi,
-                    formatter,
-                    new OutputSpec(path, mode),
-                    new DisplaySpec(null, null) // todo
+                    new OutputSpec(path, formatter, writeMode),
+                    new DisplaySpec(apiToDisplay, displayMode)
             );
         } catch (Exception e) {
             io.println("Error: " + e.getMessage() + ". Try again.");
-            throw new IOException("Menu error: ", e); // todo custom
+            throw new RuntimeException("Menu error: ", e); // todo custom
         }
     }
 
