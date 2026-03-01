@@ -37,7 +37,7 @@ public class AggregationUseCase {
         List<AggregatedRecord> responseList = new ArrayList<>();
 
         for (ApiId id: runRequest.apisWithParams().keySet()) {
-            ApiClient client = apiRegistry.require(id);
+            ApiClient client = apiRegistry.getClient(id);
             ApiParams params = runRequest.apisWithParams().getOrDefault(id, ApiParams.of());
             responseList.add(client.getApiResponse(params, httpExecutor));
         }

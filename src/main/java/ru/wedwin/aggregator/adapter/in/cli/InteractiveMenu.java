@@ -1,7 +1,7 @@
 package ru.wedwin.aggregator.adapter.in.cli;
 
-import ru.wedwin.aggregator.app.registry.ApiRegistry;
 import ru.wedwin.aggregator.app.registry.WriterRegistry;
+import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.api.ParamSpec;
@@ -9,7 +9,7 @@ import ru.wedwin.aggregator.domain.model.in.RunRequest;
 import ru.wedwin.aggregator.domain.model.out.OutputFormat;
 import ru.wedwin.aggregator.domain.model.out.OutputSpec;
 import ru.wedwin.aggregator.domain.model.out.WriteMode;
-import ru.wedwin.aggregator.port.out.ApiClient;
+import ru.wedwin.aggregator.port.in.ApiCatalog;
 import ru.wedwin.aggregator.port.out.OutputWriter;
 
 import java.io.IOException;
@@ -22,13 +22,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class InteractiveMenu {
-    private final ApiRegistry apiRegistry;
+    private final ApiCatalog apiCatalog;
     private final WriterRegistry writerRegistry;
     private final ConsoleIO io;
     private final Map<ApiId, ApiParams> paramsByApi;
 
-    public InteractiveMenu(ApiRegistry apiRegistry, WriterRegistry writerRegistry, ConsoleIO io) {
-        this.apiRegistry = apiRegistry;
+    public InteractiveMenu(ApiCatalog apiCatalog, WriterRegistry writerRegistry, ConsoleIO io) {
+        this.apiCatalog = apiCatalog;
         this.writerRegistry = writerRegistry;
         this.io = io;
         this.paramsByApi = new HashMap<>();
@@ -38,13 +38,13 @@ public class InteractiveMenu {
         try {
             io.println("Available APIs:");
             io.println("id, name, url");
-            for (ApiClient c : apiRegistry.all()) {
-                io.println(apiInfo(c));
+            for (ApiDefinition d : apiCatalog.list()) {
+                io.println(apiInfo(d));
             }
             String rawIds = io.readLine("Enter desired API ids (e.g. api1 api2): "); // todo check if we enter more apis than exist
             Set<ApiId> ids = parseIds(rawIds);
             for (ApiId id : ids) {
-                ApiClient client = apiRegistry.require(id);
+                ApiDefinition client = apiCatalog.getDefinition(id);
 
                 io.println("Available query params for " + id + ":");
                 for (ParamSpec param : client.supportedParams()) {
@@ -74,7 +74,7 @@ public class InteractiveMenu {
         }
     }
 
-    private static String apiInfo(ApiClient c) {
+    private static String apiInfo(ApiDefinition c) {
         return c.id() + "\t" + c.displayName() + "\t" + c.url();
     }
 
@@ -84,9 +84,8 @@ public class InteractiveMenu {
                 .collect(Collectors.joining(" "));
     }
 
-
     private Set<ApiId> parseIds(String string) {
-        Set<ApiId> allowedIds = apiRegistry.allIds();
+        Set<ApiId> allowedIds = apiCatalog.list().stream().map(ApiDefinition::id).collect(Collectors.toSet());
         if (string == null || string.isEmpty()) {
             throw new IllegalArgumentException("at least one id must be specified");
         }
