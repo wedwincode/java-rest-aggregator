@@ -7,6 +7,7 @@ import ru.wedwin.aggregator.domain.model.api.ParamSpec;
 
 import java.util.List;
 
+// todo: problem we use "out" apiclient inside "in" logic
 public interface ApiClient {
     ApiId id();
     String url();

@@ -17,6 +17,10 @@ dependencies {
     // Source: https://mvnrepository.com/artifact/org.apache.commons/commons-csv
     implementation("org.apache.commons:commons-csv:1.14.1")
     implementation("io.github.cdimascio:dotenv-java:3.2.0")
+    // Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
+    implementation("org.apache.logging.log4j:log4j-api:2.25.3")
+    // Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+    implementation("org.apache.logging.log4j:log4j-core:2.25.3")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

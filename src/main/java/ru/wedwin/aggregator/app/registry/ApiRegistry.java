@@ -4,8 +4,10 @@ import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.port.out.ApiClient;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ApiRegistry {
@@ -25,5 +27,9 @@ public class ApiRegistry {
 
     public List<ApiClient> all() {
         return new ArrayList<>(byId.values());
+    }
+
+    public Set<ApiId> allIds() {
+        return byId.keySet();
     }
 }

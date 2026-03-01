@@ -28,7 +28,7 @@ public class WeatherApiClient extends AbstractApiClient<WeatherApiResponse> {
     public List<ParamSpec> supportedParams() {
         return List.of(
                 new ParamSpec("key", true, EnvReader.get("WEATHER_API_KEY"), "api key (put it in the .env file)"),
-                new ParamSpec("q", true, "Saint-Petersburg", "IP address, Latitude/Longitude (decimal degree) or city name"),
+                new ParamSpec("q", true, "Saint-Petersburg", "City name"),
                 new ParamSpec("lang", false, "RU", "response language")
         );
     }

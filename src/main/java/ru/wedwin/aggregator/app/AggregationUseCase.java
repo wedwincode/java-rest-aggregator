@@ -17,34 +17,31 @@ import java.util.List;
 public class AggregationUseCase {
     private final RunRequestRetriever runRequestRetriever;
     private final HttpExecutor httpExecutor;
-    private final List<ApiClient> apiClients;
-    private final List<OutputWriter> outputWriters;
+    private final ApiRegistry apiRegistry;
+    private final WriterRegistry writerRegistry;
 
     public AggregationUseCase(
             RunRequestRetriever runRequestRetriever,
             HttpExecutor httpExecutor,
-            List<ApiClient> apiClients,
-            List<OutputWriter> outputWriters
+            ApiRegistry apiRegistry,
+            WriterRegistry writerRegistry
     ) {
         this.runRequestRetriever = runRequestRetriever;
         this.httpExecutor = httpExecutor;
-        this.apiClients = apiClients;
-        this.outputWriters = outputWriters;
+        this.apiRegistry = apiRegistry;
+        this.writerRegistry = writerRegistry;
     }
 
-    public void run() {
+    public void run() throws Exception {
         RunRequest runRequest = runRequestRetriever.getRunRequest();
         List<AggregatedRecord> responseList = new ArrayList<>();
-        ApiRegistry apiRegistry = new ApiRegistry(apiClients);
-        WriterRegistry writerRegistry = new WriterRegistry(outputWriters);
 
         for (ApiId id: runRequest.apisWithParams().keySet()) {
             ApiClient client = apiRegistry.require(id);
-            ApiParams params = runRequest.apisWithParams().getOrDefault(id, ApiParams.of(null));
+            ApiParams params = runRequest.apisWithParams().getOrDefault(id, ApiParams.of());
             responseList.add(client.getApiResponse(params, httpExecutor));
         }
         OutputWriter writer = writerRegistry.require(runRequest.outputSpec().format().name().toLowerCase()); // todo better
-//        OutputWriter writer = writerRegistry.require("console"); // todo better
         writer.write(responseList, runRequest.outputSpec());
     }
 }

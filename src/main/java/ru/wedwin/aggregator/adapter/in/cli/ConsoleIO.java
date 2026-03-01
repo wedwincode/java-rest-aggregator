@@ -18,6 +18,10 @@ public class ConsoleIO {
         out.println(s);
     }
 
+    public void println(Object obj) {
+        out.println(obj);
+    }
+
     public void print(String s) {
         out.print(s);
     }

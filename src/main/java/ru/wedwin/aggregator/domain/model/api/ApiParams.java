@@ -12,6 +12,10 @@ public final class ApiParams {
         this.values = new LinkedHashMap<>(values);
     }
 
+    public static ApiParams of() {
+        return new ApiParams(Map.of());
+    }
+
     public static ApiParams of(Map<String, String> values) {
         return new ApiParams(values == null ? Map.of() : values);
     }

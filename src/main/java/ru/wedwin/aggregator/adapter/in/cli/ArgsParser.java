@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+// todo: work with ApiRegistry and prevent incorrect input
 public class ArgsParser {
     public record ParsedArgs(
             boolean interactive,
@@ -65,7 +66,7 @@ public class ArgsParser {
                 case "--apis": {
                     Set<String> apiIdsRaw = requireOneOrMultipleValues(args, ++i, arg);
                     for (String rawId : apiIdsRaw) {
-                        paramsByApi.put(new ApiId(rawId), ApiParams.of(null));
+                        paramsByApi.put(new ApiId(rawId), ApiParams.of());
                     }
                     continue;
                 }
