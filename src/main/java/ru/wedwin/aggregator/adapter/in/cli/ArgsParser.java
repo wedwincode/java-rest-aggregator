@@ -23,6 +23,9 @@ public class ArgsParser {
     private final Map<ApiId, ApiParams> apisWithParams;
     private final Set<ApiId> selectedApis;
     private final Map<ApiId, Map<String, String>> rawParamsByApi;
+    private Path outputPath = null;
+    private WriterId writerId = null;
+    private WriteMode writeMode = null;
 
     private record ParsedValues(Set<String> values, int nextIndex) {}
 
@@ -38,12 +41,7 @@ public class ArgsParser {
         return Arrays.asList(args).contains("--interactive");
     }
 
-    // TODO: custom exceptions
     public RunConfig parse() {
-        Path outputPath = null;
-        WriterId writerId = null;
-        WriteMode writeMode = null;
-
         int i = 0;
         while (i < args.length) {
             String arg = args[i];
@@ -77,11 +75,15 @@ public class ArgsParser {
             }
         }
 
+        return validate();
+    }
+
+    private RunConfig validate() {
         if (writerId == null) {
-            throw new IllegalArgumentException("writer was not specified");
+            throw new ArgsParseException("writer was not specified");
         }
         if (writeMode == null) {
-            throw new IllegalArgumentException("mode was not specified");
+            throw new ArgsParseException("mode was not specified");
         }
         if (outputPath == null) {
             outputPath = Path.of("out." + writerId);
@@ -92,19 +94,19 @@ public class ArgsParser {
         allApis.addAll(rawParamsByApi.keySet());
 
         if (allApis.isEmpty()) {
-            throw new IllegalArgumentException("specify at least one api");
+            throw new ArgsParseException("specify at least one api");
         }
 
         allApis.forEach((id) -> {
             if (!catalog.contains(id)) {
-                throw new IllegalArgumentException("api not exist: " + id);
+                throw new ArgsParseException("api not exist: " + id);
             }
             Set<String> supportedParams = catalog.getDefinition(id).supportedParams()
                     .stream().map(ParamMeta::key).collect(Collectors.toSet());
             Map<String, String> params = rawParamsByApi.getOrDefault(id, Map.of());
             params.forEach((key, _) -> {
                 if (!supportedParams.contains(key)) {
-                    throw new IllegalArgumentException("unsupported param: " + key + " for api " + id);
+                    throw new ArgsParseException("unsupported param: " + key + " for api " + id);
                 }
             });
             apisWithParams.put(id, ApiParams.of(params));
@@ -115,18 +117,18 @@ public class ArgsParser {
 
     private static String requireValue(String[] args, int idx, String flag) {
         if (idx < 0 || idx >= args.length) {
-            throw new IllegalArgumentException("missing value for: " + flag);
+            throw new ArgsParseException("missing value for: " + flag);
         }
         String value = args[idx];
         if (value.startsWith("-")) {
-            throw new IllegalArgumentException("missing value for: " + flag);
+            throw new ArgsParseException("missing value for: " + flag);
         }
         return value;
     }
 
     private static ParsedValues requireOneOrMultipleValues(String[] args, int idx, String flag) {
         if (idx < 0 || idx >= args.length) {
-            throw new IllegalArgumentException("incorrect values for flag: " + flag);
+            throw new ArgsParseException("incorrect values for flag: " + flag);
         }
         Set<String> values = new HashSet<>();
         while (idx < args.length && !args[idx].startsWith("-")) {
@@ -134,7 +136,7 @@ public class ArgsParser {
             values.add(value);
         }
         if (values.isEmpty()) {
-            throw new IllegalArgumentException("incorrect values for flag: " + flag);
+            throw new ArgsParseException("incorrect values for flag: " + flag);
         }
 
         return new ParsedValues(values, idx);
@@ -142,27 +144,49 @@ public class ArgsParser {
 
     private static WriteMode parseMode(String rawMode) {
         if (rawMode == null) {
-            throw new IllegalArgumentException("mode is null");
+            throw new ArgsParseException("mode is null");
         }
         String normalized = rawMode.trim().toUpperCase();
         if (normalized.isEmpty()) {
-            throw new IllegalArgumentException("mode is empty");
+            throw new ArgsParseException("mode is empty");
         }
         try {
             return WriteMode.valueOf(normalized);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("mode is incorrect: " + rawMode, e);
+        } catch (ArgsParseException e) {
+            throw new ArgsParseException("mode is incorrect: " + rawMode, e);
         }
     }
 
     private void addParam(String rawData) {
-        // todo: add structure check via regex
-        String[] separated = rawData.split("[.=]");
-        if (separated.length != 3) {
-            throw new RuntimeException("params format is incorrect");
+        if (rawData == null || rawData.isBlank()) {
+            throw new ArgsParseException("params format is incorrect: empty value");
         }
-        ApiId id = new ApiId(separated[0]);
+        String s = rawData.trim();
+        if (s.contains(" ")) {
+            throw new ArgsParseException("params format is incorrect: spaces are not allowed: " + rawData);
+        }
+        int dot = s.indexOf('.');
+        int eq  = s.indexOf('=');
+
+        if (dot < 0 || eq < 0) {
+            throw new ArgsParseException("params format is incorrect: expected api.param=value");
+        }
+        if (dot == 0 || eq <= dot + 1 || eq == s.length() - 1) {
+            throw new ArgsParseException("params format is incorrect: expected api.param=value");
+        }
+        if (s.indexOf('.', dot + 1) != -1) {
+            throw new ArgsParseException("params format is incorrect: too many '.' in " + rawData);
+        }
+        if (s.indexOf('=', eq + 1) != -1) {
+            throw new ArgsParseException("params format is incorrect: too many '=' in " + rawData);
+        }
+
+        String apiRaw = s.substring(0, dot);
+        String keyRaw = s.substring(dot + 1, eq);
+        String valRaw = s.substring(eq + 1);
+
+        ApiId id = new ApiId(apiRaw);
         Map<String, String> currentParams = rawParamsByApi.computeIfAbsent(id, _ -> new HashMap<>());
-        currentParams.put(separated[1], separated[2]);
+        currentParams.put(keyRaw, valRaw);
     }
 }
