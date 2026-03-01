@@ -2,7 +2,7 @@ package ru.wedwin.aggregator.adapter.in.cli;
 
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
-import ru.wedwin.aggregator.domain.model.out.OutputFormat;
+import ru.wedwin.aggregator.domain.model.out.WriterId;
 import ru.wedwin.aggregator.domain.model.out.OutputSpec;
 import ru.wedwin.aggregator.domain.model.in.RunRequest;
 import ru.wedwin.aggregator.domain.model.out.WriteMode;
@@ -36,7 +36,7 @@ public class ArgsParser {
     public ParsedArgs parse(String[] args) {
 
         Path outputPath = null;
-        OutputFormat outputFormat = OutputFormat.JSON;
+        WriterId writerId = null;
         WriteMode writeMode = WriteMode.NEW;
 
         boolean isInteractive = false;
@@ -50,7 +50,7 @@ public class ArgsParser {
                     break labelInteractive;
                 case "--format": {
                     String value = requireValue(args, ++i, arg);
-                    outputFormat = parseFormat(value);
+                    writerId = new WriterId(value);
                     continue;
                 }
                 case "--mode": {
@@ -85,15 +85,12 @@ public class ArgsParser {
         }
 
         if (outputPath == null) {
-            switch (outputFormat) {
-                case JSON -> outputPath = Path.of("out.json");
-                case CSV -> outputPath = Path.of("out.csv");
-            }
+            outputPath = Path.of("out." + writerId);
         }
 
         return new ParsedArgs(
                 isInteractive,
-                new RunRequest(paramsByApi, new OutputSpec(outputPath, outputFormat, writeMode)));
+                new RunRequest(paramsByApi, new OutputSpec(outputPath, writerId, writeMode)));
     }
 
     private static String requireValue(String[] args, int idx, String flag) {
@@ -121,16 +118,6 @@ public class ArgsParser {
             idx++;
         }
         return values;
-    }
-
-    private static OutputFormat parseFormat(String rawFormat) { // todo pass through and check in usecase?
-        String normalizedFormat = rawFormat.strip().toLowerCase();
-        return switch (normalizedFormat) {
-            case "csv" -> OutputFormat.CSV;
-            case "json" -> OutputFormat.JSON;
-            default -> OutputFormat.JSON;
-//            default -> throw new IllegalArgumentException("format is incorrect: " + rawFormat);
-        };
     }
 
     private static WriteMode parseMode(String rawMode) {

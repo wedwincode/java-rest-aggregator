@@ -8,26 +8,26 @@ import ru.wedwin.aggregator.domain.model.in.RunRequest;
 import ru.wedwin.aggregator.app.registry.WriterRegistry;
 import ru.wedwin.aggregator.port.in.RunRequestRetriever;
 import ru.wedwin.aggregator.port.out.ApiClient;
-import ru.wedwin.aggregator.port.out.HttpExecutor;
-import ru.wedwin.aggregator.port.out.OutputWriter;
+import ru.wedwin.aggregator.port.out.Executor;
+import ru.wedwin.aggregator.port.out.Writer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AggregationUseCase {
     private final RunRequestRetriever runRequestRetriever;
-    private final HttpExecutor httpExecutor;
+    private final Executor executor;
     private final ApiRegistry apiRegistry;
     private final WriterRegistry writerRegistry;
 
     public AggregationUseCase(
             RunRequestRetriever runRequestRetriever,
-            HttpExecutor httpExecutor,
+            Executor executor,
             ApiRegistry apiRegistry,
             WriterRegistry writerRegistry
     ) {
         this.runRequestRetriever = runRequestRetriever;
-        this.httpExecutor = httpExecutor;
+        this.executor = executor;
         this.apiRegistry = apiRegistry;
         this.writerRegistry = writerRegistry;
     }
@@ -39,9 +39,9 @@ public class AggregationUseCase {
         for (ApiId id: runRequest.apisWithParams().keySet()) {
             ApiClient client = apiRegistry.getClient(id);
             ApiParams params = runRequest.apisWithParams().getOrDefault(id, ApiParams.of());
-            responseList.add(client.getApiResponse(params, httpExecutor));
+            responseList.add(client.getApiResponse(params, executor));
         }
-        OutputWriter writer = writerRegistry.require(runRequest.outputSpec().format().name().toLowerCase()); // todo better
+        Writer writer = writerRegistry.getWriter(runRequest.outputSpec().writerId()); // todo better
         writer.write(responseList, runRequest.outputSpec());
     }
 }

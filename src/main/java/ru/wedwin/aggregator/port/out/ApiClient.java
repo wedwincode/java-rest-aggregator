@@ -11,7 +11,7 @@ import java.util.List;
 // todo: problem we use "out" apiclient inside "in" logic
 public interface ApiClient {
     ApiDefinition definition();
-    AggregatedRecord getApiResponse(ApiParams params, HttpExecutor executor);
+    AggregatedRecord getApiResponse(ApiParams params, Executor executor);
 
     default ApiId id() { return definition().id(); }
     default String url() { return definition().url(); }

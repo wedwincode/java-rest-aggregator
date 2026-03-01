@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.adapter.out.output;
+package ru.wedwin.aggregator.adapter.out.writers;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -8,7 +8,8 @@ import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
 import ru.wedwin.aggregator.domain.model.AggregatedRecord;
 import ru.wedwin.aggregator.domain.model.out.OutputSpec;
 import ru.wedwin.aggregator.domain.model.out.WriteMode;
-import ru.wedwin.aggregator.port.out.OutputWriter;
+import ru.wedwin.aggregator.domain.model.out.WriterId;
+import ru.wedwin.aggregator.port.out.Writer;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -25,11 +26,11 @@ import java.util.Map;
 import java.util.Set;
 
 // todo append
-public class CsvWriter implements OutputWriter {
+public class CsvWriter implements Writer {
 
     @Override
-    public String id() {
-        return "csv";
+    public WriterId id() {
+        return new WriterId("csv");
     }
 
     @Override

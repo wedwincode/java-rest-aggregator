@@ -1,9 +1,10 @@
-package ru.wedwin.aggregator.adapter.out.output;
+package ru.wedwin.aggregator.adapter.out.writers;
 
 import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
 import ru.wedwin.aggregator.domain.model.AggregatedRecord;
 import ru.wedwin.aggregator.domain.model.out.OutputSpec;
-import ru.wedwin.aggregator.port.out.OutputWriter;
+import ru.wedwin.aggregator.domain.model.out.WriterId;
+import ru.wedwin.aggregator.port.out.Writer;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
@@ -15,7 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-public class JsonWriter implements OutputWriter {
+public class JsonWriter implements Writer {
     private final ObjectMapper om;
 
     public JsonWriter() {
@@ -23,8 +24,8 @@ public class JsonWriter implements OutputWriter {
     }
 
     @Override
-    public String id() {
-        return "json";
+    public WriterId id() {
+        return new WriterId("json"); // todo change "new" to .of()
     }
 
     // todo null checks everywhere

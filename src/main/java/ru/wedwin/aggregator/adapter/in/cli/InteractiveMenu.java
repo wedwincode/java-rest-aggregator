@@ -1,35 +1,35 @@
 package ru.wedwin.aggregator.adapter.in.cli;
 
-import ru.wedwin.aggregator.app.registry.WriterRegistry;
 import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.api.ParamSpec;
 import ru.wedwin.aggregator.domain.model.in.RunRequest;
-import ru.wedwin.aggregator.domain.model.out.OutputFormat;
 import ru.wedwin.aggregator.domain.model.out.OutputSpec;
 import ru.wedwin.aggregator.domain.model.out.WriteMode;
+import ru.wedwin.aggregator.domain.model.out.WriterId;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
-import ru.wedwin.aggregator.port.out.OutputWriter;
+import ru.wedwin.aggregator.port.in.WriterCatalog;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class InteractiveMenu {
     private final ApiCatalog apiCatalog;
-    private final WriterRegistry writerRegistry;
+    private final WriterCatalog writerCatalog;
     private final ConsoleIO io;
     private final Map<ApiId, ApiParams> paramsByApi;
 
-    public InteractiveMenu(ApiCatalog apiCatalog, WriterRegistry writerRegistry, ConsoleIO io) {
+    public InteractiveMenu(ApiCatalog apiCatalog, WriterCatalog writerCatalog, ConsoleIO io) {
         this.apiCatalog = apiCatalog;
-        this.writerRegistry = writerRegistry;
+        this.writerCatalog = writerCatalog;
         this.io = io;
         this.paramsByApi = new HashMap<>();
     }
@@ -54,10 +54,14 @@ public class InteractiveMenu {
                 ApiParams parsedParams = parseParams(params);
                 paramsByApi.put(id, parsedParams);
             }
-            io.println("Available formats:");
-            io.println(writerRegistry);
-            String format = io.readLine("Enter output format: ");
-            OutputWriter writer = writerRegistry.require(format);
+
+            List<WriterId> writers = writerCatalog.list();
+            io.println("Available output writers:");
+            io.println(writers); // todo better
+            WriterId writer = new WriterId(io.readLine("Enter output writer: "));
+            if (!writers.contains(writer)) {
+                throw new IllegalArgumentException("unsupported writer: " + writer);
+            }
 
             io.println("Available write modes:");
             io.println(modeInfo());
@@ -66,7 +70,7 @@ public class InteractiveMenu {
             String rawPath = io.readLine("Enter output path: ");
             Path path = Path.of(rawPath);
             return new RunRequest(
-                    paramsByApi, new OutputSpec(path, OutputFormat.valueOf(format.toUpperCase()), mode) // todo: without OutputFormat enum
+                    paramsByApi, new OutputSpec(path, writer, mode) // todo: without OutputFormat enum
             );
         } catch (Exception e) {
             io.println("Error: " + e.getMessage() + ". Try again.");

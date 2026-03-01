@@ -1,15 +1,16 @@
-package ru.wedwin.aggregator.adapter.out.output;
+package ru.wedwin.aggregator.adapter.out.writers;
 
 import ru.wedwin.aggregator.domain.model.AggregatedRecord;
 import ru.wedwin.aggregator.domain.model.out.OutputSpec;
-import ru.wedwin.aggregator.port.out.OutputWriter;
+import ru.wedwin.aggregator.domain.model.out.WriterId;
+import ru.wedwin.aggregator.port.out.Writer;
 
 import java.util.List;
 
-public class ConsoleWriter implements OutputWriter {
+public class ConsoleWriter implements Writer {
     @Override
-    public String id() {
-        return "console";
+    public WriterId id() {
+        return new WriterId("console");
     }
 
     @Override

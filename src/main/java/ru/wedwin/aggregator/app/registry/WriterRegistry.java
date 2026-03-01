@@ -1,33 +1,32 @@
 package ru.wedwin.aggregator.app.registry;
 
-import ru.wedwin.aggregator.port.out.OutputWriter;
+import ru.wedwin.aggregator.domain.model.out.WriterId;
+import ru.wedwin.aggregator.port.in.WriterCatalog;
+import ru.wedwin.aggregator.port.out.Writer;
+import ru.wedwin.aggregator.port.out.WriterProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 // todo: think about registry and enum
-public class WriterRegistry {
-    private final Map<String, OutputWriter> byId;
+public class WriterRegistry implements WriterCatalog, WriterProvider {
+    private final Map<WriterId, Writer> byId;
 
-    public WriterRegistry(List<OutputWriter> writers) {
-        byId = writers.stream().collect(Collectors.toMap(c -> c.id().toLowerCase(), c -> c));
+    public WriterRegistry(List<Writer> writers) {
+        byId = writers.stream().collect(Collectors.toMap(Writer::id, c -> c));
     }
 
-    public OutputWriter require(String id) {
-        OutputWriter writer = byId.get(id.toLowerCase());
+    public List<WriterId> list() {
+        return new ArrayList<>(byId.keySet());
+    }
+
+    public Writer getWriter(WriterId id) {
+        Writer writer = byId.get(id);
         if (writer == null) {
             throw new IllegalArgumentException("unknown writer: " + id);
         }
         return writer;
     }
 
-    public List<OutputWriter> all() {
-        return new ArrayList<>(byId.values());
-    }
-
-    @Override
-    public String toString() {
-        return String.join(" ", byId.keySet());
-    }
 }

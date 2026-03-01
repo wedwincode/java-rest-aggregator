@@ -1,15 +1,14 @@
-package ru.wedwin.aggregator.adapter.out.http;
+package ru.wedwin.aggregator.adapter.out.executors;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import ru.wedwin.aggregator.domain.exceptions.executor.ExecutorException;
 import ru.wedwin.aggregator.domain.exceptions.executor.UnsuccessfulResponseException;
-import ru.wedwin.aggregator.port.out.HttpExecutor;
+import ru.wedwin.aggregator.port.out.Executor;
 
 import java.io.IOException;
 
-public class OkHttpExecutor implements HttpExecutor {
+public class OkHttpExecutor implements Executor {
     private final OkHttpClient client;
 
     public OkHttpExecutor() {
