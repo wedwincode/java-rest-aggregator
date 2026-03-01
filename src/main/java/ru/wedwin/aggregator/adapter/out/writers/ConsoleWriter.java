@@ -1,6 +1,6 @@
 package ru.wedwin.aggregator.adapter.out.writers;
 
-import ru.wedwin.aggregator.domain.model.AggregatedRecord;
+import ru.wedwin.aggregator.domain.model.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.out.OutputSpec;
 import ru.wedwin.aggregator.domain.model.out.WriterId;
 import ru.wedwin.aggregator.port.out.Writer;
@@ -14,9 +14,9 @@ public class ConsoleWriter implements Writer {
     }
 
     @Override
-    public void write(List<AggregatedRecord> records, OutputSpec spec) {
-        for (AggregatedRecord rec: records) {
-            System.out.println(rec);
+    public void write(List<AggregatedItem> items, OutputSpec spec) {
+        for (AggregatedItem item: items) {
+            System.out.println(item);
         }
     }
 }

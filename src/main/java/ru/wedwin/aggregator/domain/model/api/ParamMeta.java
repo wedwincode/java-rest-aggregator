@@ -1,6 +1,6 @@
 package ru.wedwin.aggregator.domain.model.api;
 
-public record ParamSpec(String key, boolean required, String defaultValue, String description) {
+public record ParamMeta(String key, boolean required, String defaultValue, String description) {
     @Override
     public String toString() {
         return "key=" + key +

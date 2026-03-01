@@ -5,7 +5,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
-import ru.wedwin.aggregator.domain.model.AggregatedRecord;
+import ru.wedwin.aggregator.domain.model.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.out.OutputSpec;
 import ru.wedwin.aggregator.domain.model.out.WriteMode;
 import ru.wedwin.aggregator.domain.model.out.WriterId;
@@ -34,8 +34,8 @@ public class CsvWriter implements Writer {
     }
 
     @Override
-    public void write(List<AggregatedRecord> records, OutputSpec spec) {
-        List<Map<String, String>> rows = flattenRecords(records);
+    public void write(List<AggregatedItem> items, OutputSpec spec) {
+        List<Map<String, String>> rows = flattenItems(items);
         try {
             if (spec.path().getParent() != null) {
                 Files.createDirectories(spec.path().getParent()); // todo нужно ли
@@ -146,14 +146,14 @@ public class CsvWriter implements Writer {
         return record;
     }
 
-    private static List<Map<String, String>> flattenRecords(List<AggregatedRecord> records) {
+    private static List<Map<String, String>> flattenItems(List<AggregatedItem> items) {
         List<Map<String, String>> rows = new ArrayList<>();
-        for (AggregatedRecord record: records) {
+        for (AggregatedItem item: items) {
             Map<String, String> row = new LinkedHashMap<>();
-            row.put("itemId", record.itemId().toString());
-            row.put("apiId", record.apiId().toString());
-            row.put("timestamp", record.timestamp().toString());
-            row.putAll(PayloadMapper.flatten(record.payload()));
+            row.put("itemId", item.itemId().toString());
+            row.put("apiId", item.apiId().toString());
+            row.put("fetchedAt", item.fetchedAt().toString());
+            row.putAll(PayloadMapper.flatten(item.payload()));
             rows.add(row);
         }
         return rows;

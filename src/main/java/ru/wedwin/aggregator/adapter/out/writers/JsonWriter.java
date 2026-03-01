@@ -1,7 +1,7 @@
 package ru.wedwin.aggregator.adapter.out.writers;
 
 import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
-import ru.wedwin.aggregator.domain.model.AggregatedRecord;
+import ru.wedwin.aggregator.domain.model.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.out.OutputSpec;
 import ru.wedwin.aggregator.domain.model.out.WriterId;
 import ru.wedwin.aggregator.port.out.Writer;
@@ -30,8 +30,8 @@ public class JsonWriter implements Writer {
 
     // todo null checks everywhere
     @Override
-    public void write(List<AggregatedRecord> records, OutputSpec spec) {
-        if (records == null || spec == null) {
+    public void write(List<AggregatedItem> items, OutputSpec spec) {
+        if (items == null || spec == null) {
             return;
         }
         try {
@@ -44,19 +44,19 @@ public class JsonWriter implements Writer {
                 case APPEND -> array = readArrayOrCreateEmpty(spec.path());
                 case null, default -> throw new RuntimeException("null!!"); // todo everywhere
             }
-            records.stream().map(this::recordToObjectNode).forEach(array::add);
+            items.stream().map(this::itemToObjectNode).forEach(array::add);
             om.writerWithDefaultPrettyPrinter().writeValue(spec.path().toFile(), array);
         } catch (IOException e) {
             throw new RuntimeException("failed to write output to " + spec.path(), e);
         }
     }
 
-    private ObjectNode recordToObjectNode(AggregatedRecord record) {
+    private ObjectNode itemToObjectNode(AggregatedItem item) {
         ObjectNode obj = om.createObjectNode();
-        obj.put("itemId", record.itemId().toString());
-        obj.put("apiId", record.apiId().toString());
-        obj.put("timestamp", record.timestamp().toString());
-        obj.set("payload", PayloadMapper.toJsonNode(record.payload(), om));
+        obj.put("itemId", item.itemId().toString());
+        obj.put("apiId", item.apiId().toString());
+        obj.put("fetchedAt", item.fetchedAt().toString());
+        obj.set("payload", PayloadMapper.toJsonNode(item.payload(), om));
         return obj;
     }
 

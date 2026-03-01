@@ -4,7 +4,7 @@ import ru.wedwin.aggregator.adapter.out.apis.AbstractApiClient;
 import ru.wedwin.aggregator.adapter.out.apis.weatherapi.dto.WeatherApiResponse;
 import ru.wedwin.aggregator.adapter.out.common.EnvReader;
 import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
-import ru.wedwin.aggregator.domain.model.api.ParamSpec;
+import ru.wedwin.aggregator.domain.model.api.ParamMeta;
 
 public class WeatherApiClient extends AbstractApiClient<WeatherApiResponse> {
     @Override
@@ -13,9 +13,9 @@ public class WeatherApiClient extends AbstractApiClient<WeatherApiResponse> {
                 "weatherapi",
                 "https://api.weatherapi.com/v1/current.json",
                 "Weather API Client",
-                new ParamSpec("key", true, EnvReader.get("WEATHER_API_KEY"), "api key (put it in the .env file)"),
-                new ParamSpec("q", true, "Saint-Petersburg", "City name"),
-                new ParamSpec("lang", false, "RU", "response language")
+                new ParamMeta("key", true, EnvReader.get("WEATHER_API_KEY"), "api key (put it in the .env file)"),
+                new ParamMeta("q", true, "Saint-Petersburg", "City name"),
+                new ParamMeta("lang", false, "RU", "response language")
         );
     }
 

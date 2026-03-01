@@ -29,8 +29,8 @@ public final class ApiParams {
         return v == null || v.isBlank() ? def : v;
     }
 
-    public void addDefaultParams(List<ParamSpec> spec) {
-        for (ParamSpec param: spec) {
+    public void addDefaultParams(List<ParamMeta> spec) {
+        for (ParamMeta param: spec) {
             if (!values.containsKey(param.key()) && param.required()) {
                 values.put(param.key(), param.defaultValue());
             }

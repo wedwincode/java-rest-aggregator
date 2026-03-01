@@ -3,7 +3,7 @@ package ru.wedwin.aggregator.adapter.in.cli;
 import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
-import ru.wedwin.aggregator.domain.model.api.ParamSpec;
+import ru.wedwin.aggregator.domain.model.api.ParamMeta;
 import ru.wedwin.aggregator.domain.model.in.RunRequest;
 import ru.wedwin.aggregator.domain.model.out.OutputSpec;
 import ru.wedwin.aggregator.domain.model.out.WriteMode;
@@ -47,7 +47,7 @@ public class InteractiveMenu {
                 ApiDefinition client = apiCatalog.getDefinition(id);
 
                 io.println("Available query params for " + id + ":");
-                for (ParamSpec param : client.supportedParams()) {
+                for (ParamMeta param : client.supportedParams()) {
                     io.println(param);
                 }
                 String params = io.readLine("Enter desired params (e.g. param1=123 param2=456) for " + id + ": ");

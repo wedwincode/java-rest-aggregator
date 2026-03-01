@@ -1,6 +1,6 @@
 package ru.wedwin.aggregator.app;
 
-import ru.wedwin.aggregator.domain.model.AggregatedRecord;
+import ru.wedwin.aggregator.domain.model.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.app.registry.ApiRegistry;
@@ -34,7 +34,7 @@ public class AggregationUseCase {
 
     public void run() throws Exception {
         RunRequest runRequest = runRequestRetriever.getRunRequest();
-        List<AggregatedRecord> responseList = new ArrayList<>();
+        List<AggregatedItem> responseList = new ArrayList<>();
 
         for (ApiId id: runRequest.apisWithParams().keySet()) {
             ApiClient client = apiRegistry.getClient(id);
