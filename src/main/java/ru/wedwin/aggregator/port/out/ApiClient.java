@@ -1,6 +1,6 @@
 package ru.wedwin.aggregator.port.out;
 
-import ru.wedwin.aggregator.domain.model.AggregatedItem;
+import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;

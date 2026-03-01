@@ -1,6 +1,6 @@
 package ru.wedwin.aggregator.app.registry;
 
-import ru.wedwin.aggregator.domain.model.out.WriterId;
+import ru.wedwin.aggregator.domain.model.output.WriterId;
 import ru.wedwin.aggregator.port.in.WriterCatalog;
 import ru.wedwin.aggregator.port.out.Writer;
 import ru.wedwin.aggregator.port.out.WriterProvider;

@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.domain.model;
+package ru.wedwin.aggregator.domain.model.result;
 
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 

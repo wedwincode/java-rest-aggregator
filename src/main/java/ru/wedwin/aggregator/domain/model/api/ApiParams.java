@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 public final class ApiParams {
-    // TODO: change string to smth more special (param, value)
     private final Map<String, String> params;
 
     private ApiParams(Map<String, String> params) {
@@ -24,12 +23,19 @@ public final class ApiParams {
     }
 
     public String put(String key, String value) {
-        if (key == null || key.isBlank()) {
+        if (key == null) {
+            throw new InvalidApiParamsException("key is null");
+        }
+        if (key.isBlank()) {
             throw new InvalidApiParamsException("key is empty");
         }
-        if (value == null || value.isBlank()) {
+        if (value == null) {
+            throw new InvalidApiParamsException("value is null");
+        }
+        if (value.isBlank()) {
             throw new InvalidApiParamsException("value is empty");
         }
+
         return params.put(key, value);
     }
 
@@ -39,9 +45,13 @@ public final class ApiParams {
         }
         for (ParamMeta param: paramMetas) {
             if (!params.containsKey(param.key()) && param.required()) {
-                if (param.defaultValue() == null || param.defaultValue().isBlank()) {
-                    throw new InvalidApiParamsException("param " + param.key() + " is null");
+                if (param.defaultValue() == null) {
+                    throw new InvalidApiParamsException("param " + param.key() + " value is null");
                 }
+                if (param.defaultValue().isBlank()) {
+                    throw new InvalidApiParamsException("param " + param.key() + " value is empty");
+                }
+
                 params.put(param.key(), param.defaultValue());
             }
         }

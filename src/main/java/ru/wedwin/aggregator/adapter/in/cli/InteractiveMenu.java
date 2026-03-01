@@ -4,10 +4,10 @@ import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.api.ParamMeta;
-import ru.wedwin.aggregator.domain.model.in.RunConfig;
-import ru.wedwin.aggregator.domain.model.out.OutputSpec;
-import ru.wedwin.aggregator.domain.model.out.WriteMode;
-import ru.wedwin.aggregator.domain.model.out.WriterId;
+import ru.wedwin.aggregator.domain.model.config.RunConfig;
+import ru.wedwin.aggregator.domain.model.output.OutputSpec;
+import ru.wedwin.aggregator.domain.model.output.WriteMode;
+import ru.wedwin.aggregator.domain.model.output.WriterId;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
 import ru.wedwin.aggregator.port.in.WriterCatalog;
 

@@ -12,15 +12,25 @@ public record ApiDefinition(
         List<ParamMeta> supportedParams
 ) {
     public ApiDefinition {
-        if (url == null || url.isBlank()) {
+        if (url == null) {
+            throw new InvalidApiDefinitionException("url is null");
+        }
+        if (url.isBlank()) {
             throw new InvalidApiDefinitionException("url is empty");
         }
-        if (displayName == null || displayName.isBlank()) {
+        if (displayName == null) {
+            throw new InvalidApiDefinitionException("displayName is null");
+        }
+        if (displayName.isBlank()) {
             throw new InvalidApiDefinitionException("displayName is empty");
         }
-        if (supportedParams == null || supportedParams.stream().anyMatch(Objects::isNull)) {
+        if (supportedParams == null) {
             throw new InvalidApiDefinitionException("supportedParams is null");
         }
+        if (supportedParams.stream().anyMatch(Objects::isNull)) {
+            throw new InvalidApiDefinitionException("supportedParams contains null");
+        }
+
         url = url.trim();
         displayName = displayName.trim();
     }

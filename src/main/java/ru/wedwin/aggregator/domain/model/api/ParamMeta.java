@@ -4,9 +4,13 @@ import ru.wedwin.aggregator.domain.model.api.exception.InvalidParamMetaException
 
 public record ParamMeta(String key, boolean required, String defaultValue, String description) {
     public ParamMeta {
-        if (key == null || key.isBlank()) {
+        if (key == null) {
+            throw new InvalidParamMetaException("param key is null");
+        }
+        if (key.isBlank()) {
             throw new InvalidParamMetaException("param key is empty");
         }
+
         key = key.trim().toLowerCase();
     }
 

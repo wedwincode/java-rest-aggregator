@@ -1,6 +1,6 @@
 package ru.wedwin.aggregator.adapter.out.common;
 
-import ru.wedwin.aggregator.domain.model.Payload;
+import ru.wedwin.aggregator.domain.model.result.Payload;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;

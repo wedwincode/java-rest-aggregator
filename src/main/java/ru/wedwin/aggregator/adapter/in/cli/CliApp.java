@@ -1,6 +1,6 @@
 package ru.wedwin.aggregator.adapter.in.cli;
 
-import ru.wedwin.aggregator.domain.model.in.RunConfig;
+import ru.wedwin.aggregator.domain.model.config.RunConfig;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
 import ru.wedwin.aggregator.port.in.RunConfigProvider;
 import ru.wedwin.aggregator.port.in.WriterCatalog;

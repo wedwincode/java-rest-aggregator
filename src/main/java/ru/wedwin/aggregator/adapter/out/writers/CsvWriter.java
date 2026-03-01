@@ -5,10 +5,10 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
-import ru.wedwin.aggregator.domain.model.AggregatedItem;
-import ru.wedwin.aggregator.domain.model.out.OutputSpec;
-import ru.wedwin.aggregator.domain.model.out.WriteMode;
-import ru.wedwin.aggregator.domain.model.out.WriterId;
+import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
+import ru.wedwin.aggregator.domain.model.output.OutputSpec;
+import ru.wedwin.aggregator.domain.model.output.WriteMode;
+import ru.wedwin.aggregator.domain.model.output.WriterId;
 import ru.wedwin.aggregator.port.out.Writer;
 
 import java.io.BufferedWriter;
