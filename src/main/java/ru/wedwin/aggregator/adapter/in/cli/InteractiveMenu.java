@@ -33,7 +33,7 @@ public class InteractiveMenu {
         this.io = io;
         this.paramsByApi = new HashMap<>();
     }
-
+    // todo: print result
     public RunConfig getRunRequest() throws IOException { // todo: wrap with try/catch
         try {
             io.println("Available APIs:");

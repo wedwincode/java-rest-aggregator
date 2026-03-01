@@ -33,7 +33,7 @@ public class AggregationUseCase {
     }
 
     public void run() throws Exception {
-        RunConfig runConfig = runConfigProvider.getRunRequest();
+        RunConfig runConfig = runConfigProvider.getRunConfig();
         List<AggregatedItem> responseList = new ArrayList<>();
 
         for (ApiId id: runConfig.apisWithParams().keySet()) {

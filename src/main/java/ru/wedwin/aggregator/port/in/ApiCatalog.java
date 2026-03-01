@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ApiCatalog {
     ApiDefinition getDefinition(ApiId id);
+    boolean contains(ApiId id);
     List<ApiDefinition> list();
 }

@@ -25,13 +25,12 @@ public class CliApp implements RunConfigProvider {
     }
 
     @Override
-    public RunConfig getRunRequest() throws IOException {
-        ArgsParser parser = new ArgsParser();
-        ArgsParser.ParsedArgs parsedArgs = parser.parse(this.args);
-        if (parsedArgs.interactive()) {
+    public RunConfig getRunConfig() throws IOException {
+        ArgsParser parser = new ArgsParser(args, apiCatalog);
+        if (parser.isInteractive()) {
             InteractiveMenu menu = new InteractiveMenu(apiCatalog, writerCatalog, new ConsoleIO(in, out));
             return menu.getRunRequest();
         }
-        return parsedArgs.runConfig();
+        return parser.parse();
     }
 }

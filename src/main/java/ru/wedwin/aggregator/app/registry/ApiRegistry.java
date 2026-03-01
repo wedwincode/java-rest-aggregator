@@ -21,6 +21,10 @@ public class ApiRegistry implements ApiCatalog, ApiClientProvider {
         return byId.values().stream().map(ApiClient::definition).toList();
     }
 
+    public boolean contains(ApiId id) {
+        return byId.containsKey(id);
+    }
+
     public ApiDefinition getDefinition(ApiId id) {
         return getClient(id).definition();
     }
