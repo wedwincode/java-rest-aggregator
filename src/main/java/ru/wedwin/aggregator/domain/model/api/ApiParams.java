@@ -23,6 +23,16 @@ public final class ApiParams {
         return new ApiParams(params == null ? Map.of() : params);
     }
 
+    public String put(String key, String value) {
+        if (key == null || key.isBlank()) {
+            throw new InvalidApiParamsException("key is empty");
+        }
+        if (value == null || value.isBlank()) {
+            throw new InvalidApiParamsException("value is empty");
+        }
+        return params.put(key, value);
+    }
+
     public void addDefaultParams(List<ParamMeta> paramMetas) {
         if (paramMetas == null) {
             return;
