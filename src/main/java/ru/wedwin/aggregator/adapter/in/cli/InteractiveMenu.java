@@ -5,6 +5,7 @@ import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.api.ParamMeta;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
+import ru.wedwin.aggregator.domain.model.output.DisplaySpec;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
 import ru.wedwin.aggregator.domain.model.format.FormatterId;
@@ -70,7 +71,10 @@ public class InteractiveMenu {
             String rawPath = io.readLine("Enter output path: ");
             Path path = Path.of(rawPath);
             return new RunConfig(
-                    paramsByApi, formatter, new OutputSpec(path, mode) // todo: without OutputFormat enum
+                    paramsByApi,
+                    formatter,
+                    new OutputSpec(path, mode),
+                    new DisplaySpec(null, null) // todo
             );
         } catch (Exception e) {
             io.println("Error: " + e.getMessage() + ". Try again.");

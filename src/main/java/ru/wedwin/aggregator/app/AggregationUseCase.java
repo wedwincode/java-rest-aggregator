@@ -41,7 +41,7 @@ public class AggregationUseCase {
             ApiParams params = runConfig.apisWithParams().getOrDefault(id, ApiParams.of());
             responseList.add(client.getApiResponse(params, executor));
         }
-        Formatter formatter = formatterRegistry.getFormatter(runConfig.outputSpec().formatterId());
+        Formatter formatter = formatterRegistry.getFormatter(runConfig.formatterId());
         formatter.format(responseList, runConfig.outputSpec());
     }
 }
