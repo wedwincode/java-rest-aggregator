@@ -1,6 +1,6 @@
-package ru.wedwin.aggregator.domain.model.output;
+package ru.wedwin.aggregator.domain.model.format;
 
-import ru.wedwin.aggregator.domain.model.output.exception.InvalidFormatterIdException;
+import ru.wedwin.aggregator.domain.model.format.exception.InvalidFormatterIdException;
 
 public record FormatterId(
         String value

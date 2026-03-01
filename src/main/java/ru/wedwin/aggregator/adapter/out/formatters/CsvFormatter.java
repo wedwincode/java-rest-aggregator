@@ -8,7 +8,7 @@ import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
-import ru.wedwin.aggregator.domain.model.output.FormatterId;
+import ru.wedwin.aggregator.domain.model.format.FormatterId;
 import ru.wedwin.aggregator.port.out.Formatter;
 
 import java.io.BufferedWriter;

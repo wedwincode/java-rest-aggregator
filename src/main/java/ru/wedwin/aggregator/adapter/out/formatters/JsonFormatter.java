@@ -3,7 +3,7 @@ package ru.wedwin.aggregator.adapter.out.formatters;
 import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
-import ru.wedwin.aggregator.domain.model.output.FormatterId;
+import ru.wedwin.aggregator.domain.model.format.FormatterId;
 import ru.wedwin.aggregator.port.out.Formatter;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;

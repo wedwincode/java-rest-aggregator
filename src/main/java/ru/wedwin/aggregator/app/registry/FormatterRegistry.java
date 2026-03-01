@@ -1,6 +1,6 @@
 package ru.wedwin.aggregator.app.registry;
 
-import ru.wedwin.aggregator.domain.model.output.FormatterId;
+import ru.wedwin.aggregator.domain.model.format.FormatterId;
 import ru.wedwin.aggregator.port.in.FormatterCatalog;
 import ru.wedwin.aggregator.port.out.Formatter;
 import ru.wedwin.aggregator.port.out.FormatterProvider;

@@ -5,10 +5,12 @@ import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.api.ParamMeta;
 import ru.wedwin.aggregator.domain.model.api.exception.InvalidApiIdException;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
+import ru.wedwin.aggregator.domain.model.output.DisplayMode;
+import ru.wedwin.aggregator.domain.model.output.DisplaySpec;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
-import ru.wedwin.aggregator.domain.model.output.FormatterId;
-import ru.wedwin.aggregator.domain.model.output.exception.InvalidFormatterIdException;
+import ru.wedwin.aggregator.domain.model.format.FormatterId;
+import ru.wedwin.aggregator.domain.model.format.exception.InvalidFormatterIdException;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
 
 import java.nio.file.Path;
@@ -174,7 +176,12 @@ public class ArgsParser {
         });
 
         try {
-            return new RunConfig(apisWithParams, new OutputSpec(outputPath, formatterId, writeMode));
+            return new RunConfig(
+                    apisWithParams,
+                    formatterId,
+                    new OutputSpec(outputPath, writeMode),
+                    new DisplaySpec(DisplayMode.NONE) // todo validation for this shit
+            );
         } catch (RuntimeException e) {
             throw new ArgsParseException("invalid run config", e);
         }
