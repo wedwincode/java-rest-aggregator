@@ -1,10 +1,10 @@
-package ru.wedwin.aggregator.adapter.out.writers;
+package ru.wedwin.aggregator.adapter.out.formatters;
 
 import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
-import ru.wedwin.aggregator.domain.model.output.WriterId;
-import ru.wedwin.aggregator.port.out.Writer;
+import ru.wedwin.aggregator.domain.model.output.FormatterId;
+import ru.wedwin.aggregator.port.out.Formatter;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
@@ -16,21 +16,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-public class JsonWriter implements Writer {
+public class JsonFormatter implements Formatter {
     private final ObjectMapper om;
 
-    public JsonWriter() {
+    public JsonFormatter() {
         om = new ObjectMapper();
     }
 
     @Override
-    public WriterId id() {
-        return new WriterId("json"); // todo change "new" to .of()
+    public FormatterId id() {
+        return new FormatterId("json"); // todo change "new" to .of()
     }
 
     // todo null checks everywhere
     @Override
-    public void write(List<AggregatedItem> items, OutputSpec spec) {
+    public void format(List<AggregatedItem> items, OutputSpec spec) {
         if (items == null || spec == null) {
             return;
         }

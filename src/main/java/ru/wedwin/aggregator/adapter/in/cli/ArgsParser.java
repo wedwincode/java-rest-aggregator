@@ -7,8 +7,8 @@ import ru.wedwin.aggregator.domain.model.api.exception.InvalidApiIdException;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
-import ru.wedwin.aggregator.domain.model.output.WriterId;
-import ru.wedwin.aggregator.domain.model.output.exception.InvalidWriterIdException;
+import ru.wedwin.aggregator.domain.model.output.FormatterId;
+import ru.wedwin.aggregator.domain.model.output.exception.InvalidFormatterIdException;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
 
 import java.nio.file.Path;
@@ -26,7 +26,7 @@ public class ArgsParser {
     private final Set<ApiId> selectedApis;
     private final Map<ApiId, Map<String, String>> rawParamsByApi;
     private Path outputPath = null;
-    private WriterId writerId = null;
+    private FormatterId formatterId = null;
     private WriteMode writeMode = null;
 
     private record ParsedValues(Set<String> values, int nextIndex) {}
@@ -90,12 +90,12 @@ public class ArgsParser {
         while (i < args.length) {
             String arg = args[i];
             switch (arg) {
-                case "--writer" -> {
+                case "--format" -> {
                     String value = requireValue(args, i + 1, arg);
                     try {
-                        writerId = new WriterId(value);
-                    } catch (InvalidWriterIdException e) {
-                        throw new ArgsParseException("invalid --writer value: " + value, e);
+                        formatterId = new FormatterId(value);
+                    } catch (InvalidFormatterIdException e) {
+                        throw new ArgsParseException("invalid --format value: " + value, e);
                     }
                     i += 2;
                 }
@@ -140,14 +140,14 @@ public class ArgsParser {
     }
 
     private RunConfig validate() {
-        if (writerId == null) {
-            throw new ArgsParseException("writer was not specified");
+        if (formatterId == null) {
+            throw new ArgsParseException("format was not specified");
         }
         if (writeMode == null) {
             throw new ArgsParseException("mode was not specified");
         }
         if (outputPath == null) {
-            outputPath = Path.of("out." + writerId);
+            outputPath = Path.of("out." + formatterId);
         }
 
         Set<ApiId> allApis = new HashSet<>();
@@ -174,7 +174,7 @@ public class ArgsParser {
         });
 
         try {
-            return new RunConfig(apisWithParams, new OutputSpec(outputPath, writerId, writeMode));
+            return new RunConfig(apisWithParams, new OutputSpec(outputPath, formatterId, writeMode));
         } catch (RuntimeException e) {
             throw new ArgsParseException("invalid run config", e);
         }

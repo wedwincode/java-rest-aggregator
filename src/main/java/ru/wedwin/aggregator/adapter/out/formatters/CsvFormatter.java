@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.adapter.out.writers;
+package ru.wedwin.aggregator.adapter.out.formatters;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -8,8 +8,8 @@ import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
-import ru.wedwin.aggregator.domain.model.output.WriterId;
-import ru.wedwin.aggregator.port.out.Writer;
+import ru.wedwin.aggregator.domain.model.output.FormatterId;
+import ru.wedwin.aggregator.port.out.Formatter;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -26,15 +26,15 @@ import java.util.Map;
 import java.util.Set;
 
 // todo append
-public class CsvWriter implements Writer {
+public class CsvFormatter implements Formatter {
 
     @Override
-    public WriterId id() {
-        return new WriterId("csv");
+    public FormatterId id() {
+        return new FormatterId("csv");
     }
 
     @Override
-    public void write(List<AggregatedItem> items, OutputSpec spec) {
+    public void format(List<AggregatedItem> items, OutputSpec spec) {
         List<Map<String, String>> rows = flattenItems(items);
         try {
             if (spec.path().getParent() != null) {

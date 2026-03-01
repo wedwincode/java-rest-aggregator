@@ -2,11 +2,11 @@ package ru.wedwin.aggregator.port.out;
 
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
-import ru.wedwin.aggregator.domain.model.output.WriterId;
+import ru.wedwin.aggregator.domain.model.output.FormatterId;
 
 import java.util.List;
 
-public interface Writer {
-    WriterId id();
-    void write(List<AggregatedItem> records, OutputSpec spec);
+public interface Formatter {
+    FormatterId id();
+    void format(List<AggregatedItem> items, OutputSpec spec);
 }

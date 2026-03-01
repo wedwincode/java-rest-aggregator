@@ -7,9 +7,9 @@ import ru.wedwin.aggregator.domain.model.api.ParamMeta;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
-import ru.wedwin.aggregator.domain.model.output.WriterId;
+import ru.wedwin.aggregator.domain.model.output.FormatterId;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
-import ru.wedwin.aggregator.port.in.WriterCatalog;
+import ru.wedwin.aggregator.port.in.FormatterCatalog;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -23,13 +23,13 @@ import java.util.stream.Collectors;
 
 public class InteractiveMenu {
     private final ApiCatalog apiCatalog;
-    private final WriterCatalog writerCatalog;
+    private final FormatterCatalog formatterCatalog;
     private final ConsoleIO io;
     private final Map<ApiId, ApiParams> paramsByApi;
 
-    public InteractiveMenu(ApiCatalog apiCatalog, WriterCatalog writerCatalog, ConsoleIO io) {
+    public InteractiveMenu(ApiCatalog apiCatalog, FormatterCatalog formatterCatalog, ConsoleIO io) {
         this.apiCatalog = apiCatalog;
-        this.writerCatalog = writerCatalog;
+        this.formatterCatalog = formatterCatalog;
         this.io = io;
         this.paramsByApi = new HashMap<>();
     }
@@ -55,12 +55,12 @@ public class InteractiveMenu {
                 paramsByApi.put(id, parsedParams);
             }
 
-            List<WriterId> writers = writerCatalog.list();
-            io.println("Available output writers:");
-            io.println(writers); // todo better
-            WriterId writer = new WriterId(io.readLine("Enter output writer: "));
-            if (!writers.contains(writer)) {
-                throw new IllegalArgumentException("unsupported writer: " + writer);
+            List<FormatterId> formatters = formatterCatalog.list();
+            io.println("Available output formatters:");
+            io.println(formatters); // todo better
+            FormatterId formatter = new FormatterId(io.readLine("Enter output formatter: "));
+            if (!formatters.contains(formatter)) {
+                throw new IllegalArgumentException("unsupported formatter: " + formatter);
             }
 
             io.println("Available write modes:");
@@ -70,7 +70,7 @@ public class InteractiveMenu {
             String rawPath = io.readLine("Enter output path: ");
             Path path = Path.of(rawPath);
             return new RunConfig(
-                    paramsByApi, new OutputSpec(path, writer, mode) // todo: without OutputFormat enum
+                    paramsByApi, new OutputSpec(path, formatter, mode) // todo: without OutputFormat enum
             );
         } catch (Exception e) {
             io.println("Error: " + e.getMessage() + ". Try again.");

@@ -7,11 +7,11 @@ import ru.wedwin.aggregator.adapter.out.apis.newsapi.NewsApiClient;
 import ru.wedwin.aggregator.adapter.out.apis.thenewsapi.TheNewsApiClient;
 import ru.wedwin.aggregator.adapter.out.apis.weatherapi.WeatherApiClient;
 import ru.wedwin.aggregator.adapter.out.executors.OkHttpExecutor;
-import ru.wedwin.aggregator.adapter.out.writers.CsvWriter;
-import ru.wedwin.aggregator.adapter.out.writers.JsonWriter;
+import ru.wedwin.aggregator.adapter.out.formatters.CsvFormatter;
+import ru.wedwin.aggregator.adapter.out.formatters.JsonFormatter;
 import ru.wedwin.aggregator.app.AggregationUseCase;
 import ru.wedwin.aggregator.app.registry.ApiRegistry;
-import ru.wedwin.aggregator.app.registry.WriterRegistry;
+import ru.wedwin.aggregator.app.registry.FormatterRegistry;
 
 import java.util.List;
 
@@ -21,12 +21,12 @@ public class Main {
     public static void main(String[] args) {
         ApiRegistry apiRegistry = new ApiRegistry(
                 List.of(new NewsApiClient(), new TheNewsApiClient(), new WeatherApiClient()));
-        WriterRegistry writerRegistry = new WriterRegistry(List.of(new JsonWriter(), new CsvWriter()));
+        FormatterRegistry formatterRegistry = new FormatterRegistry(List.of(new JsonFormatter(), new CsvFormatter()));
         AggregationUseCase useCase = new AggregationUseCase(
-                new CliApp(args, apiRegistry, writerRegistry, System.in, System.out),
+                new CliApp(args, apiRegistry, formatterRegistry, System.in, System.out),
                 new OkHttpExecutor(),
                 apiRegistry,
-                writerRegistry
+                formatterRegistry
         );
         try {
             useCase.run();

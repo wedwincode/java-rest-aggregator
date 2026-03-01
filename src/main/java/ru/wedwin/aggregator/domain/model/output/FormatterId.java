@@ -1,16 +1,16 @@
 package ru.wedwin.aggregator.domain.model.output;
 
-import ru.wedwin.aggregator.domain.model.output.exception.InvalidWriterIdException;
+import ru.wedwin.aggregator.domain.model.output.exception.InvalidFormatterIdException;
 
-public record WriterId(
+public record FormatterId(
         String value
 ) {
-    public WriterId {
+    public FormatterId {
         if (value == null) { // todo: null/empty check for all classes
-            throw new InvalidWriterIdException("value is null");
+            throw new InvalidFormatterIdException("value is null");
         }
         if (value.isBlank()) {
-            throw new InvalidWriterIdException("value is empty");
+            throw new InvalidFormatterIdException("value is empty");
         }
 
         value = value.trim().toLowerCase();
