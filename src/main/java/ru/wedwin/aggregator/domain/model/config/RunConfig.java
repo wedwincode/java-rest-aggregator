@@ -9,21 +9,21 @@ import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import java.util.Map;
 
 public record RunConfig(
-        Map<ApiId, ApiParams> apisWithParams, // todo change name
+        Map<ApiId, ApiParams> queryParamsByApi,
         OutputSpec outputSpec,
         DisplaySpec displaySpec
 ) {
     public RunConfig {
-        if (apisWithParams == null) {
-            throw new InvalidRunConfigException("apisWithParams is null");
+        if (queryParamsByApi == null) {
+            throw new InvalidRunConfigException("queryParamsByApi is null");
         }
-        if (apisWithParams.isEmpty()) {
+        if (queryParamsByApi.isEmpty()) {
             throw new InvalidRunConfigException("no APIs selected");
         }
-        if (apisWithParams.containsKey(null)) {
+        if (queryParamsByApi.containsKey(null)) {
             throw new InvalidRunConfigException("api id is null");
         }
-        if (apisWithParams.containsValue(null)) {
+        if (queryParamsByApi.containsValue(null)) {
             throw new InvalidRunConfigException("api params is null");
         }
         if (outputSpec == null) {
@@ -33,6 +33,6 @@ public record RunConfig(
             throw new InvalidRunConfigException("displaySpec is null");
         }
 
-        apisWithParams = Map.copyOf(apisWithParams);
+        queryParamsByApi = Map.copyOf(queryParamsByApi);
     }
 }

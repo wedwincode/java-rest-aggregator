@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class ArgsRunConfigProvider implements RunConfigProvider {
     private final String[] args;
     private final ApiCatalog catalog;
-    private final Map<ApiId, ApiParams> apisWithParams;
+    private final Map<ApiId, ApiParams> queryParamsByApi;
     private final Set<ApiId> selectedApis;
     private final Map<ApiId, Map<String, String>> rawParamsByApi;
     private Path outputPath = null;
@@ -36,7 +36,7 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
     public ArgsRunConfigProvider(String[] args, ApiCatalog catalog) {
         this.args = args;
         this.catalog = catalog;
-        this.apisWithParams = new HashMap<>();
+        this.queryParamsByApi = new HashMap<>();
         this.selectedApis = new HashSet<>();
         this.rawParamsByApi = new HashMap<>();
     }
@@ -133,7 +133,7 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
 
         try {
             return new RunConfig(
-                    apisWithParams,
+                    queryParamsByApi,
                     new OutputSpec(outputPath, codecId, writeMode),
                     new DisplaySpec(DisplayMode.NONE)
             );
@@ -175,7 +175,7 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
                 }
             }
 
-            apisWithParams.put(id, ApiParams.of(params));
+            queryParamsByApi.put(id, ApiParams.of(params));
         }
     }
 

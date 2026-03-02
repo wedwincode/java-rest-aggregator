@@ -37,9 +37,9 @@ public class AggregationUseCase {
         RunConfig runConfig = runConfigProvider.getRunConfig();
         List<AggregatedItem> responseList = new ArrayList<>();
 
-        for (ApiId id: runConfig.apisWithParams().keySet()) {
+        for (ApiId id: runConfig.queryParamsByApi().keySet()) {
             ApiClient client = apiRegistry.getClient(id);
-            ApiParams params = runConfig.apisWithParams().getOrDefault(id, ApiParams.of());
+            ApiParams params = runConfig.queryParamsByApi().getOrDefault(id, ApiParams.of());
             responseList.add(client.getApiResponse(params, executor));
         }
         saver.save(runConfig.outputSpec(), responseList);

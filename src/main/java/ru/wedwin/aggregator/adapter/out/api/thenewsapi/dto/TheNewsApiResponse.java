@@ -6,6 +6,9 @@ import tools.jackson.databind.annotation.JsonNaming;
 
 import java.util.List;
 
+// Medium article about records as DTOs:
+// https://medium.com/@anurag.ydv36/java-records-jackson-the-cleanest-dto-setup-ive-ever-built-235658b4df5b
+
 // JsonProperty (@JsonProperty("published_at")) alternative:
 //@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -13,10 +16,9 @@ public record TheNewsApiResponse(
         Meta meta,
         List<Data> data
 ) {
-    // todo check medium page about records dto
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Meta(
-           Integer found, // todo what to do if we want to rename field (check annotations for jackson)
+           Integer found,
            Integer returned,
            Integer limit,
            Integer page

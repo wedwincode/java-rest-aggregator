@@ -40,12 +40,12 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
         try {
             List<ApiDefinition> apis = showAndGetApis();
             Set<ApiId> ids = readAndValidateApiIds(apis);
-            Map<ApiId, ApiParams> paramsByApi = readParamsForApis(ids);
+            Map<ApiId, ApiParams> queryParamsByApi = readParamsForApis(ids);
             CodecId codec = readAndValidateCodec();
             OutputSpec outputSpec = readOutputSpec(codec);
             DisplaySpec displaySpec = readDisplaySpec();
 
-            return new RunConfig(paramsByApi, outputSpec, displaySpec);
+            return new RunConfig(queryParamsByApi, outputSpec, displaySpec);
         } catch (RuntimeException e) {
             io.println("Error: " + e.getMessage() + ". Try again.");
             throw new ArgsParseException("menu error: ", e);
@@ -79,15 +79,15 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
     }
 
     private Map<ApiId, ApiParams> readParamsForApis(Set<ApiId> ids) {
-        Map<ApiId, ApiParams> paramsByApi = new LinkedHashMap<>();
+        Map<ApiId, ApiParams> queryParamsByApi = new LinkedHashMap<>();
 
         for (ApiId id : ids) {
             ApiDefinition api = apiCatalog.getDefinition(id);
             Map<String, String> parsedParams = readParamsForApi(id, api);
-            paramsByApi.put(id, ApiParams.of(parsedParams));
+            queryParamsByApi.put(id, ApiParams.of(parsedParams));
         }
 
-        return paramsByApi;
+        return queryParamsByApi;
     }
 
     private Map<String, String> readParamsForApi(ApiId id, ApiDefinition api) {

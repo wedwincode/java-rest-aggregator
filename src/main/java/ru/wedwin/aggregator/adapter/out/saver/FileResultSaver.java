@@ -28,7 +28,7 @@ public class FileResultSaver implements ResultSaver {
         Codec codec = provider.getCodec(spec.codecId());
         try {
             if (spec.path().getParent() != null) {
-                Files.createDirectories(spec.path().getParent()); // todo нужно ли
+                Files.createDirectories(spec.path().getParent());
             }
             switch (spec.mode()) {
                 case NEW -> saveNew(spec.path(), items, codec);
