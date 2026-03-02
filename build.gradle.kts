@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id("java")
     id("com.gradleup.shadow") version "9.3.2"
@@ -10,12 +12,6 @@ repositories {
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(24))
-    }
-}
-
-tasks.jar {
-    manifest {
-        attributes["Main-Class"] = "ru.wedwin.aggregator.Main"
     }
 }
 
@@ -42,4 +38,23 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.named<ShadowJar>("shadowJar") {
+    archiveFileName.set("app.jar")
+    mergeServiceFiles()
+
+    manifest {
+        attributes["Main-Class"] = "ru.wedwin.aggregator.Main"
+    }
+}
+
+tasks.register<Copy>("copyAppJarToDist") {
+    dependsOn("shadowJar")
+    from(tasks.named<ShadowJar>("shadowJar").flatMap { it.archiveFile })
+    into(layout.projectDirectory.dir("dist"))
+}
+
+tasks.named("build") {
+    dependsOn("copyAppJarToDist")
 }
