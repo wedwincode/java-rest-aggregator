@@ -4,7 +4,7 @@ import ru.wedwin.aggregator.domain.model.api.exception.ApiResponseException;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
-import ru.wedwin.aggregator.app.service.ApiRegistry;
+import ru.wedwin.aggregator.app.service.api.ApiRegistry;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultViewException;

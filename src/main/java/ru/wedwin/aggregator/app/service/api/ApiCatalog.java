@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.port.in;
+package ru.wedwin.aggregator.app.service.api;
 
 import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.model.api.ApiId;

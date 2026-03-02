@@ -5,7 +5,7 @@ import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultViewException;
 import ru.wedwin.aggregator.port.out.Codec;
-import ru.wedwin.aggregator.app.service.CodecProvider;
+import ru.wedwin.aggregator.app.service.codec.CodecProvider;
 import ru.wedwin.aggregator.port.out.ResultViewer;
 
 import java.io.BufferedReader;

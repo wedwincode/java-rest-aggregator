@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.port.in;
+package ru.wedwin.aggregator.app.service.codec;
 
 import ru.wedwin.aggregator.domain.model.codec.CodecId;
 

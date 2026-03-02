@@ -3,9 +3,9 @@ package ru.wedwin.aggregator.adapter.in.cli;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
-import ru.wedwin.aggregator.port.in.ApiCatalog;
+import ru.wedwin.aggregator.app.service.api.ApiCatalog;
 import ru.wedwin.aggregator.port.in.RunConfigProvider;
-import ru.wedwin.aggregator.port.in.CodecCatalog;
+import ru.wedwin.aggregator.app.service.codec.CodecCatalog;
 
 import java.io.InputStream;
 import java.io.PrintStream;

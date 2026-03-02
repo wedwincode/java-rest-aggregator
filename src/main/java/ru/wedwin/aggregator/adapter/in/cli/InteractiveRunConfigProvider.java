@@ -10,8 +10,8 @@ import ru.wedwin.aggregator.domain.model.output.DisplaySpec;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
 import ru.wedwin.aggregator.domain.model.codec.CodecId;
-import ru.wedwin.aggregator.port.in.ApiCatalog;
-import ru.wedwin.aggregator.port.in.CodecCatalog;
+import ru.wedwin.aggregator.app.service.api.ApiCatalog;
+import ru.wedwin.aggregator.app.service.codec.CodecCatalog;
 import ru.wedwin.aggregator.port.in.RunConfigProvider;
 
 import java.nio.file.InvalidPathException;
