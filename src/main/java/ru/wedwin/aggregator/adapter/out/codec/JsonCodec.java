@@ -26,7 +26,7 @@ public class JsonCodec implements Codec {
 
     @Override
     public CodecId id() {
-        return new CodecId("json"); // todo change "new" to .of()
+        return new CodecId("json");
     }
 
     @Override

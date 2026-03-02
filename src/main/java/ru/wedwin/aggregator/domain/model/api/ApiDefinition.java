@@ -2,21 +2,22 @@ package ru.wedwin.aggregator.domain.model.api;
 
 import ru.wedwin.aggregator.domain.model.api.exception.InvalidApiDefinitionException;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
 public record ApiDefinition(
         ApiId id,
-        String url, // todo URL url,
+        URL url,
         String displayName,
         List<ParamMeta> supportedParams
 ) {
     public ApiDefinition {
         if (url == null) {
             throw new InvalidApiDefinitionException("url is null");
-        }
-        if (url.isBlank()) {
-            throw new InvalidApiDefinitionException("url is empty");
         }
         if (displayName == null) {
             throw new InvalidApiDefinitionException("displayName is null");
@@ -31,11 +32,18 @@ public record ApiDefinition(
             throw new InvalidApiDefinitionException("supportedParams contains null");
         }
 
-        url = url.trim();
         displayName = displayName.trim();
     }
 
     public ApiDefinition(String id, String url, String displayName, ParamMeta... supportedParams) {
-        this(new ApiId(id), url, displayName, List.of(supportedParams));
+        this(new ApiId(id), toUrl(url), displayName, List.of(supportedParams));
+    }
+
+    private static URL toUrl(String url) {
+        try {
+            return new URI(url).toURL();
+        } catch (URISyntaxException | MalformedURLException e) {
+            throw new IllegalArgumentException("Invalid url: " + url, e);
+        }
     }
 }

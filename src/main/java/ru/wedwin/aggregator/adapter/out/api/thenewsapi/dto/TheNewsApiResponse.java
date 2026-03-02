@@ -22,7 +22,6 @@ public record TheNewsApiResponse(
            Integer page
     ) {}
 
-    // todo check why arrays in csv are stored as "items: []"
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public record Data(

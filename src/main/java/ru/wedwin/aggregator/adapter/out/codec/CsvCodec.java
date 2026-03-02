@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-// todo append
 public class CsvCodec implements Codec {
 
     private static final Logger log = LogManager.getLogger(CsvCodec.class);

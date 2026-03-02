@@ -14,7 +14,7 @@ public abstract class AbstractApiClient<DTO> implements ApiClient {
     @Override
     public AggregatedItem getApiResponse(ApiParams params, Executor executor) {
         params.addDefaultParams(supportedParams());
-        String response = executor.execute(RequestBuilder.build(url(), params));
+        String response = executor.execute(RequestBuilder.buildGet(url(), params));
         DTO dto = JacksonObjectMapper.map(response, dtoClass());
         Payload payload = JacksonObjectMapper.fromDto(dto);
         return new AggregatedItem(id(), payload);

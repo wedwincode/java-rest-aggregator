@@ -7,6 +7,7 @@ import ru.wedwin.aggregator.domain.exception.executor.UnsuccessfulResponseExcept
 import ru.wedwin.aggregator.port.out.Executor;
 
 import java.io.IOException;
+import java.net.URL;
 
 public class OkHttpExecutor implements Executor {
     private final OkHttpClient client;
@@ -16,7 +17,7 @@ public class OkHttpExecutor implements Executor {
     }
 
     @Override
-    public String execute(String url) {
+    public String execute(URL url) {
         Request request = new Request.Builder().url(url).build();
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
@@ -27,4 +28,5 @@ public class OkHttpExecutor implements Executor {
             throw new RuntimeException("execution failed", e);
         }
     }
+
 }

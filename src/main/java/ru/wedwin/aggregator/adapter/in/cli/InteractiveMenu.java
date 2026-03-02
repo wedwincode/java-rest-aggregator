@@ -42,7 +42,7 @@ public class InteractiveMenu {
             for (ApiDefinition d : apiCatalog.list()) {
                 io.println(apiInfo(d));
             }
-            String rawIds = io.readLine("Enter desired API ids (e.g. api1 api2): "); // todo check if we enter more apis than exist
+            String rawIds = io.readLine("Enter desired API ids (e.g. api1 api2): ");
             Set<ApiId> ids = parseIds(rawIds);
             for (ApiId id : ids) {
                 ApiDefinition client = apiCatalog.getDefinition(id);
@@ -57,11 +57,11 @@ public class InteractiveMenu {
             }
 
             List<CodecId> codecs = codecCatalog.list();
-            io.println("Available output codec:");
+            io.println("Available output formats:");
             io.println(codecs); // todo better
-            CodecId codec = new CodecId(io.readLine("Enter output codec: "));
+            CodecId codec = new CodecId(io.readLine("Enter output format: "));
             if (!codecs.contains(codec)) {
-                throw new IllegalArgumentException("unsupported codec: " + codec);
+                throw new IllegalArgumentException("unsupported format: " + codec);
             }
 
             io.println("Available write modes:");

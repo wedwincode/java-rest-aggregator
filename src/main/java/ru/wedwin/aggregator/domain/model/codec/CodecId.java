@@ -6,7 +6,7 @@ public record CodecId(
         String value
 ) {
     public CodecId {
-        if (value == null) { // todo: null/empty check for all classes
+        if (value == null) {
             throw new InvalidCodecIdException("value is null");
         }
         if (value.isBlank()) {
