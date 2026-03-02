@@ -9,8 +9,8 @@ import ru.wedwin.aggregator.domain.model.output.DisplayMode;
 import ru.wedwin.aggregator.domain.model.output.DisplaySpec;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
-import ru.wedwin.aggregator.domain.model.format.FormatterId;
-import ru.wedwin.aggregator.domain.model.format.exception.InvalidFormatterIdException;
+import ru.wedwin.aggregator.domain.model.codec.CodecId;
+import ru.wedwin.aggregator.domain.model.codec.exception.InvalidCodecIdException;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
 
 import java.nio.file.Path;
@@ -28,7 +28,7 @@ public class ArgsParser {
     private final Set<ApiId> selectedApis;
     private final Map<ApiId, Map<String, String>> rawParamsByApi;
     private Path outputPath = null;
-    private FormatterId formatterId = null;
+    private CodecId codecId = null;
     private WriteMode writeMode = null;
 
     private record ParsedValues(Set<String> values, int nextIndex) {}
@@ -95,8 +95,8 @@ public class ArgsParser {
                 case "--format" -> {
                     String value = requireValue(args, i + 1, arg);
                     try {
-                        formatterId = new FormatterId(value);
-                    } catch (InvalidFormatterIdException e) {
+                        codecId = new CodecId(value);
+                    } catch (InvalidCodecIdException e) {
                         throw new ArgsParseException("invalid --format value: " + value, e);
                     }
                     i += 2;
@@ -142,14 +142,14 @@ public class ArgsParser {
     }
 
     private RunConfig validate() {
-        if (formatterId == null) {
+        if (codecId == null) {
             throw new ArgsParseException("format was not specified");
         }
         if (writeMode == null) {
             throw new ArgsParseException("mode was not specified");
         }
         if (outputPath == null) {
-            outputPath = Path.of("out." + formatterId);
+            outputPath = Path.of("out." + codecId);
         }
 
         Set<ApiId> allApis = new HashSet<>();
@@ -178,7 +178,7 @@ public class ArgsParser {
         try {
             return new RunConfig(
                     apisWithParams,
-                    new OutputSpec(outputPath, formatterId, writeMode),
+                    new OutputSpec(outputPath, codecId, writeMode),
                     new DisplaySpec(DisplayMode.NONE) // todo validation for this shit
             );
         } catch (RuntimeException e) {

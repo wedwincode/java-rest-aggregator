@@ -1,7 +1,7 @@
-package ru.wedwin.aggregator.adapter.out.apis.weatherapi;
+package ru.wedwin.aggregator.adapter.out.api.weatherapi;
 
-import ru.wedwin.aggregator.adapter.out.apis.AbstractApiClient;
-import ru.wedwin.aggregator.adapter.out.apis.weatherapi.dto.WeatherApiResponse;
+import ru.wedwin.aggregator.adapter.out.api.AbstractApiClient;
+import ru.wedwin.aggregator.adapter.out.api.weatherapi.dto.WeatherApiResponse;
 import ru.wedwin.aggregator.adapter.out.common.EnvReader;
 import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.model.api.ParamMeta;

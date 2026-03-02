@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.adapter.out.apis.newsapi.dto;
+package ru.wedwin.aggregator.adapter.out.api.newsapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

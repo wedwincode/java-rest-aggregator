@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.adapter.out.formatters;
+package ru.wedwin.aggregator.adapter.out.codec;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -9,16 +9,15 @@ import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.model.format.FormatterId;
+import ru.wedwin.aggregator.domain.model.codec.CodecId;
 import ru.wedwin.aggregator.domain.model.result.Payload;
-import ru.wedwin.aggregator.port.out.Formatter;
+import ru.wedwin.aggregator.port.out.Codec;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -27,13 +26,13 @@ import java.util.Set;
 import java.util.UUID;
 
 // todo append
-public class CsvFormatter implements Formatter {
+public class CsvCodec implements Codec {
 
-    private static final Logger log = LogManager.getLogger(CsvFormatter.class);
+    private static final Logger log = LogManager.getLogger(CsvCodec.class);
 
     @Override
-    public FormatterId id() {
-        return new FormatterId("csv");
+    public CodecId id() {
+        return new CodecId("csv");
     }
 
     @Override

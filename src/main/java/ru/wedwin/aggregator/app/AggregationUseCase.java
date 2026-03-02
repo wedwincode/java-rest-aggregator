@@ -5,11 +5,9 @@ import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.app.registry.ApiRegistry;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
-import ru.wedwin.aggregator.app.registry.FormatterRegistry;
 import ru.wedwin.aggregator.port.in.RunConfigProvider;
 import ru.wedwin.aggregator.port.out.ApiClient;
 import ru.wedwin.aggregator.port.out.Executor;
-import ru.wedwin.aggregator.port.out.Formatter;
 import ru.wedwin.aggregator.port.out.ResultStorage;
 
 import java.util.ArrayList;

@@ -9,9 +9,9 @@ import ru.wedwin.aggregator.domain.model.output.DisplayMode;
 import ru.wedwin.aggregator.domain.model.output.DisplaySpec;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
-import ru.wedwin.aggregator.domain.model.format.FormatterId;
+import ru.wedwin.aggregator.domain.model.codec.CodecId;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
-import ru.wedwin.aggregator.port.in.FormatterCatalog;
+import ru.wedwin.aggregator.port.in.CodecCatalog;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -24,13 +24,13 @@ import java.util.stream.Collectors;
 
 public class InteractiveMenu {
     private final ApiCatalog apiCatalog;
-    private final FormatterCatalog formatterCatalog;
+    private final CodecCatalog codecCatalog;
     private final ConsoleIO io;
     private final Map<ApiId, ApiParams> paramsByApi;
 
-    public InteractiveMenu(ApiCatalog apiCatalog, FormatterCatalog formatterCatalog, ConsoleIO io) {
+    public InteractiveMenu(ApiCatalog apiCatalog, CodecCatalog codecCatalog, ConsoleIO io) {
         this.apiCatalog = apiCatalog;
-        this.formatterCatalog = formatterCatalog;
+        this.codecCatalog = codecCatalog;
         this.io = io;
         this.paramsByApi = new HashMap<>();
     }
@@ -56,12 +56,12 @@ public class InteractiveMenu {
                 paramsByApi.put(id, parsedParams);
             }
 
-            List<FormatterId> formatters = formatterCatalog.list();
-            io.println("Available output formatters:");
-            io.println(formatters); // todo better
-            FormatterId formatter = new FormatterId(io.readLine("Enter output formatter: "));
-            if (!formatters.contains(formatter)) {
-                throw new IllegalArgumentException("unsupported formatter: " + formatter);
+            List<CodecId> codecs = codecCatalog.list();
+            io.println("Available output codec:");
+            io.println(codecs); // todo better
+            CodecId codec = new CodecId(io.readLine("Enter output codec: "));
+            if (!codecs.contains(codec)) {
+                throw new IllegalArgumentException("unsupported codec: " + codec);
             }
 
             io.println("Available write modes:");
@@ -87,7 +87,7 @@ public class InteractiveMenu {
             io.println();
             return new RunConfig(
                     paramsByApi,
-                    new OutputSpec(path, formatter, writeMode),
+                    new OutputSpec(path, codec, writeMode),
                     new DisplaySpec(apiToDisplay, displayMode)
             );
         } catch (Exception e) {

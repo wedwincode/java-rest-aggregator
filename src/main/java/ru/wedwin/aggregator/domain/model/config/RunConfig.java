@@ -3,7 +3,6 @@ package ru.wedwin.aggregator.domain.model.config;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.config.exception.InvalidRunConfigException;
-import ru.wedwin.aggregator.domain.model.format.FormatterId;
 import ru.wedwin.aggregator.domain.model.output.DisplaySpec;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 

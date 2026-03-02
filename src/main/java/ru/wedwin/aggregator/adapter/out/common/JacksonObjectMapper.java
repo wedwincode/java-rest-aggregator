@@ -8,10 +8,6 @@ import tools.jackson.databind.ObjectMapper;
 public class JacksonObjectMapper {
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public static ObjectMapper instance() { // todo factory?
-        return mapper;
-    }
-
     public static <T> T map(String content, Class<T> clazz) {
         try {
             return mapper.readValue(content, clazz);

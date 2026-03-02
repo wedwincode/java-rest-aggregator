@@ -1,7 +1,7 @@
-package ru.wedwin.aggregator.adapter.out.apis.thenewsapi;
+package ru.wedwin.aggregator.adapter.out.api.thenewsapi;
 
-import ru.wedwin.aggregator.adapter.out.apis.AbstractApiClient;
-import ru.wedwin.aggregator.adapter.out.apis.thenewsapi.dto.TheNewsApiResponse;
+import ru.wedwin.aggregator.adapter.out.api.AbstractApiClient;
+import ru.wedwin.aggregator.adapter.out.api.thenewsapi.dto.TheNewsApiResponse;
 import ru.wedwin.aggregator.adapter.out.common.EnvReader;
 import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.model.api.ParamMeta;

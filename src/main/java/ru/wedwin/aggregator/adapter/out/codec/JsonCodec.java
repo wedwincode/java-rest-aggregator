@@ -1,11 +1,11 @@
-package ru.wedwin.aggregator.adapter.out.formatters;
+package ru.wedwin.aggregator.adapter.out.codec;
 
 import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.model.format.FormatterId;
+import ru.wedwin.aggregator.domain.model.codec.CodecId;
 import ru.wedwin.aggregator.domain.model.result.Payload;
-import ru.wedwin.aggregator.port.out.Formatter;
+import ru.wedwin.aggregator.port.out.Codec;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
@@ -17,16 +17,16 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-public class JsonFormatter implements Formatter {
+public class JsonCodec implements Codec {
     private final ObjectMapper om;
 
-    public JsonFormatter() {
+    public JsonCodec() {
         om = new ObjectMapper();
     }
 
     @Override
-    public FormatterId id() {
-        return new FormatterId("json"); // todo change "new" to .of()
+    public CodecId id() {
+        return new CodecId("json"); // todo change "new" to .of()
     }
 
     @Override

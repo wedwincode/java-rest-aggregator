@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
 import ru.wedwin.aggregator.port.in.RunConfigProvider;
-import ru.wedwin.aggregator.port.in.FormatterCatalog;
+import ru.wedwin.aggregator.port.in.CodecCatalog;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -14,14 +14,14 @@ public class CliApp implements RunConfigProvider {
     private static final Logger log = LogManager.getLogger(CliApp.class);
     private final String[] args;
     private final ApiCatalog apiCatalog;
-    private final FormatterCatalog formatterCatalog;
+    private final CodecCatalog codecCatalog;
     private final InputStream in;
     private final PrintStream out;
 
-    public CliApp(String[] args, ApiCatalog apiCatalog, FormatterCatalog formatterCatalog, InputStream in, PrintStream out) {
+    public CliApp(String[] args, ApiCatalog apiCatalog, CodecCatalog codecCatalog, InputStream in, PrintStream out) {
         this.args = args;
         this.apiCatalog = apiCatalog;
-        this.formatterCatalog = formatterCatalog;
+        this.codecCatalog = codecCatalog;
         this.in = in;
         this.out = out;
     }
@@ -30,7 +30,7 @@ public class CliApp implements RunConfigProvider {
     public RunConfig getRunConfig() {
         ArgsParser parser = new ArgsParser(args, apiCatalog);
         if (parser.isInteractive()) {
-            InteractiveMenu menu = new InteractiveMenu(apiCatalog, formatterCatalog, new ConsoleIO(in, out));
+            InteractiveMenu menu = new InteractiveMenu(apiCatalog, codecCatalog, new ConsoleIO(in, out));
             return menu.getRunRequest();
         }
         try {

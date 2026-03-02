@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.adapter.out.apis;
+package ru.wedwin.aggregator.adapter.out.api;
 
 import ru.wedwin.aggregator.adapter.out.common.JacksonObjectMapper;
 import ru.wedwin.aggregator.adapter.out.common.RequestBuilder;

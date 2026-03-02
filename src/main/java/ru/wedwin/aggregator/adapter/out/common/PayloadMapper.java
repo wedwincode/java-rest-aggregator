@@ -194,22 +194,6 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
                         current.put(part, new Payload.PObject(next));
                         current = next;
                     }
-//                    Payload existing = current.get(part);
-//                    if (existing instanceof Payload.PObject(Map<String, Payload> fields)) {
-//                        Map<String, Payload> mutableFields = (fields instanceof LinkedHashMap)
-//                                ? fields
-//                                : new LinkedHashMap<>(fields);
-//
-//                        if (mutableFields != fields) {
-//                            current.put(part, new Payload.PObject(mutableFields));
-//                        }
-//
-//                        current = mutableFields;
-//                    } else {
-//                        Map<String, Payload> next = new LinkedHashMap<>();
-//                        current.put(part, new Payload.PObject(next));
-//                        current = next;
-//                    }
                 }
             }
         }

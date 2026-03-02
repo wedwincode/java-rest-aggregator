@@ -1,18 +1,17 @@
-package ru.wedwin.aggregator.adapter.out.formatters;
+package ru.wedwin.aggregator.adapter.out.codec;
 
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.model.format.FormatterId;
-import ru.wedwin.aggregator.port.out.Formatter;
+import ru.wedwin.aggregator.domain.model.codec.CodecId;
+import ru.wedwin.aggregator.port.out.Codec;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 
-public class ConsoleFormatter implements Formatter {
+public class ConsoleCodec implements Codec {
     @Override
-    public FormatterId id() {
-        return new FormatterId("console");
+    public CodecId id() {
+        return new CodecId("console");
     }
 
     @Override

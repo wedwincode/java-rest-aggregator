@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.adapter.out.executors;
+package ru.wedwin.aggregator.adapter.out.executor;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
