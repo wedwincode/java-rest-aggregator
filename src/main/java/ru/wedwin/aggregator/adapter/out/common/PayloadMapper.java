@@ -132,11 +132,6 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
                     return;
                 }
 
-//                for (int i = 0; i < a.items().size(); i++) {
-//                    String childPath = path + "[" + i + "]";
-//                    flattenInto(out, childPath, a.items().get(i));
-//                }
-
                 out.put(path, om.writeValueAsString(toJsonNode(a)));
                 return;
             }

@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
+import ru.wedwin.aggregator.domain.model.codec.exception.CodecException;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.codec.CodecId;
 import ru.wedwin.aggregator.domain.model.result.Payload;
@@ -26,7 +27,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class CsvCodec implements Codec {
-
     private static final Logger log = LogManager.getLogger(CsvCodec.class);
 
     @Override
@@ -35,35 +35,44 @@ public class CsvCodec implements Codec {
     }
 
     @Override
-    public List<AggregatedItem> read(Reader r) throws IOException {
+    public List<AggregatedItem> read(Reader r) throws CodecException {
         CSVFormat format = CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(false).get();
-        CSVParser parser = format.parse(r);
+        CSVParser parser;
+        try {
+            parser = format.parse(r);
+        } catch (IOException e) {
+            throw new CodecException("csv read error: ", e);
+        }
 
         Map<String, Integer> headerMap = parser.getHeaderMap();
         if (headerMap == null || headerMap.isEmpty()) {
             throw new IllegalStateException("csv has no header");
         }
-        log.info(headerMap);
+        log.debug(headerMap);
 
         List<AggregatedItem> items = new ArrayList<>();
-        for (CSVRecord record : parser) {
+        for (CSVRecord record: parser) {
             Map<String, String> row = record.toMap();
             items.add(toItem(row));
         }
-        log.info(items);
+        log.debug(items);
         return items;
     }
 
     @Override
-    public void write(List<AggregatedItem> items, Writer w) throws IOException {
+    public void write(List<AggregatedItem> items, Writer w) throws CodecException {
         List<Map<String, String>> rows = flattenItems(items);
         List<String> header = buildHeader(rows);
         CSVFormat format = CSVFormat.DEFAULT.builder().setHeader(header.toArray(String[]::new)).get();
-        CSVPrinter printer = new CSVPrinter(w, format);
-        for (Map<String, String> row : rows) {
-            printer.printRecord(toRecord(header, row));
+        try {
+            CSVPrinter printer = new CSVPrinter(w, format);
+            for (Map<String, String> row : rows) {
+                printer.printRecord(toRecord(header, row));
+            }
+            printer.flush();
+        } catch (IOException e) {
+            throw new CodecException("csv write error: ", e);
         }
-        printer.flush();
     }
 
     private static List<String> buildHeader(List<Map<String, String>> rows) {

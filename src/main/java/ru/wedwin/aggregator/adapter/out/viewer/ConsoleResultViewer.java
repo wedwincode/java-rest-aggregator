@@ -3,6 +3,7 @@ package ru.wedwin.aggregator.adapter.out.viewer;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
+import ru.wedwin.aggregator.domain.model.result.exception.ResultViewException;
 import ru.wedwin.aggregator.port.out.Codec;
 import ru.wedwin.aggregator.app.service.CodecProvider;
 import ru.wedwin.aggregator.port.out.ResultViewer;
@@ -24,7 +25,7 @@ public class ConsoleResultViewer implements ResultViewer {
     }
 
     @Override
-    public void all(OutputSpec spec) {
+    public void all(OutputSpec spec) throws ResultViewException {
         Path path = spec.path();
         try {
             if (!Files.exists(path) || Files.size(path) == 0) {
@@ -32,12 +33,12 @@ public class ConsoleResultViewer implements ResultViewer {
             }
             Files.copy(path, System.out);
         } catch (IOException e) {
-            throw new RuntimeException("failed to print file " + path, e);
+            throw new ResultViewException("failed to print file " + path, e);
         }
     }
 
     @Override
-    public void byApi(OutputSpec spec, ApiId apiId) {
+    public void byApi(OutputSpec spec, ApiId apiId) throws ResultViewException {
         Codec codec = provider.getCodec(spec.codecId());
         Path path = spec.path();
         try {
@@ -56,7 +57,7 @@ public class ConsoleResultViewer implements ResultViewer {
             BufferedWriter w = new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
             codec.write(filtered, w);
         } catch (IOException e) {
-            throw new RuntimeException("failed to print filtered output for api " + apiId + " from " + path, e);
+            throw new ResultViewException("failed to print filtered output for api " + apiId + " from " + path, e);
         }
     }
 }

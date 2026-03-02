@@ -1,6 +1,8 @@
 package ru.wedwin.aggregator.adapter.out.api;
 
 import ru.wedwin.aggregator.adapter.out.common.JacksonObjectMapper;
+import ru.wedwin.aggregator.adapter.out.executor.ExecutorException;
+import ru.wedwin.aggregator.domain.model.api.exception.ApiResponseException;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.result.Payload;
@@ -11,9 +13,14 @@ public abstract class AbstractApiClient<DTO> implements ApiClient {
     protected abstract Class<DTO> dtoClass();
 
     @Override
-    public AggregatedItem getApiResponse(ApiParams params, Executor executor) {
+    public AggregatedItem getApiResponse(ApiParams params, Executor executor) throws ApiResponseException {
         params.addDefaultParams(supportedParams());
-        String response = executor.execute(url(), params.asMap());
+        String response;
+        try {
+            response = executor.execute(url(), params.asMap());
+        } catch (ExecutorException e) {
+            throw new ApiResponseException("api response error: ", e);
+        }
         DTO dto = JacksonObjectMapper.map(response, dtoClass());
         Payload payload = JacksonObjectMapper.fromDto(dto);
         return new AggregatedItem(id(), payload);

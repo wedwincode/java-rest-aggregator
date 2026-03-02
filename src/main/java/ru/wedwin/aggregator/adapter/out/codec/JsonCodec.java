@@ -1,5 +1,7 @@
 package ru.wedwin.aggregator.adapter.out.codec;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class JsonCodec implements Codec {
+    private static final Logger log = LogManager.getLogger(JsonCodec.class);
     private final ObjectMapper om;
 
     public JsonCodec() {
@@ -43,6 +46,8 @@ public class JsonCodec implements Codec {
             }
             items.add(toItem((ObjectNode) n));
         }
+        log.debug(items);
+
         return items;
     }
 

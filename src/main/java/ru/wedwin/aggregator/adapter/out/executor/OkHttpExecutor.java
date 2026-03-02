@@ -26,7 +26,7 @@ public class OkHttpExecutor implements Executor {
     }
 
     @Override
-    public String execute(URL url, Map<String, String> params) {
+    public String execute(URL url, Map<String, String> params) throws ExecutorException {
         Request request = buildGet(url, params);
         Call call = client.newCall(request);
 
@@ -34,11 +34,11 @@ public class OkHttpExecutor implements Executor {
             int code = response.code();
             if (!response.isSuccessful()) {
                 String errBody = safeBodyToString(response.body());
-                throw new RuntimeException("http error: " + code + " body: " + trim(errBody, 500));
+                throw new ExecutorException("http error: " + code + " body: " + trim(errBody, 500));
             }
             return safeBodyToString(response.body());
         } catch (IOException e) {
-            throw new RuntimeException("request failed (network/timeout): " + url, e);
+            throw new ExecutorException("request failed (network/timeout): " + url, e);
         }
     }
 
@@ -47,10 +47,10 @@ public class OkHttpExecutor implements Executor {
         try {
             base = HttpUrl.get(url);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("invalid url: " + url, e);
+            throw new ExecutorException("invalid url: " + url, e);
         }
         if (base == null) {
-            throw new IllegalArgumentException("invalid url: " + url);
+            throw new ExecutorException("invalid url: " + url);
         }
 
         HttpUrl.Builder builder = base.newBuilder();

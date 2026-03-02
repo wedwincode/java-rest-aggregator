@@ -1,10 +1,13 @@
 package ru.wedwin.aggregator.app;
 
+import ru.wedwin.aggregator.domain.model.api.exception.ApiResponseException;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.app.service.ApiRegistry;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
+import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
+import ru.wedwin.aggregator.domain.model.result.exception.ResultViewException;
 import ru.wedwin.aggregator.port.in.RunConfigProvider;
 import ru.wedwin.aggregator.port.out.ApiClient;
 import ru.wedwin.aggregator.port.out.Executor;
@@ -33,7 +36,7 @@ public class AggregationUseCase {
         this.viewer = viewer;
     }
 
-    public void run() {
+    public void run() throws ApiResponseException, ResultSaveException, ResultViewException {
         RunConfig runConfig = runConfigProvider.getRunConfig();
         List<AggregatedItem> responseList = new ArrayList<>();
 
@@ -42,12 +45,14 @@ public class AggregationUseCase {
             ApiParams params = runConfig.queryParamsByApi().getOrDefault(id, ApiParams.of());
             responseList.add(client.getApiResponse(params, executor));
         }
+
         saver.save(runConfig.outputSpec(), responseList);
 
         switch (runConfig.displaySpec().mode()) {
             case NONE -> {}
             case ALL -> viewer.all(runConfig.outputSpec());
             case BY_API -> viewer.byApi(runConfig.outputSpec(), runConfig.displaySpec().apiId());
+            case null -> {}
         }
     }
 }

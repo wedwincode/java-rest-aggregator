@@ -2,6 +2,7 @@ package ru.wedwin.aggregator.adapter.out.saver;
 
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
+import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
 import ru.wedwin.aggregator.port.out.Codec;
 import ru.wedwin.aggregator.app.service.CodecProvider;
 import ru.wedwin.aggregator.port.out.ResultSaver;
@@ -24,7 +25,7 @@ public class FileResultSaver implements ResultSaver {
     }
 
     @Override
-    public void save(OutputSpec spec, List<AggregatedItem> items) {
+    public void save(OutputSpec spec, List<AggregatedItem> items) throws ResultSaveException {
         Codec codec = provider.getCodec(spec.codecId());
         try {
             if (spec.path().getParent() != null) {
@@ -33,10 +34,10 @@ public class FileResultSaver implements ResultSaver {
             switch (spec.mode()) {
                 case NEW -> saveNew(spec.path(), items, codec);
                 case APPEND -> saveAppend(spec.path(), items, codec);
-                case null, default -> throw new RuntimeException("null!!"); // todo everywhere
+                case null -> throw new RuntimeException("null!!"); // todo everywhere
             }
-        } catch (IOException e) {
-            throw new RuntimeException("failed to write output to " + spec.path(), e);
+        } catch (Exception e) {
+            throw new ResultSaveException("failed to write output to " + spec.path(), e);
         }
     }
 

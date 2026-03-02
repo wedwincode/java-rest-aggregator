@@ -14,6 +14,9 @@ import ru.wedwin.aggregator.adapter.out.viewer.ConsoleResultViewer;
 import ru.wedwin.aggregator.app.AggregationUseCase;
 import ru.wedwin.aggregator.app.service.ApiRegistry;
 import ru.wedwin.aggregator.app.service.CodecRegistry;
+import ru.wedwin.aggregator.domain.model.api.exception.ApiResponseException;
+import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
+import ru.wedwin.aggregator.domain.model.result.exception.ResultViewException;
 
 import java.util.List;
 
@@ -41,9 +44,16 @@ public class Main {
 
         try {
             useCase.run();
-        } catch (Exception e) {
-            log.error("error", e); // todo think more about logs
+        } catch (ApiResponseException e) {
+            log.error("error handling api response: ", e);
             System.exit(2);
+        } catch (ResultSaveException e) {
+            log.error("error during result saving: ", e);
+            System.exit(3);
+        } catch (ResultViewException e) {
+            log.error("error during result presentation: ", e);
+            System.exit(4);
         }
+
     }
 }
