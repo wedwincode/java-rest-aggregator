@@ -31,9 +31,13 @@ dependencies {
     // Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
     implementation("org.apache.logging.log4j:log4j-core:2.25.3")
 
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
+    // Source: https://mvnrepository.com/artifact/org.junit/junit-bom
+    testImplementation(platform("org.junit:junit-bom:6.0.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    // Source: https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testImplementation("org.mockito:mockito-core:5.22.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.22.0")
 }
 
 tasks.test {

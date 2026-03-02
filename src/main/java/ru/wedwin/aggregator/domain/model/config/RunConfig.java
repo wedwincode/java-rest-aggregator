@@ -20,12 +20,6 @@ public record RunConfig(
         if (queryParamsByApi.isEmpty()) {
             throw new InvalidRunConfigException("no APIs selected");
         }
-        if (queryParamsByApi.containsKey(null)) {
-            throw new InvalidRunConfigException("api id is null");
-        }
-        if (queryParamsByApi.containsValue(null)) {
-            throw new InvalidRunConfigException("api params is null");
-        }
         if (outputSpec == null) {
             throw new InvalidRunConfigException("outputSpec is null");
         }
@@ -33,6 +27,10 @@ public record RunConfig(
             throw new InvalidRunConfigException("displaySpec is null");
         }
 
-        queryParamsByApi = Map.copyOf(queryParamsByApi);
+        try {
+            queryParamsByApi = Map.copyOf(queryParamsByApi);
+        } catch (NullPointerException e) {
+            throw new InvalidRunConfigException("api id or api params is null");
+        }
     }
 }

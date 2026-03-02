@@ -53,7 +53,6 @@ public class AggregationUseCase {
             case NONE -> {}
             case ALL -> viewer.all(runConfig.outputSpec());
             case BY_API -> viewer.byApi(runConfig.outputSpec(), runConfig.displaySpec().apiId());
-            case null -> {}
         }
     }
 }

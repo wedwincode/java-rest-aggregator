@@ -34,12 +34,14 @@ public sealed interface Payload permits Payload.PNull, Payload.PBool, Payload.PI
             if (fields == null) {
                 throw new InvalidPayloadException("object fields is null");
             }
-            if (fields.containsKey(null)) {
-                throw new InvalidPayloadException("object contains null key");
-            }
-            if (fields.containsValue(null)) {
-                throw new InvalidPayloadException("object contains null value");
-            }
+            fields.forEach((key, value) -> {
+                if (key == null) {
+                    throw new InvalidPayloadException("object contains null key");
+                }
+                if (value == null) {
+                    throw new InvalidPayloadException("object contains null value");
+                }
+            });
         }
     }
 }
