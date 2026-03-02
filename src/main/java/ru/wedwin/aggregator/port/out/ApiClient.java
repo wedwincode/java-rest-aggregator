@@ -15,6 +15,5 @@ public interface ApiClient {
 
     default ApiId id() { return definition().id(); }
     default URL url() { return definition().url(); }
-    default String displayName() { return definition().displayName(); }
     default List<ParamMeta> supportedParams() { return definition().supportedParams(); }
 }

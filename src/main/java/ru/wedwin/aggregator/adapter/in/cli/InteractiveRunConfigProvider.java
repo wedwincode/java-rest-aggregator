@@ -12,6 +12,7 @@ import ru.wedwin.aggregator.domain.model.output.WriteMode;
 import ru.wedwin.aggregator.domain.model.codec.CodecId;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
 import ru.wedwin.aggregator.port.in.CodecCatalog;
+import ru.wedwin.aggregator.port.in.RunConfigProvider;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -22,20 +23,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class InteractiveMenu {
+public class InteractiveRunConfigProvider implements RunConfigProvider {
     private final ApiCatalog apiCatalog;
     private final CodecCatalog codecCatalog;
     private final ConsoleIO io;
     private final Map<ApiId, ApiParams> paramsByApi;
 
-    public InteractiveMenu(ApiCatalog apiCatalog, CodecCatalog codecCatalog, ConsoleIO io) {
+    public InteractiveRunConfigProvider(ApiCatalog apiCatalog, CodecCatalog codecCatalog, ConsoleIO io) {
         this.apiCatalog = apiCatalog;
         this.codecCatalog = codecCatalog;
         this.io = io;
         this.paramsByApi = new HashMap<>();
     }
-    // todo: print result
-    public RunConfig getRunRequest() { // todo: wrap with try/catch
+
+    @Override
+    public RunConfig getRunConfig() { // todo: wrap with try/catch
         try {
             io.println("Available APIs:");
             io.println("id, name, url");
@@ -45,6 +47,10 @@ public class InteractiveMenu {
             String rawIds = io.readLine("Enter desired API ids (e.g. api1 api2): ");
             Set<ApiId> ids = parseIds(rawIds);
             for (ApiId id : ids) {
+                if (!apiCatalog.contains(id)) {
+                    throw new ArgsParseException("api not exist: " + id);
+                }
+
                 ApiDefinition client = apiCatalog.getDefinition(id);
 
                 io.println("Available query params for " + id + ":");
@@ -122,17 +128,19 @@ public class InteractiveMenu {
         return ids;
     }
 
-    private static ApiParams parseParams(String string) {
-        if (string == null || string.isEmpty()) {
+    private static ApiParams parseParams(String rawData) {
+        if (rawData == null || rawData.isEmpty()) {
             return ApiParams.of();
         }
         Map<String, String> params = new HashMap<>();
-        for (String entry: string.split(" ")) {
-            String[] entrySplit = entry.split("="); // todo param checks as in parseIds
-            if (entrySplit.length != 2) {
-                throw new IllegalArgumentException("param format is incorrect: " + entry);
+        for (String s: rawData.trim().split(" ")) {
+            int eq = s.indexOf('=');
+            if (eq <= 0 || eq == s.length() - 1) {
+                throw new ArgsParseException("params format is incorrect: expected param=value");
             }
-            params.put(entrySplit[0], entrySplit[1]);
+            String keyRaw = s.substring(0, eq);
+            String valRaw = s.substring(eq + 1);
+            params.put(keyRaw, valRaw); // todo check that params exist in registry
         }
         return ApiParams.of(params);
     }

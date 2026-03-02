@@ -12,16 +12,16 @@ import ru.wedwin.aggregator.domain.model.output.WriteMode;
 import ru.wedwin.aggregator.domain.model.codec.CodecId;
 import ru.wedwin.aggregator.domain.model.codec.exception.InvalidCodecIdException;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
+import ru.wedwin.aggregator.port.in.RunConfigProvider;
 
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ArgsParser {
+public class ArgsRunConfigProvider implements RunConfigProvider {
     private final String[] args;
     private final ApiCatalog catalog;
     private final Map<ApiId, ApiParams> apisWithParams;
@@ -33,7 +33,7 @@ public class ArgsParser {
 
     private record ParsedValues(Set<String> values, int nextIndex) {}
 
-    public ArgsParser(String[] args, ApiCatalog catalog) {
+    public ArgsRunConfigProvider(String[] args, ApiCatalog catalog) {
         this.args = args;
         this.catalog = catalog;
         this.apisWithParams = new HashMap<>();
@@ -41,53 +41,8 @@ public class ArgsParser {
         this.rawParamsByApi = new HashMap<>();
     }
 
-    private static String requireValue(String[] args, int idx, String flag) {
-        if (idx < 0 || idx >= args.length) {
-            throw new ArgsParseException("missing value for: " + flag);
-        }
-        String value = args[idx];
-        if (value.startsWith("-")) {
-            throw new ArgsParseException("missing value for: " + flag);
-        }
-        return value;
-    }
-
-    private static ParsedValues requireOneOrMultipleValues(String[] args, int idx, String flag) {
-        if (idx < 0 || idx >= args.length) {
-            throw new ArgsParseException("incorrect values for flag: " + flag);
-        }
-        Set<String> values = new HashSet<>();
-        while (idx < args.length && !args[idx].startsWith("-")) {
-            String value = args[idx++];
-            values.add(value);
-        }
-        if (values.isEmpty()) {
-            throw new ArgsParseException("incorrect values for flag: " + flag);
-        }
-
-        return new ParsedValues(values, idx);
-    }
-
-    private static WriteMode parseMode(String rawMode) {
-        if (rawMode == null) {
-            throw new ArgsParseException("mode is null");
-        }
-        String normalized = rawMode.trim().toUpperCase();
-        if (normalized.isEmpty()) {
-            throw new ArgsParseException("mode is empty");
-        }
-        try {
-            return WriteMode.valueOf(normalized);
-        } catch (IllegalArgumentException e) {
-            throw new ArgsParseException("mode is incorrect: " + rawMode, e);
-        }
-    }
-
-    public boolean isInteractive() {
-        return Arrays.asList(args).contains("--interactive");
-    }
-
-    public RunConfig parse() {
+    @Override
+    public RunConfig getRunConfig() {
         int i = 0;
         while (i < args.length) {
             String arg = args[i];
@@ -179,10 +134,52 @@ public class ArgsParser {
             return new RunConfig(
                     apisWithParams,
                     new OutputSpec(outputPath, codecId, writeMode),
-                    new DisplaySpec(DisplayMode.NONE) // todo validation for this shit
+                    new DisplaySpec(DisplayMode.NONE)
             );
         } catch (RuntimeException e) {
             throw new ArgsParseException("invalid run config", e);
+        }
+    }
+
+    private static String requireValue(String[] args, int idx, String flag) {
+        if (idx < 0 || idx >= args.length) {
+            throw new ArgsParseException("missing value for: " + flag);
+        }
+        String value = args[idx];
+        if (value.startsWith("-")) {
+            throw new ArgsParseException("missing value for: " + flag);
+        }
+        return value;
+    }
+
+    private static ParsedValues requireOneOrMultipleValues(String[] args, int idx, String flag) {
+        if (idx < 0 || idx >= args.length) {
+            throw new ArgsParseException("incorrect values for flag: " + flag);
+        }
+        Set<String> values = new HashSet<>();
+        while (idx < args.length && !args[idx].startsWith("-")) {
+            String value = args[idx++];
+            values.add(value);
+        }
+        if (values.isEmpty()) {
+            throw new ArgsParseException("incorrect values for flag: " + flag);
+        }
+
+        return new ParsedValues(values, idx);
+    }
+
+    private static WriteMode parseMode(String rawMode) {
+        if (rawMode == null) {
+            throw new ArgsParseException("mode is null");
+        }
+        String normalized = rawMode.trim().toUpperCase();
+        if (normalized.isEmpty()) {
+            throw new ArgsParseException("mode is empty");
+        }
+        try {
+            return WriteMode.valueOf(normalized);
+        } catch (IllegalArgumentException e) {
+            throw new ArgsParseException("mode is incorrect: " + rawMode, e);
         }
     }
 

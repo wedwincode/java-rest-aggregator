@@ -9,16 +9,17 @@ import ru.wedwin.aggregator.port.in.CodecCatalog;
 
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 
-public class CliApp implements RunConfigProvider {
-    private static final Logger log = LogManager.getLogger(CliApp.class);
+public class CliRunConfigProvider implements RunConfigProvider {
+    private static final Logger log = LogManager.getLogger(CliRunConfigProvider.class);
     private final String[] args;
     private final ApiCatalog apiCatalog;
     private final CodecCatalog codecCatalog;
     private final InputStream in;
     private final PrintStream out;
 
-    public CliApp(String[] args, ApiCatalog apiCatalog, CodecCatalog codecCatalog, InputStream in, PrintStream out) {
+    public CliRunConfigProvider(String[] args, ApiCatalog apiCatalog, CodecCatalog codecCatalog, InputStream in, PrintStream out) {
         this.args = args;
         this.apiCatalog = apiCatalog;
         this.codecCatalog = codecCatalog;
@@ -28,13 +29,15 @@ public class CliApp implements RunConfigProvider {
 
     @Override
     public RunConfig getRunConfig() {
-        ArgsParser parser = new ArgsParser(args, apiCatalog);
-        if (parser.isInteractive()) {
-            InteractiveMenu menu = new InteractiveMenu(apiCatalog, codecCatalog, new ConsoleIO(in, out));
-            return menu.getRunRequest();
-        }
         try {
-            return parser.parse();
+            if (Arrays.asList(args).contains("--interactive")) {
+                return new InteractiveRunConfigProvider(
+                        apiCatalog,
+                        codecCatalog,
+                        new ConsoleIO(in, out)
+                ).getRunConfig();
+            }
+            return new ArgsRunConfigProvider(args, apiCatalog).getRunConfig();
         } catch (ArgsParseException e) {
             out.println("arguments error: " + e.getMessage());
             log.error("arguments error: {}", e.getMessage());

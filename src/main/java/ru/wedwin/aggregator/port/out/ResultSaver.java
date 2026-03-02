@@ -1,6 +1,7 @@
-package ru.wedwin.aggregator.domain.model.result;
+package ru.wedwin.aggregator.port.out;
 
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
+import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 
 import java.util.List;
 

@@ -8,7 +8,8 @@ import ru.wedwin.aggregator.domain.model.config.RunConfig;
 import ru.wedwin.aggregator.port.in.RunConfigProvider;
 import ru.wedwin.aggregator.port.out.ApiClient;
 import ru.wedwin.aggregator.port.out.Executor;
-import ru.wedwin.aggregator.port.out.ResultStorage;
+import ru.wedwin.aggregator.port.out.ResultSaver;
+import ru.wedwin.aggregator.port.out.ResultViewer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,18 +18,19 @@ public class AggregationUseCase {
     private final RunConfigProvider runConfigProvider;
     private final Executor executor;
     private final ApiRegistry apiRegistry;
-    private final ResultStorage storage;
+    private final ResultSaver saver;
+    private final ResultViewer viewer;
 
     public AggregationUseCase(
             RunConfigProvider runConfigProvider,
             Executor executor,
-            ApiRegistry apiRegistry,
-            ResultStorage storage
+            ApiRegistry apiRegistry, ResultSaver saver, ResultViewer viewer
     ) {
         this.runConfigProvider = runConfigProvider;
         this.executor = executor;
         this.apiRegistry = apiRegistry;
-        this.storage = storage;
+        this.saver = saver;
+        this.viewer = viewer;
     }
 
     public void run() {
@@ -40,12 +42,12 @@ public class AggregationUseCase {
             ApiParams params = runConfig.apisWithParams().getOrDefault(id, ApiParams.of());
             responseList.add(client.getApiResponse(params, executor));
         }
-        storage.save(runConfig.outputSpec(), responseList);
+        saver.save(runConfig.outputSpec(), responseList);
 
         switch (runConfig.displaySpec().mode()) {
             case NONE -> {}
-            case ALL -> storage.printAll(runConfig.outputSpec(), System.out); // todo
-            case BY_API -> storage.printByApi(runConfig.outputSpec(), runConfig.displaySpec().apiId(), System.out);
+            case ALL -> viewer.all(runConfig.outputSpec());
+            case BY_API -> viewer.byApi(runConfig.outputSpec(), runConfig.displaySpec().apiId());
         }
     }
 }
