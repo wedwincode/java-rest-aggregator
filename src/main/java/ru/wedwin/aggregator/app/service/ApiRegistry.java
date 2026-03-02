@@ -1,10 +1,9 @@
-package ru.wedwin.aggregator.app.registry;
+package ru.wedwin.aggregator.app.service;
 
 import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.port.in.ApiCatalog;
 import ru.wedwin.aggregator.port.out.ApiClient;
-import ru.wedwin.aggregator.port.out.ApiClientProvider;
 
 import java.util.List;
 import java.util.Map;

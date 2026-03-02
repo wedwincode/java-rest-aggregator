@@ -1,9 +1,8 @@
 package ru.wedwin.aggregator.port.out;
 
-import ru.wedwin.aggregator.domain.exception.executor.ExecutorException;
-
 import java.net.URL;
+import java.util.Map;
 
 public interface Executor {
-    String execute(URL url) throws ExecutorException;
+    String execute(URL url, Map<String, String> params);
 }

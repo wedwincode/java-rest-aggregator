@@ -12,8 +12,8 @@ import ru.wedwin.aggregator.adapter.out.executor.OkHttpExecutor;
 import ru.wedwin.aggregator.adapter.out.saver.FileResultSaver;
 import ru.wedwin.aggregator.adapter.out.viewer.ConsoleResultViewer;
 import ru.wedwin.aggregator.app.AggregationUseCase;
-import ru.wedwin.aggregator.app.registry.ApiRegistry;
-import ru.wedwin.aggregator.app.registry.CodecRegistry;
+import ru.wedwin.aggregator.app.service.ApiRegistry;
+import ru.wedwin.aggregator.app.service.CodecRegistry;
 
 import java.util.List;
 
