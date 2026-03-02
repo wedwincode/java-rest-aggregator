@@ -30,6 +30,10 @@ public class CliRunConfigProvider implements RunConfigProvider {
     @Override
     public RunConfig getRunConfig() {
         try {
+            if (args == null) {
+                throw new ArgsParseException("args are null");
+            }
+
             if (Arrays.asList(args).contains("--interactive")) {
                 return new InteractiveRunConfigProvider(
                         apiCatalog,

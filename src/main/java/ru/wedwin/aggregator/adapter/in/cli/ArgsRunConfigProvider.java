@@ -43,92 +43,93 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
 
     @Override
     public RunConfig getRunConfig() {
+        parseArgs();
+        return validateAndBuild();
+    }
+
+    private void parseArgs() {
         int i = 0;
         while (i < args.length) {
             String arg = args[i];
             switch (arg) {
-                case "--format" -> {
-                    String value = requireValue(args, i + 1, arg);
-                    try {
-                        codecId = new CodecId(value);
-                    } catch (InvalidCodecIdException e) {
-                        throw new ArgsParseException("invalid --format value: " + value, e);
-                    }
-                    i += 2;
-                }
-                case "--mode" -> {
-                    String value = requireValue(args, i + 1, arg);
-                    writeMode = parseMode(value);
-                    i += 2;
-                }
-                case "--path" -> {
-                    String value = requireValue(args, i + 1, arg);
-                    try {
-                        outputPath = Path.of(value);
-                    } catch (RuntimeException e) {
-                        throw new ArgsParseException("invalid --path value: " + value, e);
-                    }
-                    i += 2;
-                }
-                case "--apis" -> {
-                    ParsedValues pv = requireOneOrMultipleValues(args, i + 1, arg);
-                    Set<ApiId> set = new HashSet<>();
-                    for (String s : pv.values()) {
-                        try {
-                            ApiId id = new ApiId(s);
-                            set.add(id);
-                        } catch (InvalidApiIdException e) {
-                            throw new ArgsParseException("invalid --apis value: " + s, e);
-                        }
-                    }
-                    selectedApis.addAll(set);
-                    i = pv.nextIndex();
-                }
-                case "--params" -> {
-                    ParsedValues pv = requireOneOrMultipleValues(args, i + 1, arg);
-                    pv.values().forEach(this::addParam);
-                    i = pv.nextIndex();
-                }
+                case "--format" -> i = parseFormat(i);
+                case "--mode" -> i = parseMode(i);
+                case "--path" -> i = parsePath(i);
+                case "--apis" -> i = parseApis(i);
+                case "--params" -> i = parseParams(i);
                 default -> i += 1;
             }
         }
-
-        return validate();
     }
 
-    private RunConfig validate() {
+    private int parseFormat(int i) {
+        String value = requireValue(args, i + 1, "--format");
+        try {
+            codecId = new CodecId(value);
+        } catch (InvalidCodecIdException e) {
+            throw new ArgsParseException("invalid --format value: " + value, e);
+        }
+        return i + 2;
+    }
+
+    private int parseMode(int i) {
+        String value = requireValue(args, i + 1, "--mode");
+        writeMode = getMode(value);
+        return i + 2;
+    }
+
+    private int parsePath(int i) {
+        String value = requireValue(args, i + 1, "--path");
+        try {
+            outputPath = Path.of(value);
+        } catch (RuntimeException e) {
+            throw new ArgsParseException("invalid --path value: " + value, e);
+        }
+        return i + 2;
+    }
+
+    private int parseApis(int i) {
+        ParsedValues pv = requireOneOrMultipleValues(args, i + 1, "--apis");
+        Set<ApiId> set = new HashSet<>();
+        for (String s : pv.values()) {
+            try {
+                ApiId id = new ApiId(s);
+                set.add(id);
+            } catch (InvalidApiIdException e) {
+                throw new ArgsParseException("invalid --apis value: " + s, e);
+            }
+        }
+        selectedApis.addAll(set);
+        return pv.nextIndex();
+    }
+
+    private int parseParams(int i) {
+        ParsedValues pv = requireOneOrMultipleValues(args, i + 1, "--params");
+        pv.values().forEach(this::addParam);
+        return pv.nextIndex();
+    }
+
+    private void validateRequiredFlags() {
         if (codecId == null) {
             throw new ArgsParseException("format was not specified");
         }
         if (writeMode == null) {
             throw new ArgsParseException("mode was not specified");
         }
+    }
+
+    private void fillDefaults() {
         if (outputPath == null) {
             outputPath = Path.of("out." + codecId);
         }
+    }
 
-        Set<ApiId> allApis = new HashSet<>();
-        allApis.addAll(selectedApis);
-        allApis.addAll(rawParamsByApi.keySet());
-
-        if (allApis.isEmpty()) {
-            throw new ArgsParseException("specify at least one api");
-        }
-
-        allApis.forEach((id) -> {
-            if (!catalog.contains(id)) {
-                throw new ArgsParseException("api not exist: " + id);
-            }
-            Set<String> supportedParams = catalog.getDefinition(id).supportedParams()
-                    .stream().map(ParamMeta::key).collect(Collectors.toSet());
-            Map<String, String> params = rawParamsByApi.getOrDefault(id, Map.of());
-            params.forEach((key, _) -> {
-                if (!supportedParams.contains(key)) {
-                    throw new ArgsParseException("unsupported param: " + key + " for api " + id);
-                }
-            });
-            apisWithParams.put(id, ApiParams.of(params));
-        });
+    private RunConfig validateAndBuild() {
+        validateRequiredFlags();
+        fillDefaults();
+        Set<ApiId> allApis = collectAllApis();
+        validateApisExist(allApis);
+        validateAndBuildParams(allApis);
 
         try {
             return new RunConfig(
@@ -138,6 +139,43 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
             );
         } catch (RuntimeException e) {
             throw new ArgsParseException("invalid run config", e);
+        }
+    }
+
+    private Set<ApiId> collectAllApis() {
+        Set<ApiId> allApis = new HashSet<>();
+        allApis.addAll(selectedApis);
+        allApis.addAll(rawParamsByApi.keySet());
+        if (allApis.isEmpty()) {
+            throw new ArgsParseException("specify at least one api");
+        }
+        return allApis;
+    }
+
+    private void validateApisExist(Set<ApiId> allApis) {
+        for (ApiId id : allApis) {
+            if (!catalog.contains(id)) {
+                throw new ArgsParseException("api not exist: " + id);
+            }
+        }
+    }
+
+    private void validateAndBuildParams(Set<ApiId> allApis) {
+        for (ApiId id : allApis) {
+            Set<String> supportedParams = catalog.getDefinition(id).supportedParams()
+                    .stream()
+                    .map(ParamMeta::key)
+                    .collect(Collectors.toSet());
+
+            Map<String, String> params = rawParamsByApi.getOrDefault(id, Map.of());
+
+            for (String key : params.keySet()) {
+                if (!supportedParams.contains(key)) {
+                    throw new ArgsParseException("unsupported param: " + key + " for api " + id);
+                }
+            }
+
+            apisWithParams.put(id, ApiParams.of(params));
         }
     }
 
@@ -168,7 +206,7 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
         return new ParsedValues(values, idx);
     }
 
-    private static WriteMode parseMode(String rawMode) {
+    private static WriteMode getMode(String rawMode) {
         if (rawMode == null) {
             throw new ArgsParseException("mode is null");
         }

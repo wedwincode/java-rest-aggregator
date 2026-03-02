@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,79 +28,156 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
     private final ApiCatalog apiCatalog;
     private final CodecCatalog codecCatalog;
     private final ConsoleIO io;
-    private final Map<ApiId, ApiParams> paramsByApi;
 
     public InteractiveRunConfigProvider(ApiCatalog apiCatalog, CodecCatalog codecCatalog, ConsoleIO io) {
         this.apiCatalog = apiCatalog;
         this.codecCatalog = codecCatalog;
         this.io = io;
-        this.paramsByApi = new HashMap<>();
     }
 
     @Override
-    public RunConfig getRunConfig() { // todo: wrap with try/catch
+    public RunConfig getRunConfig() {
         try {
-            io.println("Available APIs:");
-            io.println("id, name, url");
-            for (ApiDefinition d : apiCatalog.list()) {
-                io.println(apiInfo(d));
-            }
-            String rawIds = io.readLine("Enter desired API ids (e.g. api1 api2): ");
-            Set<ApiId> ids = parseIds(rawIds);
-            for (ApiId id : ids) {
-                if (!apiCatalog.contains(id)) {
-                    throw new ArgsParseException("api not exist: " + id);
-                }
+            List<ApiDefinition> apis = showAndGetApis();
+            Set<ApiId> ids = readAndValidateApiIds(apis);
+            Map<ApiId, ApiParams> paramsByApi = readParamsForApis(ids);
+            CodecId codec = readAndValidateCodec();
+            OutputSpec outputSpec = readOutputSpec(codec);
+            DisplaySpec displaySpec = readDisplaySpec();
 
-                ApiDefinition client = apiCatalog.getDefinition(id);
-
-                io.println("Available query params for " + id + ":");
-                for (ParamMeta param : client.supportedParams()) {
-                    io.println(param);
-                }
-                String params = io.readLine("Enter desired params (e.g. param1=123 param2=456) for " + id + ": ");
-                ApiParams parsedParams = parseParams(params);
-                paramsByApi.put(id, parsedParams);
-            }
-
-            List<CodecId> codecs = codecCatalog.list();
-            io.println("Available output formats:");
-            io.println(codecs); // todo better
-            CodecId codec = new CodecId(io.readLine("Enter output format: "));
-            if (!codecs.contains(codec)) {
-                throw new IllegalArgumentException("unsupported format: " + codec);
-            }
-
-            io.println("Available write modes:");
-            io.println(modeInfo());
-            String rawMode = io.readLine("Enter output mode: ").toUpperCase();
-            WriteMode writeMode = WriteMode.valueOf(rawMode);
-            String rawPath = io.readLine("Enter output path: ");
-            Path path = Path.of(rawPath);
-            String rawPrintDecision = io.readLine("What results do you want to print? (all/none/apiId): ").trim().toLowerCase();
-            ApiId apiToDisplay = null;
-            DisplayMode displayMode;
-            switch (rawPrintDecision) {
-                case "all" -> displayMode = DisplayMode.ALL;
-                case "none" -> displayMode = DisplayMode.NONE;
-                default -> {
-                    if (!apiCatalog.contains(new ApiId(rawPrintDecision))) {
-                        throw new RuntimeException("unknown id");
-                    }
-                    displayMode = DisplayMode.BY_API;
-                    apiToDisplay = new ApiId(rawPrintDecision);
-                }
-            }
-            io.println();
-            return new RunConfig(
-                    paramsByApi,
-                    new OutputSpec(path, codec, writeMode),
-                    new DisplaySpec(apiToDisplay, displayMode)
-            );
-        } catch (Exception e) {
+            return new RunConfig(paramsByApi, outputSpec, displaySpec);
+        } catch (RuntimeException e) {
             io.println("Error: " + e.getMessage() + ". Try again.");
-            throw new RuntimeException("Menu error: ", e); // todo custom
+            throw new ArgsParseException("menu error: ", e);
         }
+    }
+
+    private List<ApiDefinition> showAndGetApis() {
+        io.println("Available APIs:");
+        io.println("id, name, url");
+        List<ApiDefinition> apiDefinitionList = apiCatalog.list();
+        for (ApiDefinition d : apiDefinitionList) {
+            io.println(apiInfo(d));
+        }
+        return apiDefinitionList;
+    }
+
+    private Set<ApiId> readAndValidateApiIds(List<ApiDefinition> apis) {
+        String rawIds = io.readLine("Enter desired API ids (e.g. api1 api2): ");
+        Set<ApiId> ids = parseIds(rawIds);
+
+        Set<ApiId> availableIds = apis.stream()
+                .map(ApiDefinition::id)
+                .collect(Collectors.toSet());
+
+        for (ApiId id : ids) {
+            if (!availableIds.contains(id)) {
+                throw new ArgsParseException("api not exist: " + id);
+            }
+        }
+        return ids;
+    }
+
+    private Map<ApiId, ApiParams> readParamsForApis(Set<ApiId> ids) {
+        Map<ApiId, ApiParams> paramsByApi = new LinkedHashMap<>();
+
+        for (ApiId id : ids) {
+            ApiDefinition api = apiCatalog.getDefinition(id);
+            Map<String, String> parsedParams = readParamsForApi(id, api);
+            paramsByApi.put(id, ApiParams.of(parsedParams));
+        }
+
+        return paramsByApi;
+    }
+
+    private Map<String, String> readParamsForApi(ApiId id, ApiDefinition api) {
+        io.println("Available query params for " + id + ":");
+        for (ParamMeta param : api.supportedParams()) {
+            io.println(param);
+        }
+
+        String paramsRaw = io.readLine("Enter desired params (e.g. param1=123 param2=456) for " + id + ": ");
+        Map<String, String> parsedParams = parseParams(paramsRaw);
+
+        Set<String> availableParams = api.supportedParams().stream()
+                .map(ParamMeta::key)
+                .collect(Collectors.toSet());
+
+        for (String key : parsedParams.keySet()) {
+            if (!availableParams.contains(key)) {
+                throw new ArgsParseException("unsupported param: " + key + " for api " + id);
+            }
+        }
+
+        return parsedParams;
+    }
+
+    private CodecId readAndValidateCodec() {
+        List<CodecId> codecs = codecCatalog.list();
+        io.println("Available output formats:");
+        io.println(codecInfo(codecs));
+
+        CodecId codec = new CodecId(io.readLine("Enter output format: "));
+        if (!codecs.contains(codec)) {
+            throw new IllegalArgumentException("unsupported format: " + codec);
+        }
+        return codec;
+    }
+
+    private OutputSpec readOutputSpec(CodecId codec) {
+        io.println("Available write modes:");
+        io.println(modeInfo());
+        String rawMode = io.readLine("Enter output mode: ").toUpperCase();
+        WriteMode writeMode = WriteMode.valueOf(rawMode);
+        String rawPath = io.readLine("Enter output path: ");
+        Path path = Path.of(rawPath);
+        return new OutputSpec(path, codec, writeMode);
+    }
+
+    private DisplaySpec readDisplaySpec() {
+        String rawPrintDecision = io.readLine("What results do you want to print? (all/none/apiId): ").trim().toLowerCase();
+        ApiId apiToDisplay = null;
+        DisplayMode displayMode;
+        switch (rawPrintDecision) {
+            case "all" -> displayMode = DisplayMode.ALL;
+            case "none" -> displayMode = DisplayMode.NONE;
+            default -> {
+                if (!apiCatalog.contains(new ApiId(rawPrintDecision))) {
+                    throw new RuntimeException("unknown id");
+                }
+                displayMode = DisplayMode.BY_API;
+                apiToDisplay = new ApiId(rawPrintDecision);
+            }
+        }
+        io.println();
+
+        return new DisplaySpec(apiToDisplay, displayMode);
+    }
+
+    private Set<ApiId> parseIds(String string) {
+        if (string == null || string.isBlank()) {
+            throw new IllegalArgumentException("at least one id must be specified");
+        }
+        return Arrays.stream(string.trim().split("\\s+"))
+                .map(ApiId::new)
+                .collect(Collectors.toSet());
+    }
+
+    private Map<String, String> parseParams(String rawData) {
+        if (rawData == null || rawData.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, String> params = new HashMap<>();
+        for (String s: rawData.trim().split("\\s+")) {
+            int eq = s.indexOf('=');
+            if (eq <= 0 || eq == s.length() - 1) {
+                throw new ArgsParseException("params format is incorrect: expected param=value");
+            }
+            String keyRaw = s.substring(0, eq);
+            String valRaw = s.substring(eq + 1);
+            params.put(keyRaw, valRaw);
+        }
+        return params;
     }
 
     private static String apiInfo(ApiDefinition c) {
@@ -112,36 +190,20 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
                 .collect(Collectors.joining(" "));
     }
 
-    private Set<ApiId> parseIds(String string) {
-        Set<ApiId> allowedIds = apiCatalog.list().stream().map(ApiDefinition::id).collect(Collectors.toSet());
-        if (string == null || string.isBlank()) {
-            throw new IllegalArgumentException("at least one id must be specified");
+    private static String codecInfo(List<CodecId> codecs) {
+        if (codecs == null || codecs.isEmpty()) {
+            return "";
         }
-        Set<ApiId> ids = new HashSet<>();
-        for (String idString: string.split(" ")) {
-            ApiId id = new ApiId(idString);
-            if (!allowedIds.contains(id)) {
-                throw new IllegalArgumentException("id not exist: " + id);
+        StringBuilder sb = new StringBuilder();
+        for (CodecId c: codecs) {
+            if (c == null) {
+                continue;
             }
-            ids.add(id);
-        }
-        return ids;
-    }
-
-    private static ApiParams parseParams(String rawData) {
-        if (rawData == null || rawData.isEmpty()) {
-            return ApiParams.of();
-        }
-        Map<String, String> params = new HashMap<>();
-        for (String s: rawData.trim().split(" ")) {
-            int eq = s.indexOf('=');
-            if (eq <= 0 || eq == s.length() - 1) {
-                throw new ArgsParseException("params format is incorrect: expected param=value");
+            if (!sb.isEmpty()) {
+                sb.append(' ');
             }
-            String keyRaw = s.substring(0, eq);
-            String valRaw = s.substring(eq + 1);
-            params.put(keyRaw, valRaw); // todo check that params exist in registry
+            sb.append(c);
         }
-        return ApiParams.of(params);
+        return sb.toString();
     }
 }
