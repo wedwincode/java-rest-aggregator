@@ -31,3 +31,9 @@ java -jar dist/app.jar --params
 `--apis [api1 api2 ...]` - list of the APIs. Currently available: `weatherapi`, `newsapi`, `thenewsapi`
 
 `--params [api1.param1=val1 api2.param1=val2 ...]` - list of the params you want to set for APIs
+
+---
+
+### Project architecture
+
+![layered_scheme.png](layered_scheme.png)
