@@ -37,17 +37,19 @@ public class PayloadJsonConverter {
 
         if (node.isArray()) {
             List<Payload> items = new ArrayList<>();
-            for (JsonNode item : node) {
+            for (JsonNode item: node) {
                 items.add(fromJson(item));
             }
+
             return new Payload.PArray(items);
         }
 
         if (node.isObject()) {
             Map<String, Payload> fields = new LinkedHashMap<>();
-            for (Map.Entry<String, JsonNode> e : node.properties()) {
+            for (Map.Entry<String, JsonNode> e: node.properties()) {
                 fields.put(e.getKey(), fromJson(e.getValue()));
             }
+
             return new Payload.PObject(fields);
         }
 
@@ -57,7 +59,9 @@ public class PayloadJsonConverter {
     public static JsonNode toJson(Payload payload) {
         JsonNodeFactory f = om.getNodeFactory();
 
-        if (payload == null) return f.nullNode();
+        if (payload == null) {
+            return f.nullNode();
+        }
 
         return switch (payload) {
             case Payload.PNull _ -> f.nullNode();
@@ -81,5 +85,4 @@ public class PayloadJsonConverter {
             }
         };
     }
-
 }

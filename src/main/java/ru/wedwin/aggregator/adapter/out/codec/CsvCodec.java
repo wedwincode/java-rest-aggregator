@@ -38,6 +38,7 @@ public class CsvCodec implements Codec {
     public List<AggregatedItem> read(Reader r) throws CodecException {
         CSVFormat format = CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(false).get();
         CSVParser parser;
+
         try {
             parser = format.parse(r);
         } catch (IOException e) {
@@ -48,6 +49,7 @@ public class CsvCodec implements Codec {
         if (headerMap == null || headerMap.isEmpty()) {
             throw new IllegalStateException("csv has no header");
         }
+
         log.debug(headerMap);
 
         List<AggregatedItem> items = new ArrayList<>();
@@ -55,7 +57,9 @@ public class CsvCodec implements Codec {
             Map<String, String> row = record.toMap();
             items.add(toItem(row));
         }
+
         log.debug(items);
+
         return items;
     }
 
@@ -64,11 +68,13 @@ public class CsvCodec implements Codec {
         List<Map<String, String>> rows = flattenItems(items);
         List<String> header = buildHeader(rows);
         CSVFormat format = CSVFormat.DEFAULT.builder().setHeader(header.toArray(String[]::new)).get();
+
         try {
             CSVPrinter printer = new CSVPrinter(w, format);
             for (Map<String, String> row : rows) {
                 printer.printRecord(toRecord(header, row));
             }
+
             printer.flush();
         } catch (IOException e) {
             throw new CodecException("csv write error: " + e.getMessage(), e);
@@ -80,6 +86,7 @@ public class CsvCodec implements Codec {
         for (Map<String, String> row: rows) {
             headerSet.addAll(row.keySet());
         }
+
         return new ArrayList<>(headerSet);
     }
 
@@ -88,6 +95,7 @@ public class CsvCodec implements Codec {
         for (String h: header) {
             record.add(row.getOrDefault(h, ""));
         }
+
         return record;
     }
 
@@ -101,6 +109,7 @@ public class CsvCodec implements Codec {
             row.putAll(PayloadFlattener.flatten(item.payload()));
             rows.add(row);
         }
+
         return rows;
     }
 
@@ -115,6 +124,7 @@ public class CsvCodec implements Codec {
         payloadFlat.remove("fetchedAt");
 
         Payload payload = PayloadFlattener.unflatten(payloadFlat);
+
         return new AggregatedItem(itemId, apiId, fetchedAt, payload);
     }
 
@@ -123,6 +133,7 @@ public class CsvCodec implements Codec {
         if (v == null || v.isBlank()) {
             throw new IllegalStateException("csv row missing required column: " + key);
         }
+
         return v;
     }
 }

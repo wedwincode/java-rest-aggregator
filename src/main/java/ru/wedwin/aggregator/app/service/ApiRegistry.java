@@ -33,6 +33,7 @@ public class ApiRegistry implements ApiCatalog, ApiClientProvider {
         if (client == null) {
             throw new IllegalArgumentException("unknown API: " + id);
         }
+
         return client;
     }
 }

@@ -43,6 +43,7 @@ public class AggregationUseCase {
         for (ApiId id: runConfig.queryParamsByApi().keySet()) {
             ApiClient client = apiRegistry.getClient(id);
             ApiParams params = runConfig.queryParamsByApi().getOrDefault(id, ApiParams.of());
+
             responseList.add(client.getApiResponse(params, executor));
         }
 

@@ -41,9 +41,11 @@ public class CliRunConfigProvider implements RunConfigProvider {
                         new ConsoleIO(in, out)
                 ).getRunConfig();
             }
+
             return new ArgsRunConfigProvider(args, apiCatalog).getRunConfig();
         } catch (ArgsParseException e) {
             log.error("arguments error: {}", e.getMessage());
+
             throw e;
         }
     }

@@ -18,6 +18,7 @@ public class JacksonObjectMapper {
 
     public static <T> Payload fromDto(T dto) {
         JsonNode node = mapper.valueToTree(dto);
+
         return PayloadJsonConverter.fromJson(node);
     }
 }

@@ -31,6 +31,7 @@ public class ConsoleResultViewer implements ResultViewer {
             if (!Files.exists(path) || Files.size(path) == 0) {
                 return;
             }
+
             Files.copy(path, System.out);
         } catch (IOException e) {
             throw new ResultViewException("failed to print file " + path, e);
@@ -45,6 +46,7 @@ public class ConsoleResultViewer implements ResultViewer {
             if (!Files.exists(path) || Files.size(path) == 0) {
                 return;
             }
+
             List<AggregatedItem> items;
             try (BufferedReader r = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
                 items = codec.read(r);

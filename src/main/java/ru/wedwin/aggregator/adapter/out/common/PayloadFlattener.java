@@ -7,8 +7,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-// todo разобраться что здесь происходит
-public final class PayloadFlattener { // todo rename to smth other
+public final class PayloadFlattener {
     private static final ObjectMapper om = new ObjectMapper();
 
     private PayloadFlattener() {
@@ -17,6 +16,7 @@ public final class PayloadFlattener { // todo rename to smth other
     public static Map<String, String> flatten(Payload payload) {
         Map<String, String> out = new LinkedHashMap<>();
         flattenIntoMap(out, "payload", payload);
+
         return out;
     }
 
@@ -51,10 +51,12 @@ public final class PayloadFlattener { // todo rename to smth other
                     out.put(path, "");
                     return;
                 }
-                for (var e : o.fields().entrySet()) {
-                    String childPath = path + "." + e.getKey();
-                    flattenIntoMap(out, childPath, e.getValue());
-                }
+
+                o.fields().forEach((key, value) -> {
+                    String childPath = path + "." + key;
+                    flattenIntoMap(out, childPath, value);
+                });
+
                 return;
             }
             case Payload.PArray a -> {
@@ -64,6 +66,7 @@ public final class PayloadFlattener { // todo rename to smth other
                 }
 
                 out.put(path, om.writeValueAsString(PayloadJsonConverter.toJson(a)));
+
                 return;
             }
             default -> {}
@@ -78,24 +81,26 @@ public final class PayloadFlattener { // todo rename to smth other
         }
 
         Map<String, String> payloadEntries = new LinkedHashMap<>();
-        for (var e : flat.entrySet()) {
+        for (var e: flat.entrySet()) {
             String k = e.getKey();
-            if (k == null) continue;
+            if (k == null) {
+                continue;
+            }
             if (k.equals("payload") || k.startsWith("payload.")) {
                 payloadEntries.put(k, e.getValue());
             }
         }
+
         if (payloadEntries.isEmpty()) {
             return new Payload.PNull();
         }
-
         if (payloadEntries.size() == 1 && payloadEntries.containsKey("payload")) {
             return parseLeaf(payloadEntries.get("payload"));
         }
 
         Map<String, Payload> root = new LinkedHashMap<>();
 
-        for (var e : payloadEntries.entrySet()) {
+        for (Map.Entry<String, String> e: payloadEntries.entrySet()) {
             String key = e.getKey();
             if (key.equals("payload")) {
                 continue;
@@ -113,8 +118,8 @@ public final class PayloadFlattener { // todo rename to smth other
                     current.put(part, parseLeaf(e.getValue()));
                 } else {
                     Payload existing = current.get(part);
-                    if (existing instanceof Payload.PObject(Map<String, Payload> fields)) {
-                        current = fields;
+                    if (existing instanceof Payload.PObject o) {
+                        current = o.fields();
                     } else {
                         Map<String, Payload> next = new LinkedHashMap<>();
                         current.put(part, new Payload.PObject(next));
@@ -131,6 +136,7 @@ public final class PayloadFlattener { // todo rename to smth other
         if (raw == null) {
             return new Payload.PNull();
         }
+
         String s = raw.trim();
         if (s.isEmpty()) {
             return new Payload.PNull();
@@ -141,20 +147,24 @@ public final class PayloadFlattener { // todo rename to smth other
             if (node != null) {
                 return PayloadJsonConverter.fromJson(node);
             }
-        } catch (Exception _) {}
+        } catch (Exception _) {
+        }
 
         if ("true".equalsIgnoreCase(s) || "false".equalsIgnoreCase(s)) {
             return new Payload.PBool(Boolean.parseBoolean(s));
         }
+
         try {
             if (!s.contains(".")) {
                 return new Payload.PInt(Integer.parseInt(s));
             }
-        } catch (NumberFormatException _) {}
+        } catch (NumberFormatException _) {
+        }
 
         try {
             return new Payload.PDouble(Double.parseDouble(s));
-        } catch (NumberFormatException _) {}
+        } catch (NumberFormatException _) {
+        }
 
         return new Payload.PString(s);
     }

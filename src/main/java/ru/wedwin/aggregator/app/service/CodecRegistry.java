@@ -25,6 +25,7 @@ public class CodecRegistry implements CodecCatalog, CodecProvider {
         if (codec == null) {
             throw new IllegalArgumentException("unknown format: " + id);
         }
+
         return codec;
     }
 

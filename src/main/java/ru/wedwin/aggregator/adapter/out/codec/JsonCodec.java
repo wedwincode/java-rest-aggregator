@@ -44,8 +44,10 @@ public class JsonCodec implements Codec {
             if (!n.isObject()) {
                 throw new IllegalStateException("json array element is not an object");
             }
+
             items.add(toItem((ObjectNode) n));
         }
+
         log.debug(items);
 
         return items;
@@ -67,6 +69,7 @@ public class JsonCodec implements Codec {
         if (!root.isArray()) {
             throw new IllegalStateException("no json array found");
         }
+
         return (ArrayNode) root;
     }
 
@@ -76,6 +79,7 @@ public class JsonCodec implements Codec {
         obj.put("apiId", item.apiId().toString());
         obj.put("fetchedAt", item.fetchedAt().toString());
         obj.set("payload", PayloadJsonConverter.toJson(item.payload()));
+
         return obj;
     }
 
@@ -95,6 +99,7 @@ public class JsonCodec implements Codec {
         if (n == null || n.isNull() || !n.isString() || n.asString().isBlank()) {
             throw new IllegalStateException("missing or invalid field: " + field);
         }
+
         return n.asString();
     }
 }

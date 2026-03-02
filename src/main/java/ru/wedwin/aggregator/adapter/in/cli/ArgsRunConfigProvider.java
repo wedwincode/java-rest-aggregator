@@ -44,6 +44,7 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
     @Override
     public RunConfig getRunConfig() {
         parseArgs();
+
         return validateAndBuild();
     }
 
@@ -51,6 +52,7 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
         int i = 0;
         while (i < args.length) {
             String arg = args[i];
+
             switch (arg) {
                 case "--format" -> i = parseFormat(i);
                 case "--mode" -> i = parseMode(i);
@@ -64,33 +66,39 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
 
     private int parseFormat(int i) {
         String value = requireValue(args, i + 1, "--format");
+
         try {
             codecId = new CodecId(value);
         } catch (InvalidCodecIdException e) {
             throw new ArgsParseException("invalid --format value: " + value, e);
         }
+
         return i + 2;
     }
 
     private int parseMode(int i) {
         String value = requireValue(args, i + 1, "--mode");
         writeMode = getMode(value);
+
         return i + 2;
     }
 
     private int parsePath(int i) {
         String value = requireValue(args, i + 1, "--path");
+
         try {
             outputPath = Path.of(value);
         } catch (RuntimeException e) {
             throw new ArgsParseException("invalid --path value: " + value, e);
         }
+
         return i + 2;
     }
 
     private int parseApis(int i) {
         ParsedValues pv = requireOneOrMultipleValues(args, i + 1, "--apis");
         Set<ApiId> set = new HashSet<>();
+
         for (String s : pv.values()) {
             try {
                 ApiId id = new ApiId(s);
@@ -99,13 +107,16 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
                 throw new ArgsParseException("invalid --apis value: " + s, e);
             }
         }
+
         selectedApis.addAll(set);
+
         return pv.nextIndex();
     }
 
     private int parseParams(int i) {
         ParsedValues pv = requireOneOrMultipleValues(args, i + 1, "--params");
         pv.values().forEach(this::addParam);
+
         return pv.nextIndex();
     }
 
@@ -146,14 +157,16 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
         Set<ApiId> allApis = new HashSet<>();
         allApis.addAll(selectedApis);
         allApis.addAll(rawParamsByApi.keySet());
+
         if (allApis.isEmpty()) {
             throw new ArgsParseException("specify at least one api");
         }
+
         return allApis;
     }
 
     private void validateApisExist(Set<ApiId> allApis) {
-        for (ApiId id : allApis) {
+        for (ApiId id: allApis) {
             if (!catalog.contains(id)) {
                 throw new ArgsParseException("api not exist: " + id);
             }
@@ -161,7 +174,7 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
     }
 
     private void validateAndBuildParams(Set<ApiId> allApis) {
-        for (ApiId id : allApis) {
+        for (ApiId id: allApis) {
             Set<String> supportedParams = catalog.getDefinition(id).supportedParams()
                     .stream()
                     .map(ParamMeta::key)
@@ -169,7 +182,7 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
 
             Map<String, String> params = rawParamsByApi.getOrDefault(id, Map.of());
 
-            for (String key : params.keySet()) {
+            for (String key: params.keySet()) {
                 if (!supportedParams.contains(key)) {
                     throw new ArgsParseException("unsupported param: " + key + " for api " + id);
                 }
@@ -183,10 +196,12 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
         if (idx < 0 || idx >= args.length) {
             throw new ArgsParseException("missing value for: " + flag);
         }
+
         String value = args[idx];
         if (value.startsWith("-")) {
             throw new ArgsParseException("missing value for: " + flag);
         }
+
         return value;
     }
 
@@ -194,11 +209,13 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
         if (idx < 0 || idx >= args.length) {
             throw new ArgsParseException("incorrect values for flag: " + flag);
         }
+
         Set<String> values = new HashSet<>();
         while (idx < args.length && !args[idx].startsWith("-")) {
             String value = args[idx++];
             values.add(value);
         }
+
         if (values.isEmpty()) {
             throw new ArgsParseException("incorrect values for flag: " + flag);
         }
@@ -210,10 +227,12 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
         if (rawMode == null) {
             throw new ArgsParseException("mode is null");
         }
+
         String normalized = rawMode.trim().toUpperCase();
         if (normalized.isEmpty()) {
             throw new ArgsParseException("mode is empty");
         }
+
         try {
             return WriteMode.valueOf(normalized);
         } catch (IllegalArgumentException e) {
@@ -225,10 +244,12 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
         if (rawData == null || rawData.isBlank()) {
             throw new ArgsParseException("params format is incorrect: empty value");
         }
+
         String s = rawData.trim();
         if (s.contains(" ")) {
             throw new ArgsParseException("params format is incorrect: spaces are not allowed: " + rawData);
         }
+
         int dot = s.indexOf('.');
         int eq = s.indexOf('=');
 

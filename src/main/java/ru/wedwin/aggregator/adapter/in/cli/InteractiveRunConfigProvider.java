@@ -56,10 +56,12 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
     private List<ApiDefinition> showAndGetApis() {
         io.println("Available APIs:");
         io.println("id, name, url");
+
         List<ApiDefinition> apiDefinitionList = apiCatalog.list();
-        for (ApiDefinition d : apiDefinitionList) {
+        for (ApiDefinition d: apiDefinitionList) {
             io.println(apiInfo(d));
         }
+
         return apiDefinitionList;
     }
 
@@ -71,18 +73,19 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
                 .map(ApiDefinition::id)
                 .collect(Collectors.toSet());
 
-        for (ApiId id : ids) {
+        for (ApiId id: ids) {
             if (!availableIds.contains(id)) {
                 throw new ArgsParseException("api not exist: " + id);
             }
         }
+
         return ids;
     }
 
     private Map<ApiId, ApiParams> readParamsForApis(Set<ApiId> ids) {
         Map<ApiId, ApiParams> queryParamsByApi = new LinkedHashMap<>();
 
-        for (ApiId id : ids) {
+        for (ApiId id: ids) {
             ApiDefinition api = apiCatalog.getDefinition(id);
             Map<String, String> parsedParams = readParamsForApi(id, api);
             queryParamsByApi.put(id, ApiParams.of(parsedParams));
@@ -97,14 +100,15 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
             io.println(param);
         }
 
-        String paramsRaw = io.readLine("Enter desired params (e.g. param1=123 param2=456) for " + id + ": ");
+        String paramsRaw = io.readLine("Enter desired params " +
+                "(e.g. param1=123 param2=456) for " + id + ": ");
         Map<String, String> parsedParams = parseParams(paramsRaw);
 
         Set<String> availableParams = api.supportedParams().stream()
                 .map(ParamMeta::key)
                 .collect(Collectors.toSet());
 
-        for (String key : parsedParams.keySet()) {
+        for (String key: parsedParams.keySet()) {
             if (!availableParams.contains(key)) {
                 throw new ArgsParseException("unsupported param: " + key + " for api " + id);
             }
@@ -122,43 +126,52 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
         if (rawId.isBlank()) {
             throw new ArgsParseException("format is blank");
         }
+
         CodecId codec = new CodecId(rawId);
         if (!codecs.contains(codec)) {
             throw new ArgsParseException("unsupported format: " + codec);
         }
+
         return codec;
     }
 
     private OutputSpec readOutputSpec(CodecId codec) {
         io.println("Available write modes:");
         io.println(modeInfo());
+
         String rawMode = io.readLine("Enter output mode: ").toUpperCase();
         if (rawMode.isBlank()) {
             throw new ArgsParseException("mode is empty");
         }
+
         WriteMode writeMode;
         try {
             writeMode = WriteMode.valueOf(rawMode);
         } catch (IllegalArgumentException e) {
             throw new ArgsParseException("writeMode not exist: " + rawMode);
         }
+
         String rawPath = io.readLine("Enter output path: ");
         if (rawPath.isBlank()) {
             throw new ArgsParseException("path is empty");
         }
+
         Path path;
         try {
             path = Path.of(rawPath);
         } catch (InvalidPathException e) {
             throw new ArgsParseException("invalid path: " + rawPath);
         }
+
         return new OutputSpec(path, codec, writeMode);
     }
 
     private DisplaySpec readDisplaySpec() {
-        String rawPrintDecision = io.readLine("What results do you want to print? (all/none/apiId): ").trim().toLowerCase();
+        String rawPrintDecision = io.readLine("What results do you want to print? " +
+                "(all/none/apiId): ").trim().toLowerCase();
         ApiId apiToDisplay = null;
         DisplayMode displayMode;
+
         switch (rawPrintDecision) {
             case "all" -> displayMode = DisplayMode.ALL;
             case "none" -> displayMode = DisplayMode.NONE;
@@ -166,10 +179,12 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
                 if (!apiCatalog.contains(new ApiId(rawPrintDecision))) {
                     throw new ArgsParseException("unknown id");
                 }
+
                 displayMode = DisplayMode.BY_API;
                 apiToDisplay = new ApiId(rawPrintDecision);
             }
         }
+
         io.println();
 
         return new DisplaySpec(apiToDisplay, displayMode);
@@ -179,6 +194,7 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
         if (string == null || string.isBlank()) {
             throw new ArgsParseException("at least one id must be specified");
         }
+
         return Arrays.stream(string.trim().split("\\s+"))
                 .map(ApiId::new)
                 .collect(Collectors.toSet());
@@ -188,16 +204,19 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
         if (rawData == null || rawData.isEmpty()) {
             return Map.of();
         }
+
         Map<String, String> params = new HashMap<>();
         for (String s: rawData.trim().split("\\s+")) {
             int eq = s.indexOf('=');
             if (eq <= 0 || eq == s.length() - 1) {
                 throw new ArgsParseException("params format is incorrect: expected param=value");
             }
+
             String keyRaw = s.substring(0, eq);
             String valRaw = s.substring(eq + 1);
             params.put(keyRaw, valRaw);
         }
+
         return params;
     }
 
@@ -215,6 +234,7 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
         if (codecs == null || codecs.isEmpty()) {
             return "";
         }
+
         StringBuilder sb = new StringBuilder();
         for (CodecId c: codecs) {
             if (c == null) {
@@ -225,6 +245,7 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
             }
             sb.append(c);
         }
+
         return sb.toString();
     }
 }

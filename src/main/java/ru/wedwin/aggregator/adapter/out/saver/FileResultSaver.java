@@ -32,6 +32,7 @@ public class FileResultSaver implements ResultSaver {
             if (spec.path().getParent() != null) {
                 Files.createDirectories(spec.path().getParent());
             }
+
             switch (spec.mode()) {
                 case NEW -> saveNew(spec.path(), items, codec);
                 case APPEND -> saveAppend(spec.path(), items, codec);
@@ -62,6 +63,7 @@ public class FileResultSaver implements ResultSaver {
                 existing = codec.read(r);
             }
         }
+
         List<AggregatedItem> merged = new ArrayList<>(existing.size() + newItems.size());
         merged.addAll(existing);
         merged.addAll(newItems);

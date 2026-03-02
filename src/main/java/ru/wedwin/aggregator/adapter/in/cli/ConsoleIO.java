@@ -32,6 +32,7 @@ public class ConsoleIO {
 
     public String readLine(String promptToShow) {
         print(promptToShow);
+
         return scanner.nextLine().trim();
     }
 }

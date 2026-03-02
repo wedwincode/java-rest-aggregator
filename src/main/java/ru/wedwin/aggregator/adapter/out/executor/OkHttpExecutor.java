@@ -36,6 +36,7 @@ public class OkHttpExecutor implements Executor {
                 String errBody = safeBodyToString(response.body());
                 throw new ExecutorException("http error: " + code + " body: " + trim(errBody, 500));
             }
+
             return safeBodyToString(response.body());
         } catch (IOException e) {
             throw new ExecutorException("request failed (network/timeout): " + url, e);
@@ -49,6 +50,7 @@ public class OkHttpExecutor implements Executor {
         } catch (IllegalArgumentException e) {
             throw new ExecutorException("invalid url: " + url, e);
         }
+
         if (base == null) {
             throw new ExecutorException("invalid url: " + url);
         }
@@ -61,6 +63,7 @@ public class OkHttpExecutor implements Executor {
                 if (key == null || key.isBlank() || value == null) {
                     continue;
                 }
+
                 builder.addQueryParameter(key, value);
             }
         }
@@ -77,6 +80,7 @@ public class OkHttpExecutor implements Executor {
         if (body == null) {
             return "";
         }
+
         return body.string();
     }
 
@@ -87,6 +91,7 @@ public class OkHttpExecutor implements Executor {
         if (s.length() <= max) {
             return s;
         }
+
         return s.substring(0, max);
     }
 
