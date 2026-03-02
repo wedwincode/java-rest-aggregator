@@ -6,6 +6,7 @@ import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
 import ru.wedwin.aggregator.port.out.Codec;
 import ru.wedwin.aggregator.app.service.CodecProvider;
 import ru.wedwin.aggregator.port.out.ResultSaver;
+import tools.jackson.core.exc.StreamReadException;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -34,8 +35,10 @@ public class FileResultSaver implements ResultSaver {
             switch (spec.mode()) {
                 case NEW -> saveNew(spec.path(), items, codec);
                 case APPEND -> saveAppend(spec.path(), items, codec);
-                case null -> throw new RuntimeException("null!!"); // todo everywhere
+                case null -> throw new RuntimeException("null!!");
             }
+        } catch (StreamReadException e) {
+            throw new ResultSaveException("failed to write output to " + spec.path() + ". content is corrupted", e);
         } catch (Exception e) {
             throw new ResultSaveException("failed to write output to " + spec.path(), e);
         }

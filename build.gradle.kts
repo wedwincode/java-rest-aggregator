@@ -1,13 +1,26 @@
 plugins {
     id("java")
+    id("com.gradleup.shadow") version "9.3.2"
 }
-
-group = "ru.wedwin"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
 }
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
+    }
+}
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "ru.wedwin.aggregator.Main"
+    }
+}
+
+group = "ru.wedwin"
+version = "1.0-SNAPSHOT"
 
 dependencies {
     // Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-databind

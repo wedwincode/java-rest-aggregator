@@ -14,10 +14,10 @@ import ru.wedwin.aggregator.port.in.ApiCatalog;
 import ru.wedwin.aggregator.port.in.CodecCatalog;
 import ru.wedwin.aggregator.port.in.RunConfigProvider;
 
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,9 +46,10 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
             DisplaySpec displaySpec = readDisplaySpec();
 
             return new RunConfig(queryParamsByApi, outputSpec, displaySpec);
-        } catch (RuntimeException e) {
-            io.println("Error: " + e.getMessage() + ". Try again.");
-            throw new ArgsParseException("menu error: ", e);
+        } catch (ArgsParseException e) {
+            throw new ArgsParseException("menu error: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new ArgsParseException("unknown menu error: " + e.getMessage(), e);
         }
     }
 
@@ -117,9 +118,13 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
         io.println("Available output formats:");
         io.println(codecInfo(codecs));
 
-        CodecId codec = new CodecId(io.readLine("Enter output format: "));
+        String rawId = io.readLine("Enter output format: ").trim();
+        if (rawId.isBlank()) {
+            throw new ArgsParseException("format is blank");
+        }
+        CodecId codec = new CodecId(rawId);
         if (!codecs.contains(codec)) {
-            throw new IllegalArgumentException("unsupported format: " + codec);
+            throw new ArgsParseException("unsupported format: " + codec);
         }
         return codec;
     }
@@ -128,9 +133,25 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
         io.println("Available write modes:");
         io.println(modeInfo());
         String rawMode = io.readLine("Enter output mode: ").toUpperCase();
-        WriteMode writeMode = WriteMode.valueOf(rawMode);
+        if (rawMode.isBlank()) {
+            throw new ArgsParseException("mode is empty");
+        }
+        WriteMode writeMode;
+        try {
+            writeMode = WriteMode.valueOf(rawMode);
+        } catch (IllegalArgumentException e) {
+            throw new ArgsParseException("writeMode not exist: " + rawMode);
+        }
         String rawPath = io.readLine("Enter output path: ");
-        Path path = Path.of(rawPath);
+        if (rawPath.isBlank()) {
+            throw new ArgsParseException("path is empty");
+        }
+        Path path;
+        try {
+            path = Path.of(rawPath);
+        } catch (InvalidPathException e) {
+            throw new ArgsParseException("invalid path: " + rawPath);
+        }
         return new OutputSpec(path, codec, writeMode);
     }
 
@@ -143,7 +164,7 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
             case "none" -> displayMode = DisplayMode.NONE;
             default -> {
                 if (!apiCatalog.contains(new ApiId(rawPrintDecision))) {
-                    throw new RuntimeException("unknown id");
+                    throw new ArgsParseException("unknown id");
                 }
                 displayMode = DisplayMode.BY_API;
                 apiToDisplay = new ApiId(rawPrintDecision);
@@ -156,7 +177,7 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
 
     private Set<ApiId> parseIds(String string) {
         if (string == null || string.isBlank()) {
-            throw new IllegalArgumentException("at least one id must be specified");
+            throw new ArgsParseException("at least one id must be specified");
         }
         return Arrays.stream(string.trim().split("\\s+"))
                 .map(ApiId::new)

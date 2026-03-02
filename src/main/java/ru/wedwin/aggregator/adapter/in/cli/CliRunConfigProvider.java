@@ -43,7 +43,6 @@ public class CliRunConfigProvider implements RunConfigProvider {
             }
             return new ArgsRunConfigProvider(args, apiCatalog).getRunConfig();
         } catch (ArgsParseException e) {
-            out.println("arguments error: " + e.getMessage());
             log.error("arguments error: {}", e.getMessage());
             throw e;
         }

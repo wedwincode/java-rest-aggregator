@@ -3,93 +3,24 @@ package ru.wedwin.aggregator.adapter.out.common;
 import ru.wedwin.aggregator.domain.model.result.Payload;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.node.ArrayNode;
-import tools.jackson.databind.node.JsonNodeFactory;
-import tools.jackson.databind.node.ObjectNode;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 // todo разобраться что здесь происходит
-public final class PayloadMapper { // todo rename to smth more common (e.g. PayloadTools)
+public final class PayloadFlattener { // todo rename to smth other
     private static final ObjectMapper om = new ObjectMapper();
 
-    private PayloadMapper() {
-    }
-
-    public static Payload fromJsonNode(JsonNode node) {
-        if (node == null || node.isNull()) {
-            return new Payload.PNull();
-        }
-        if (node.isBoolean()) {
-            return new Payload.PBool(node.booleanValue());
-        }
-        if (node.isInt()) {
-            return new Payload.PInt(node.intValue());
-        }
-        if (node.isNumber()) {
-            return new Payload.PDouble(node.doubleValue());
-        }
-        if (node.isString()) {
-            return new Payload.PString(node.asString());
-        }
-
-        if (node.isArray()) {
-            List<Payload> items = new ArrayList<>();
-            for (JsonNode item : node) {
-                items.add(fromJsonNode(item));
-            }
-            return new Payload.PArray(items);
-        }
-
-        if (node.isObject()) {
-            Map<String, Payload> fields = new LinkedHashMap<>();
-            for (Map.Entry<String, JsonNode> e : node.properties()) {
-                fields.put(e.getKey(), fromJsonNode(e.getValue()));
-            }
-            return new Payload.PObject(fields);
-        }
-
-        return new Payload.PString(node.asString());
-    }
-
-    public static JsonNode toJsonNode(Payload payload) {
-        JsonNodeFactory f = om.getNodeFactory();
-
-        if (payload == null) return f.nullNode();
-
-        return switch (payload) {
-            case Payload.PNull _ -> f.nullNode();
-            case Payload.PBool b -> f.booleanNode(b.value());
-            case Payload.PInt num -> f.numberNode(num.value());
-            case Payload.PDouble num -> f.numberNode(num.value());
-            case Payload.PString s -> f.stringNode(s.value());
-
-            case Payload.PArray a -> {
-                ArrayNode arr = om.createArrayNode();
-                for (Payload item : a.items()) {
-                    arr.add(toJsonNode(item));
-                }
-                yield arr;
-            }
-
-            case Payload.PObject o -> {
-                ObjectNode obj = om.createObjectNode();
-                o.fields().forEach((k, v) -> obj.set(k, toJsonNode(v)));
-                yield obj;
-            }
-        };
+    private PayloadFlattener() {
     }
 
     public static Map<String, String> flatten(Payload payload) {
         Map<String, String> out = new LinkedHashMap<>();
-        flattenInto(out, "payload", payload);
+        flattenIntoMap(out, "payload", payload);
         return out;
     }
 
-    private static void flattenInto(Map<String, String> out, String path, Payload p) {
+    private static void flattenIntoMap(Map<String, String> out, String path, Payload p) {
         switch (p) {
             case null -> {
                 out.put(path, "");
@@ -122,7 +53,7 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
                 }
                 for (var e : o.fields().entrySet()) {
                     String childPath = path + "." + e.getKey();
-                    flattenInto(out, childPath, e.getValue());
+                    flattenIntoMap(out, childPath, e.getValue());
                 }
                 return;
             }
@@ -132,7 +63,7 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
                     return;
                 }
 
-                out.put(path, om.writeValueAsString(toJsonNode(a)));
+                out.put(path, om.writeValueAsString(PayloadJsonConverter.toJson(a)));
                 return;
             }
             default -> {}
@@ -159,7 +90,7 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
         }
 
         if (payloadEntries.size() == 1 && payloadEntries.containsKey("payload")) {
-            return parsePayloadLeaf(payloadEntries.get("payload"));
+            return parseLeaf(payloadEntries.get("payload"));
         }
 
         Map<String, Payload> root = new LinkedHashMap<>();
@@ -179,7 +110,7 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
                 boolean last = (i == parts.length - 1);
 
                 if (last) {
-                    current.put(part, parsePayloadLeaf(e.getValue()));
+                    current.put(part, parseLeaf(e.getValue()));
                 } else {
                     Payload existing = current.get(part);
                     if (existing instanceof Payload.PObject(Map<String, Payload> fields)) {
@@ -196,7 +127,7 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
         return new Payload.PObject(root);
     }
 
-    private static Payload parsePayloadLeaf(String raw) {
+    private static Payload parseLeaf(String raw) {
         if (raw == null) {
             return new Payload.PNull();
         }
@@ -207,9 +138,8 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
 
         try {
             JsonNode node = om.readTree(s);
-
             if (node != null) {
-                return fromJsonNode(node);
+                return PayloadJsonConverter.fromJson(node);
             }
         } catch (Exception _) {}
 

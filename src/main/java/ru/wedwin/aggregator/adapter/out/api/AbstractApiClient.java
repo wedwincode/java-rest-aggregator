@@ -19,7 +19,7 @@ public abstract class AbstractApiClient<DTO> implements ApiClient {
         try {
             response = executor.execute(url(), params.asMap());
         } catch (ExecutorException e) {
-            throw new ApiResponseException("api response error: ", e);
+            throw new ApiResponseException("api response error: " + e.getMessage(), e);
         }
         DTO dto = JacksonObjectMapper.map(response, dtoClass());
         Payload payload = JacksonObjectMapper.fromDto(dto);

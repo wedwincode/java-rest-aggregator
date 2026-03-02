@@ -6,7 +6,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
+import ru.wedwin.aggregator.adapter.out.common.PayloadFlattener;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.codec.exception.CodecException;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
@@ -41,7 +41,7 @@ public class CsvCodec implements Codec {
         try {
             parser = format.parse(r);
         } catch (IOException e) {
-            throw new CodecException("csv read error: ", e);
+            throw new CodecException("csv read error: " + e.getMessage(), e);
         }
 
         Map<String, Integer> headerMap = parser.getHeaderMap();
@@ -71,7 +71,7 @@ public class CsvCodec implements Codec {
             }
             printer.flush();
         } catch (IOException e) {
-            throw new CodecException("csv write error: ", e);
+            throw new CodecException("csv write error: " + e.getMessage(), e);
         }
     }
 
@@ -98,7 +98,7 @@ public class CsvCodec implements Codec {
             row.put("itemId", item.itemId().toString());
             row.put("apiId", item.apiId().toString());
             row.put("fetchedAt", item.fetchedAt().toString());
-            row.putAll(PayloadMapper.flatten(item.payload()));
+            row.putAll(PayloadFlattener.flatten(item.payload()));
             rows.add(row);
         }
         return rows;
@@ -114,7 +114,7 @@ public class CsvCodec implements Codec {
         payloadFlat.remove("apiId");
         payloadFlat.remove("fetchedAt");
 
-        Payload payload = PayloadMapper.unflatten(payloadFlat);
+        Payload payload = PayloadFlattener.unflatten(payloadFlat);
         return new AggregatedItem(itemId, apiId, fetchedAt, payload);
     }
 

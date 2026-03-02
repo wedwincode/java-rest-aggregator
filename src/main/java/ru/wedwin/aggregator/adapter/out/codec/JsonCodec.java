@@ -2,7 +2,7 @@ package ru.wedwin.aggregator.adapter.out.codec;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.wedwin.aggregator.adapter.out.common.PayloadMapper;
+import ru.wedwin.aggregator.adapter.out.common.PayloadJsonConverter;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.codec.CodecId;
@@ -75,7 +75,7 @@ public class JsonCodec implements Codec {
         obj.put("itemId", item.itemId().toString());
         obj.put("apiId", item.apiId().toString());
         obj.put("fetchedAt", item.fetchedAt().toString());
-        obj.set("payload", PayloadMapper.toJsonNode(item.payload()));
+        obj.set("payload", PayloadJsonConverter.toJson(item.payload()));
         return obj;
     }
 
@@ -85,7 +85,7 @@ public class JsonCodec implements Codec {
         Instant fetchedAt = Instant.parse(required(obj, "fetchedAt"));
 
         JsonNode payloadNode = obj.get("payload");
-        Payload payload = PayloadMapper.fromJsonNode(payloadNode);
+        Payload payload = PayloadJsonConverter.fromJson(payloadNode);
 
         return new AggregatedItem(itemId, apiId, fetchedAt, payload);
     }

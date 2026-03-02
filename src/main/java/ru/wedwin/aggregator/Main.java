@@ -2,6 +2,7 @@ package ru.wedwin.aggregator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.wedwin.aggregator.adapter.in.cli.ArgsParseException;
 import ru.wedwin.aggregator.adapter.in.cli.CliRunConfigProvider;
 import ru.wedwin.aggregator.adapter.out.api.newsapi.NewsApiClient;
 import ru.wedwin.aggregator.adapter.out.api.thenewsapi.TheNewsApiClient;
@@ -44,16 +45,26 @@ public class Main {
 
         try {
             useCase.run();
+        } catch (ArgsParseException e) {
+            System.out.println("Error parsing args: " + e.getMessage());
+            log.error("error parsing args", e);
+            System.exit(1);
         } catch (ApiResponseException e) {
-            log.error("error handling api response: ", e);
+            System.out.println("Error handling api response: " + e.getMessage());
+            log.error("error handling api response", e);
             System.exit(2);
         } catch (ResultSaveException e) {
-            log.error("error during result saving: ", e);
+            System.out.println("Error during result saving: " + e.getMessage());
+            log.error("error during result saving", e);
             System.exit(3);
         } catch (ResultViewException e) {
-            log.error("error during result presentation: ", e);
+            System.out.println("Error during result presentation: " + e.getMessage());
+            log.error("error during result presentation", e);
             System.exit(4);
+        } catch (Exception e) {
+            System.out.println("Unknown error: " + e.getMessage());
+            log.error("unknown error", e);
+            System.exit(5);
         }
-
     }
 }
