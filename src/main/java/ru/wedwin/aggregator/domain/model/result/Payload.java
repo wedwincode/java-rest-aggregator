@@ -27,7 +27,7 @@ public sealed interface Payload permits Payload.PNull, Payload.PBool, Payload.PI
             if (items.stream().anyMatch(Objects::isNull)) {
                 throw new InvalidPayloadException("array contains null item");
             }
-            items = List.copyOf(items);
+//            items = List.copyOf(items);
         }
     }
     record PObject(Map<String, Payload> fields) implements Payload {
@@ -41,7 +41,7 @@ public sealed interface Payload permits Payload.PNull, Payload.PBool, Payload.PI
             if (fields.containsValue(null)) {
                 throw new InvalidPayloadException("object contains null value");
             }
-            fields = Map.copyOf(fields);
+//            fields = Map.copyOf(fields);
         }
     }
 }

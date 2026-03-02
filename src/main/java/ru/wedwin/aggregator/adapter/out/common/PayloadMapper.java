@@ -14,6 +14,8 @@ import java.util.Map;
 
 // todo разобраться что здесь происходит
 public final class PayloadMapper { // todo rename to smth more common (e.g. PayloadTools)
+    private static final ObjectMapper om = new ObjectMapper();
+
     private PayloadMapper() {
     }
 
@@ -53,7 +55,7 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
         return new Payload.PString(node.asString());
     }
 
-    public static JsonNode toJsonNode(Payload payload, ObjectMapper om) {
+    public static JsonNode toJsonNode(Payload payload) {
         JsonNodeFactory f = om.getNodeFactory();
 
         if (payload == null) return f.nullNode();
@@ -68,14 +70,14 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
             case Payload.PArray a -> {
                 ArrayNode arr = om.createArrayNode();
                 for (Payload item : a.items()) {
-                    arr.add(toJsonNode(item, om));
+                    arr.add(toJsonNode(item));
                 }
                 yield arr;
             }
 
             case Payload.PObject o -> {
                 ObjectNode obj = om.createObjectNode();
-                o.fields().forEach((k, v) -> obj.set(k, toJsonNode(v, om)));
+                o.fields().forEach((k, v) -> obj.set(k, toJsonNode(v)));
                 yield obj;
             }
         };
@@ -88,7 +90,6 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
     }
 
     private static void flattenInto(Map<String, String> out, String path, Payload p) {
-        ObjectMapper om = new ObjectMapper();
         switch (p) {
             case null -> {
                 out.put(path, "");
@@ -136,7 +137,7 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
 //                    flattenInto(out, childPath, a.items().get(i));
 //                }
 
-                out.put(path, om.writeValueAsString(a));
+                out.put(path, om.writeValueAsString(toJsonNode(a)));
                 return;
             }
             default -> {}
@@ -185,30 +186,30 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
                 if (last) {
                     current.put(part, parsePayloadLeaf(e.getValue()));
                 } else {
-//                    Payload existing = current.get(part);
-//                    if (existing instanceof Payload.PObject(Map<String, Payload> fields)) {
-//                        current = fields;
-//                    } else {
-//                        Map<String, Payload> next = new LinkedHashMap<>();
-//                        current.put(part, new Payload.PObject(next));
-//                        current = next;
-//                    }
                     Payload existing = current.get(part);
                     if (existing instanceof Payload.PObject(Map<String, Payload> fields)) {
-                        Map<String, Payload> mutableFields = (fields instanceof LinkedHashMap)
-                                ? fields
-                                : new LinkedHashMap<>(fields);
-
-                        if (mutableFields != fields) {
-                            current.put(part, new Payload.PObject(mutableFields));
-                        }
-
-                        current = mutableFields;
+                        current = fields;
                     } else {
                         Map<String, Payload> next = new LinkedHashMap<>();
                         current.put(part, new Payload.PObject(next));
                         current = next;
                     }
+//                    Payload existing = current.get(part);
+//                    if (existing instanceof Payload.PObject(Map<String, Payload> fields)) {
+//                        Map<String, Payload> mutableFields = (fields instanceof LinkedHashMap)
+//                                ? fields
+//                                : new LinkedHashMap<>(fields);
+//
+//                        if (mutableFields != fields) {
+//                            current.put(part, new Payload.PObject(mutableFields));
+//                        }
+//
+//                        current = mutableFields;
+//                    } else {
+//                        Map<String, Payload> next = new LinkedHashMap<>();
+//                        current.put(part, new Payload.PObject(next));
+//                        current = next;
+//                    }
                 }
             }
         }
@@ -225,15 +226,10 @@ public final class PayloadMapper { // todo rename to smth more common (e.g. Payl
             return new Payload.PNull();
         }
 
-        ObjectMapper om = new ObjectMapper();
         try {
             JsonNode node = om.readTree(s);
 
-            if (node != null && node.isObject() && node.has("items") && node.get("items").isArray()) {
-                return fromJsonNode(node.get("items"));
-            }
-
-            if (node != null && (node.isObject() || node.isArray() || node.isBoolean() || node.isNumber() || node.isString() || node.isNull())) {
+            if (node != null) {
                 return fromJsonNode(node);
             }
         } catch (Exception _) {}

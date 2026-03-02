@@ -70,7 +70,7 @@ public class JsonFormatter implements Formatter {
         obj.put("itemId", item.itemId().toString());
         obj.put("apiId", item.apiId().toString());
         obj.put("fetchedAt", item.fetchedAt().toString());
-        obj.set("payload", PayloadMapper.toJsonNode(item.payload(), om));
+        obj.set("payload", PayloadMapper.toJsonNode(item.payload()));
         return obj;
     }
 

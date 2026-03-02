@@ -16,7 +16,7 @@ public class ConsoleFormatter implements Formatter {
     }
 
     @Override
-    public List<AggregatedItem> read(Reader r) throws IOException {
+    public List<AggregatedItem> read(Reader r) {
         return List.of();
     }
 

@@ -33,6 +33,7 @@ public class Main {
             useCase.run();
         } catch (Exception e) {
             log.error("error", e); // todo think more about logs
+            System.exit(2);
         }
     }
 }

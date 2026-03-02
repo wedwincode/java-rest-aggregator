@@ -45,6 +45,7 @@ public class CsvFormatter implements Formatter {
         if (headerMap == null || headerMap.isEmpty()) {
             throw new IllegalStateException("csv has no header");
         }
+        log.info(headerMap);
 
         List<AggregatedItem> items = new ArrayList<>();
         for (CSVRecord record : parser) {
@@ -101,7 +102,7 @@ public class CsvFormatter implements Formatter {
         ApiId apiId = new ApiId(required(row, "apiId"));
         Instant fetchedAt = Instant.parse(required(row, "fetchedAt"));
 
-        Map<String, String> payloadFlat = new HashMap<>(row);
+        Map<String, String> payloadFlat = new LinkedHashMap<>(row);
         payloadFlat.remove("itemId");
         payloadFlat.remove("apiId");
         payloadFlat.remove("fetchedAt");
