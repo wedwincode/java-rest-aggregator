@@ -15,10 +15,12 @@ public class CodecRegistry implements CodecCatalog, CodecProvider {
         byId = codecs.stream().collect(Collectors.toMap(Codec::id, c -> c));
     }
 
+    @Override
     public List<CodecId> list() {
         return new ArrayList<>(byId.keySet());
     }
 
+    @Override
     public Codec getCodec(CodecId id) {
         Codec codec = byId.get(id);
         if (codec == null) {
@@ -27,5 +29,4 @@ public class CodecRegistry implements CodecCatalog, CodecProvider {
 
         return codec;
     }
-
 }
