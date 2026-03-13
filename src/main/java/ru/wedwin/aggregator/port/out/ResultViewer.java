@@ -9,4 +9,6 @@ import java.io.OutputStream;
 public interface ResultViewer {
     void all(OutputSpec spec) throws ResultViewException;
     void byApi(OutputSpec spec, ApiId apiId) throws ResultViewException;
+    void progress(ApiId apiId);
+    void error(Throwable error);
 }

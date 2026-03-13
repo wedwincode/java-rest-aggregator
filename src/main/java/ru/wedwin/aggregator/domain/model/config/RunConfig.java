@@ -4,6 +4,7 @@ import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.config.exception.InvalidRunConfigException;
 import ru.wedwin.aggregator.domain.model.output.DisplaySpec;
+import ru.wedwin.aggregator.domain.model.output.ExecutionSpec;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Map;
 public record RunConfig(
         Map<ApiId, ApiParams> queryParamsByApi,
         OutputSpec outputSpec,
+        ExecutionSpec executionSpec,
         DisplaySpec displaySpec
 ) {
     public RunConfig {
@@ -22,6 +24,9 @@ public record RunConfig(
         }
         if (outputSpec == null) {
             throw new InvalidRunConfigException("outputSpec is null");
+        }
+        if (executionSpec == null) {
+            throw new InvalidRunConfigException("executionSpec is null");
         }
         if (displaySpec == null) {
             throw new InvalidRunConfigException("displaySpec is null");

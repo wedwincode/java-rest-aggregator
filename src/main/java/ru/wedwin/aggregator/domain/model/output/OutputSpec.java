@@ -5,6 +5,7 @@ import ru.wedwin.aggregator.domain.model.output.exception.InvalidOutputSpecExcep
 
 import java.nio.file.Path;
 
+// todo: merge output with config?
 public record OutputSpec(Path path, CodecId codecId, WriteMode mode) {
     public OutputSpec {
         if (path == null) {

@@ -1,5 +1,6 @@
 package ru.wedwin.aggregator.adapter.in.cli;
 
+import ru.wedwin.aggregator.app.service.api.ApiRegistry;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.api.ParamMeta;
@@ -7,41 +8,43 @@ import ru.wedwin.aggregator.domain.model.api.exception.InvalidApiIdException;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
 import ru.wedwin.aggregator.domain.model.output.DisplayMode;
 import ru.wedwin.aggregator.domain.model.output.DisplaySpec;
+import ru.wedwin.aggregator.domain.model.output.ExecutionSpec;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
 import ru.wedwin.aggregator.domain.model.codec.CodecId;
 import ru.wedwin.aggregator.domain.model.codec.exception.InvalidCodecIdException;
-import ru.wedwin.aggregator.app.service.api.ApiCatalog;
-import ru.wedwin.aggregator.port.in.RunConfigProvider;
 
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ArgsRunConfigProvider implements RunConfigProvider {
+public class ArgsRunConfigProvider {
     private final String[] args;
-    private final ApiCatalog catalog;
+    private final ApiRegistry registry;
     private final Map<ApiId, ApiParams> queryParamsByApi;
     private final Set<ApiId> selectedApis;
     private final Map<ApiId, Map<String, String>> rawParamsByApi;
     private Path outputPath = null;
     private CodecId codecId = null;
     private WriteMode writeMode = null;
+    private int maxConcurrent = 1;
+    private Duration pollInterval = null;
+    private Duration duration = null;
 
     private record ParsedValues(Set<String> values, int nextIndex) {}
 
-    public ArgsRunConfigProvider(String[] args, ApiCatalog catalog) {
+    public ArgsRunConfigProvider(String[] args, ApiRegistry registry) {
         this.args = args;
-        this.catalog = catalog;
+        this.registry = registry;
         this.queryParamsByApi = new HashMap<>();
         this.selectedApis = new HashSet<>();
         this.rawParamsByApi = new HashMap<>();
     }
 
-    @Override
     public RunConfig getRunConfig() {
         parseArgs();
 
@@ -59,6 +62,9 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
                 case "--path" -> i = parsePath(i);
                 case "--apis" -> i = parseApis(i);
                 case "--params" -> i = parseParams(i);
+                case "--max-concurrent" -> i = parseMaxConcurrent(i);
+                case "--interval" -> i = parseInterval(i);
+                case "--duration" -> i = parseDuration(i);
                 default -> i += 1;
             }
         }
@@ -120,6 +126,30 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
         return pv.nextIndex();
     }
 
+    private int parseMaxConcurrent(int i) {
+        maxConcurrent = parseIntValue(i, "--max-concurrent");
+        return i + 2;
+    }
+
+    private int parseInterval(int i) {
+        pollInterval = Duration.ofSeconds(parseIntValue(i, "--interval"));
+        return i + 2;
+    }
+
+    private int parseDuration(int i) {
+        duration = Duration.ofSeconds(parseIntValue(i, "--duration"));
+        return i + 2;
+    }
+
+    private int parseIntValue(int i, String flag) {
+        String value = requireValue(args, i + 1, flag);
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            throw new ArgsParseException("invalid " + flag + " value: " + value, e);
+        }
+    }
+
     private void validateRequiredFlags() {
         if (codecId == null) {
             throw new ArgsParseException("format was not specified");
@@ -146,6 +176,7 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
             return new RunConfig(
                     queryParamsByApi,
                     new OutputSpec(outputPath, codecId, writeMode),
+                    new ExecutionSpec(maxConcurrent, pollInterval, duration),
                     new DisplaySpec(DisplayMode.NONE)
             );
         } catch (RuntimeException e) {
@@ -167,7 +198,7 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
 
     private void validateApisExist(Set<ApiId> allApis) {
         for (ApiId id: allApis) {
-            if (!catalog.contains(id)) {
+            if (!registry.contains(id)) {
                 throw new ArgsParseException("api not exist: " + id);
             }
         }
@@ -175,7 +206,7 @@ public class ArgsRunConfigProvider implements RunConfigProvider {
 
     private void validateAndBuildParams(Set<ApiId> allApis) {
         for (ApiId id: allApis) {
-            Set<String> supportedParams = catalog.getDefinition(id).supportedParams()
+            Set<String> supportedParams = registry.getDefinition(id).supportedParams()
                     .stream()
                     .map(ParamMeta::key)
                     .collect(Collectors.toSet());

@@ -3,17 +3,19 @@ package ru.wedwin.aggregator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.adapter.in.cli.ArgsParseException;
-import ru.wedwin.aggregator.adapter.in.cli.CliRunConfigProvider;
+import ru.wedwin.aggregator.adapter.in.cli.CliApp;
 import ru.wedwin.aggregator.adapter.out.api.newsapi.NewsApiClient;
 import ru.wedwin.aggregator.adapter.out.api.thenewsapi.TheNewsApiClient;
 import ru.wedwin.aggregator.adapter.out.api.weatherapi.WeatherApiClient;
 import ru.wedwin.aggregator.adapter.out.codec.CsvCodec;
 import ru.wedwin.aggregator.adapter.out.codec.JsonCodec;
 import ru.wedwin.aggregator.adapter.out.executor.OkHttpExecutor;
+import ru.wedwin.aggregator.adapter.out.runner.ScheduledAggregationRunner;
 import ru.wedwin.aggregator.adapter.out.saver.FileResultSaver;
 import ru.wedwin.aggregator.adapter.out.viewer.ConsoleResultViewer;
 import ru.wedwin.aggregator.app.AggregationUseCase;
 import ru.wedwin.aggregator.app.service.api.ApiRegistry;
+import ru.wedwin.aggregator.app.service.api.ApiRegistryImpl;
 import ru.wedwin.aggregator.app.service.codec.CodecRegistry;
 import ru.wedwin.aggregator.domain.model.api.exception.ApiResponseException;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
@@ -23,9 +25,9 @@ import java.util.List;
 
 public class Main {
     private static final Logger log = LogManager.getLogger(Main.class);
-
+    // todo check why max concurrent not working and tasks are executed very fast
     public static void main(String[] args) {
-        ApiRegistry apiRegistry = new ApiRegistry(List.of(
+        ApiRegistry apiRegistry = new ApiRegistryImpl(List.of(
                 new NewsApiClient(),
                 new TheNewsApiClient(),
                 new WeatherApiClient()
@@ -34,17 +36,24 @@ public class Main {
                 new JsonCodec(),
                 new CsvCodec()
         ));
-
-        AggregationUseCase useCase = new AggregationUseCase(
-                new CliRunConfigProvider(args, apiRegistry, codecRegistry, System.in, System.out),
-                new OkHttpExecutor(),
+        CliApp app = new CliApp(
+                args,
                 apiRegistry,
-                new FileResultSaver(codecRegistry),
-                new ConsoleResultViewer(codecRegistry)
+                codecRegistry,
+                System.in,
+                System.out,
+                new AggregationUseCase(
+                        new FileResultSaver(codecRegistry),
+                        new ConsoleResultViewer(codecRegistry),
+                        new ScheduledAggregationRunner(
+                                apiRegistry,
+                                new OkHttpExecutor()
+                        )
+                )
         );
 
         try {
-            useCase.run();
+            app.run();
         } catch (ArgsParseException e) {
             System.out.println("Error parsing args: " + e.getMessage());
             log.error("error parsing args", e);

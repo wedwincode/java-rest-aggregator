@@ -1,5 +1,6 @@
 package ru.wedwin.aggregator.adapter.in.cli;
 
+import ru.wedwin.aggregator.app.service.api.ApiRegistry;
 import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
@@ -7,15 +8,15 @@ import ru.wedwin.aggregator.domain.model.api.ParamMeta;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
 import ru.wedwin.aggregator.domain.model.output.DisplayMode;
 import ru.wedwin.aggregator.domain.model.output.DisplaySpec;
+import ru.wedwin.aggregator.domain.model.output.ExecutionSpec;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
 import ru.wedwin.aggregator.domain.model.codec.CodecId;
-import ru.wedwin.aggregator.app.service.api.ApiCatalog;
 import ru.wedwin.aggregator.app.service.codec.CodecCatalog;
-import ru.wedwin.aggregator.port.in.RunConfigProvider;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -24,18 +25,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class InteractiveRunConfigProvider implements RunConfigProvider {
-    private final ApiCatalog apiCatalog;
+public class InteractiveRunConfigProvider {
+    private final ApiRegistry apiRegistry;
     private final CodecCatalog codecCatalog;
     private final ConsoleIO io;
 
-    public InteractiveRunConfigProvider(ApiCatalog apiCatalog, CodecCatalog codecCatalog, ConsoleIO io) {
-        this.apiCatalog = apiCatalog;
+    public InteractiveRunConfigProvider(ApiRegistry apiRegistry, CodecCatalog codecCatalog, ConsoleIO io) {
+        this.apiRegistry = apiRegistry;
         this.codecCatalog = codecCatalog;
         this.io = io;
     }
 
-    @Override
     public RunConfig getRunConfig() {
         try {
             List<ApiDefinition> apis = showAndGetApis();
@@ -43,9 +43,10 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
             Map<ApiId, ApiParams> queryParamsByApi = readParamsForApis(ids);
             CodecId codec = readAndValidateCodec();
             OutputSpec outputSpec = readOutputSpec(codec);
+            ExecutionSpec executionSpec = readExecutionSpec();
             DisplaySpec displaySpec = readDisplaySpec();
-
-            return new RunConfig(queryParamsByApi, outputSpec, displaySpec);
+            waitForStartDecision();
+            return new RunConfig(queryParamsByApi, outputSpec, executionSpec, displaySpec);
         } catch (ArgsParseException e) {
             throw new ArgsParseException("menu error: " + e.getMessage(), e);
         } catch (Exception e) {
@@ -57,7 +58,7 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
         io.println("Available APIs:");
         io.println("id, name, url");
 
-        List<ApiDefinition> apiDefinitionList = apiCatalog.list();
+        List<ApiDefinition> apiDefinitionList = apiRegistry.list();
         for (ApiDefinition d: apiDefinitionList) {
             io.println(apiInfo(d));
         }
@@ -86,7 +87,7 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
         Map<ApiId, ApiParams> queryParamsByApi = new LinkedHashMap<>();
 
         for (ApiId id: ids) {
-            ApiDefinition api = apiCatalog.getDefinition(id);
+            ApiDefinition api = apiRegistry.getDefinition(id);
             Map<String, String> parsedParams = readParamsForApi(id, api);
             queryParamsByApi.put(id, ApiParams.of(parsedParams));
         }
@@ -166,6 +167,34 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
         return new OutputSpec(path, codec, writeMode);
     }
 
+    private ExecutionSpec readExecutionSpec() {
+        String rawMaxConcurrent = io.readLine("Enter max concurrent tasks: ");
+        int maxConcurrent;
+        try {
+            maxConcurrent = Integer.parseInt(rawMaxConcurrent);
+        } catch (NumberFormatException e) {
+            throw new ArgsParseException("invalid value: " + rawMaxConcurrent, e);
+        }
+
+        String rawPollInterval = io.readLine("Enter poll interval (s): ");
+        Duration pollInterval;
+        try {
+            pollInterval = Duration.ofSeconds(Integer.parseInt(rawPollInterval));
+        } catch (NumberFormatException e) {
+            throw new ArgsParseException("invalid value: " + rawPollInterval, e);
+        }
+
+        String rawDuration = io.readLine("Enter duration (s): ");
+        Duration duration;
+        try {
+            duration = Duration.ofSeconds(Integer.parseInt(rawDuration));
+        } catch (NumberFormatException e) {
+            throw new ArgsParseException("invalid value: " + rawDuration, e);
+        }
+
+        return new ExecutionSpec(maxConcurrent, pollInterval, duration);
+    }
+
     private DisplaySpec readDisplaySpec() {
         String rawPrintDecision = io.readLine("What results do you want to print? " +
                 "(all/none/apiId): ").trim().toLowerCase();
@@ -176,7 +205,7 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
             case "all" -> displayMode = DisplayMode.ALL;
             case "none" -> displayMode = DisplayMode.NONE;
             default -> {
-                if (!apiCatalog.contains(new ApiId(rawPrintDecision))) {
+                if (!apiRegistry.contains(new ApiId(rawPrintDecision))) {
                     throw new ArgsParseException("unknown id");
                 }
 
@@ -185,9 +214,16 @@ public class InteractiveRunConfigProvider implements RunConfigProvider {
             }
         }
 
-        io.println();
-
         return new DisplaySpec(apiToDisplay, displayMode);
+    }
+
+    private void waitForStartDecision() {
+        String decision = io.readLine("You're all set to start aggregation. Type 'START' to continue: ");
+        if (!decision.trim().equalsIgnoreCase("start")) {
+            throw new ArgsParseException("aggregation is interrupted. try again");
+        }
+        io.println("Type 'STOP' to stop aggregation or wait until it finish");
+        io.println();
     }
 
     private Set<ApiId> parseIds(String string) {

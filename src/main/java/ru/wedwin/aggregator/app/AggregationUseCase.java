@@ -1,54 +1,73 @@
 package ru.wedwin.aggregator.app;
 
-import ru.wedwin.aggregator.domain.model.api.exception.ApiResponseException;
-import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.model.api.ApiId;
-import ru.wedwin.aggregator.domain.model.api.ApiParams;
-import ru.wedwin.aggregator.app.service.api.ApiRegistry;
+import ru.wedwin.aggregator.domain.model.AggregationHandle;
+import ru.wedwin.aggregator.domain.model.codec.CodecId;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
+import ru.wedwin.aggregator.domain.model.output.OutputSpec;
+import ru.wedwin.aggregator.domain.model.output.WriteMode;
+import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultViewException;
-import ru.wedwin.aggregator.port.in.RunConfigProvider;
-import ru.wedwin.aggregator.port.out.ApiClient;
-import ru.wedwin.aggregator.port.out.Executor;
+import ru.wedwin.aggregator.port.in.StartAggregation;
+import ru.wedwin.aggregator.port.in.StopAggregation;
+import ru.wedwin.aggregator.port.in.ViewResults;
+import ru.wedwin.aggregator.port.out.AggregationRunner;
 import ru.wedwin.aggregator.port.out.ResultSaver;
 import ru.wedwin.aggregator.port.out.ResultViewer;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class AggregationUseCase {
-    private final RunConfigProvider runConfigProvider;
-    private final Executor executor;
-    private final ApiRegistry apiRegistry;
+public class AggregationUseCase implements StartAggregation, StopAggregation, ViewResults {
     private final ResultSaver saver;
     private final ResultViewer viewer;
+    private final AggregationRunner runner;
+    private final List<AggregatedItem> results;
 
     public AggregationUseCase(
-            RunConfigProvider runConfigProvider,
-            Executor executor,
-            ApiRegistry apiRegistry, ResultSaver saver, ResultViewer viewer
+            ResultSaver saver,
+            ResultViewer viewer,
+            AggregationRunner runner
     ) {
-        this.runConfigProvider = runConfigProvider;
-        this.executor = executor;
-        this.apiRegistry = apiRegistry;
         this.saver = saver;
         this.viewer = viewer;
+        this.runner = runner;
+        this.results = Collections.synchronizedList(new ArrayList<>());
     }
 
-    public void run() throws ApiResponseException, ResultSaveException, ResultViewException {
-        RunConfig runConfig = runConfigProvider.getRunConfig();
-        List<AggregatedItem> responseList = new ArrayList<>();
+    @Override
+    public AggregationHandle start(RunConfig runConfig) {
+        // todo phaser?
+        return runner.start(
+                runConfig,
+                item -> handleResult(
+                        item,
+                        runConfig.outputSpec().path(),
+                        runConfig.outputSpec().codecId()
+                ),
+                viewer::error);
+    }
 
-        for (ApiId id: runConfig.queryParamsByApi().keySet()) {
-            ApiClient client = apiRegistry.getClient(id);
-            ApiParams params = runConfig.queryParamsByApi().getOrDefault(id, ApiParams.of());
-
-            responseList.add(client.getApiResponse(params, executor));
+    private void handleResult(AggregatedItem item, Path path, CodecId codecId) {
+        viewer.progress(item.apiId());
+        results.add(item);
+        try {
+            saver.save(new OutputSpec(path, codecId, WriteMode.NEW), results);
+        } catch (ResultSaveException e) {
+            // todo logs
+            throw new RuntimeException(e);
         }
+    }
 
-        saver.save(runConfig.outputSpec(), responseList);
+    @Override
+    public void stop(AggregationHandle handle) {
+        runner.stop(handle);
+    }
 
+    @Override
+    public void view(RunConfig runConfig) throws ResultViewException {
         switch (runConfig.displaySpec().mode()) {
             case NONE -> {}
             case ALL -> viewer.all(runConfig.outputSpec());

@@ -1,5 +1,7 @@
 package ru.wedwin.aggregator.adapter.out.viewer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
@@ -18,6 +20,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class ConsoleResultViewer implements ResultViewer {
+    private static final Logger log = LogManager.getLogger(ConsoleResultViewer.class);
     private final CodecProvider provider;
 
     public ConsoleResultViewer(CodecProvider provider) {
@@ -61,5 +64,16 @@ public class ConsoleResultViewer implements ResultViewer {
         } catch (IOException e) {
             throw new ResultViewException("failed to print filtered output for api " + apiId + " from " + path, e);
         }
+    }
+
+    @Override
+    public void progress(ApiId apiId) {
+        System.out.println("Got response for API: " + apiId);
+    }
+
+    @Override
+    public void error(Throwable error) {
+        log.error(error);
+        System.out.println("Error: " + error.getMessage());
     }
 }
