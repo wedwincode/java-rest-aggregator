@@ -3,7 +3,7 @@ package ru.wedwin.aggregator.adapter.out.runner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.app.service.api.ApiRegistry;
-import ru.wedwin.aggregator.domain.model.AggregationHandle;
+import ru.wedwin.aggregator.app.service.session.Session;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.domain.model.api.ApiParams;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
@@ -44,12 +44,12 @@ public class ScheduledAggregationRunner implements AggregationRunner {
     }
 
     @Override
-    public AggregationHandle start(
+    public Session start(
             RunConfig config,
             Consumer<AggregatedItem> onResult,
             Consumer<Throwable> onError
     ) {
-        AggregationHandle handle = new AggregationHandle(config.executionSpec().maxConcurrentTasks());
+        Session handle = new Session(config.executionSpec().maxConcurrentTasks());
         List<ApiTask> tasks = buildTasks(config.queryParamsByApi());
         ScheduledFuture<?> scheduledTask = scheduler.scheduleAtFixedRate(
                 () -> dispatch(handle, tasks, onResult, onError),
@@ -74,7 +74,7 @@ public class ScheduledAggregationRunner implements AggregationRunner {
     }
 
     private void dispatch(
-            AggregationHandle handle,
+            Session handle,
             List<ApiTask> tasks,
             Consumer<AggregatedItem> onResult,
             Consumer<Throwable> onError
@@ -102,7 +102,7 @@ public class ScheduledAggregationRunner implements AggregationRunner {
     }
 
     private void launchTask(
-            AggregationHandle handle,
+            Session handle,
             ApiTask task,
             Consumer<AggregatedItem> onResult,
             Consumer<Throwable> onError
@@ -123,7 +123,7 @@ public class ScheduledAggregationRunner implements AggregationRunner {
     }
 
     @Override
-    public void stop(AggregationHandle handle) {
+    public void stop(Session handle) {
         handle.stopScheduling();
 
         while (handle.hasInFlightTasks()) {

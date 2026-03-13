@@ -4,10 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.app.AggregationUseCase;
 import ru.wedwin.aggregator.app.service.api.ApiRegistry;
-import ru.wedwin.aggregator.domain.model.AggregationHandle;
+import ru.wedwin.aggregator.app.service.session.Session;
 import ru.wedwin.aggregator.domain.model.api.exception.ApiResponseException;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
-import ru.wedwin.aggregator.app.service.codec.CodecCatalog;
+import ru.wedwin.aggregator.app.service.codec.CodecRegistry;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultViewException;
 
@@ -27,7 +27,7 @@ public class CliApp {
     private static final Logger log = LogManager.getLogger(CliApp.class);
     private final String[] args;
     private final ApiRegistry apiRegistry;
-    private final CodecCatalog codecCatalog;
+    private final CodecRegistry codecRegistry;
     private final InputStream in;
     private final PrintStream out;
     private final AggregationUseCase useCase; // todo think about interfaces
@@ -37,14 +37,14 @@ public class CliApp {
     public CliApp(
             String[] args,
             ApiRegistry apiRegistry,
-            CodecCatalog codecCatalog,
+            CodecRegistry codecRegistry,
             InputStream in,
             PrintStream out,
             AggregationUseCase useCase
     ) {
         this.args = args;
         this.apiRegistry = apiRegistry;
-        this.codecCatalog = codecCatalog;
+        this.codecRegistry = codecRegistry;
         this.in = in;
         this.out = out;
         this.useCase = useCase;
@@ -53,7 +53,7 @@ public class CliApp {
     public void run() throws ApiResponseException, ResultSaveException, ResultViewException {
         // todo: delete resultviewer and print here
         RunConfig runConfig = getRunConfig();
-        AggregationHandle handle = useCase.start(runConfig);
+        Session handle = useCase.start(runConfig);
 
         try {
             waitForCompletion(runConfig);
@@ -123,7 +123,7 @@ public class CliApp {
                 isInteractive = true;
                 return new InteractiveRunConfigProvider(
                         apiRegistry,
-                        codecCatalog,
+                        codecRegistry,
                         new ConsoleIO(in, out)
                 ).getRunConfig();
             }

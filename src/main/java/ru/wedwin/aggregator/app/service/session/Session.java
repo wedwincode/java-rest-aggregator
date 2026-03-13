@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.domain.model;
+package ru.wedwin.aggregator.app.service.session;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,13 +9,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 // todo move outside domain
 // todo разобраться
-public final class AggregationHandle {
+public final class Session {
     private final List<ScheduledFuture<?>> scheduledTasks = Collections.synchronizedList(new ArrayList<>()); // todo is it necessary to use sync
     private final AtomicBoolean acceptingNewTasks = new AtomicBoolean(true); // todo volatile vs atomic?
     private final Semaphore launches;
     private final int maxConcurrentTasks;
 
-    public AggregationHandle(int maxConcurrentTasks) {
+    public Session(int maxConcurrentTasks) {
         this.maxConcurrentTasks = maxConcurrentTasks;
         this.launches = new Semaphore(maxConcurrentTasks);
     }

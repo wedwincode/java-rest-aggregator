@@ -16,7 +16,7 @@ import ru.wedwin.aggregator.adapter.out.viewer.ConsoleResultViewer;
 import ru.wedwin.aggregator.app.AggregationUseCase;
 import ru.wedwin.aggregator.app.service.api.ApiRegistry;
 import ru.wedwin.aggregator.app.service.api.ApiRegistryImpl;
-import ru.wedwin.aggregator.app.service.codec.CodecRegistry;
+import ru.wedwin.aggregator.app.service.codec.CodecRegistryImpl;
 import ru.wedwin.aggregator.domain.model.api.exception.ApiResponseException;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultViewException;
@@ -32,7 +32,7 @@ public class Main {
                 new TheNewsApiClient(),
                 new WeatherApiClient()
         ));
-        CodecRegistry codecRegistry = new CodecRegistry(List.of(
+        CodecRegistryImpl codecRegistry = new CodecRegistryImpl(List.of(
                 new JsonCodec(),
                 new CsvCodec()
         ));

@@ -1,6 +1,6 @@
 package ru.wedwin.aggregator.app;
 
-import ru.wedwin.aggregator.domain.model.AggregationHandle;
+import ru.wedwin.aggregator.app.service.session.Session;
 import ru.wedwin.aggregator.domain.model.codec.CodecId;
 import ru.wedwin.aggregator.domain.model.config.RunConfig;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
@@ -38,7 +38,7 @@ public class AggregationUseCase implements StartAggregation, StopAggregation, Vi
     }
 
     @Override
-    public AggregationHandle start(RunConfig runConfig) {
+    public Session start(RunConfig runConfig) {
         // todo phaser?
         return runner.start(
                 runConfig,
@@ -62,7 +62,7 @@ public class AggregationUseCase implements StartAggregation, StopAggregation, Vi
     }
 
     @Override
-    public void stop(AggregationHandle handle) {
+    public void stop(Session handle) {
         runner.stop(handle);
     }
 

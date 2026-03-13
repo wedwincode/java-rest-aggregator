@@ -7,7 +7,7 @@ import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultViewException;
 import ru.wedwin.aggregator.port.out.Codec;
-import ru.wedwin.aggregator.app.service.codec.CodecProvider;
+import ru.wedwin.aggregator.app.service.codec.CodecRegistry;
 import ru.wedwin.aggregator.port.out.ResultViewer;
 
 import java.io.BufferedReader;
@@ -21,10 +21,10 @@ import java.util.List;
 
 public class ConsoleResultViewer implements ResultViewer {
     private static final Logger log = LogManager.getLogger(ConsoleResultViewer.class);
-    private final CodecProvider provider;
+    private final CodecRegistry registry;
 
-    public ConsoleResultViewer(CodecProvider provider) {
-        this.provider = provider;
+    public ConsoleResultViewer(CodecRegistry registry) {
+        this.registry = registry;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ConsoleResultViewer implements ResultViewer {
 
     @Override
     public void byApi(OutputSpec spec, ApiId apiId) throws ResultViewException {
-        Codec codec = provider.getCodec(spec.codecId());
+        Codec codec = registry.getCodec(spec.codecId());
         Path path = spec.path();
         try {
             if (!Files.exists(path) || Files.size(path) == 0) {

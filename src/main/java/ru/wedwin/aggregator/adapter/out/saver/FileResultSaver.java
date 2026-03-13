@@ -4,7 +4,7 @@ import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
 import ru.wedwin.aggregator.port.out.Codec;
-import ru.wedwin.aggregator.app.service.codec.CodecProvider;
+import ru.wedwin.aggregator.app.service.codec.CodecRegistry;
 import ru.wedwin.aggregator.port.out.ResultSaver;
 import tools.jackson.core.exc.StreamReadException;
 
@@ -19,15 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileResultSaver implements ResultSaver {
-    private final CodecProvider provider;
+    private final CodecRegistry registry;
 
-    public FileResultSaver(CodecProvider provider) {
-        this.provider = provider;
+    public FileResultSaver(CodecRegistry registry) {
+        this.registry = registry;
     }
 
     @Override
     public void save(OutputSpec spec, List<AggregatedItem> items) throws ResultSaveException {
-        Codec codec = provider.getCodec(spec.codecId());
+        Codec codec = registry.getCodec(spec.codecId());
         try {
             if (spec.path().getParent() != null) {
                 Files.createDirectories(spec.path().getParent());

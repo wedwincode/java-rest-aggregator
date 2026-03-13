@@ -1,7 +1,7 @@
 package ru.wedwin.aggregator.port.in;
 
-import ru.wedwin.aggregator.domain.model.AggregationHandle;
+import ru.wedwin.aggregator.app.service.session.Session;
 
 public interface StopAggregation {
-    void stop(AggregationHandle handle);
+    void stop(Session handle);
 }

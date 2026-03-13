@@ -12,7 +12,7 @@ import ru.wedwin.aggregator.domain.model.output.ExecutionSpec;
 import ru.wedwin.aggregator.domain.model.output.OutputSpec;
 import ru.wedwin.aggregator.domain.model.output.WriteMode;
 import ru.wedwin.aggregator.domain.model.codec.CodecId;
-import ru.wedwin.aggregator.app.service.codec.CodecCatalog;
+import ru.wedwin.aggregator.app.service.codec.CodecRegistry;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -27,12 +27,12 @@ import java.util.stream.Collectors;
 
 public class InteractiveRunConfigProvider {
     private final ApiRegistry apiRegistry;
-    private final CodecCatalog codecCatalog;
+    private final CodecRegistry codecRegistry;
     private final ConsoleIO io;
 
-    public InteractiveRunConfigProvider(ApiRegistry apiRegistry, CodecCatalog codecCatalog, ConsoleIO io) {
+    public InteractiveRunConfigProvider(ApiRegistry apiRegistry, CodecRegistry codecRegistry, ConsoleIO io) {
         this.apiRegistry = apiRegistry;
-        this.codecCatalog = codecCatalog;
+        this.codecRegistry = codecRegistry;
         this.io = io;
     }
 
@@ -119,7 +119,7 @@ public class InteractiveRunConfigProvider {
     }
 
     private CodecId readAndValidateCodec() {
-        List<CodecId> codecs = codecCatalog.list();
+        List<CodecId> codecs = codecRegistry.list();
         io.println("Available output formats:");
         io.println(codecInfo(codecs));
 
