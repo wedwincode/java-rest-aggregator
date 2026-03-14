@@ -16,26 +16,27 @@ import ru.wedwin.aggregator.adapter.out.viewer.ConsoleResultViewer;
 import ru.wedwin.aggregator.app.AggregationUseCase;
 import ru.wedwin.aggregator.app.service.api.ApiRegistry;
 import ru.wedwin.aggregator.app.service.api.ApiRegistryImpl;
+import ru.wedwin.aggregator.app.service.codec.CodecRegistry;
 import ru.wedwin.aggregator.app.service.codec.CodecRegistryImpl;
 import ru.wedwin.aggregator.domain.model.api.exception.ApiResponseException;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
 import ru.wedwin.aggregator.domain.model.result.exception.ResultViewException;
 
-import java.util.List;
-
 public class Main {
+
     private static final Logger log = LogManager.getLogger(Main.class);
-    // todo check why max concurrent not working and tasks are executed very fast
+
     public static void main(String[] args) {
-        ApiRegistry apiRegistry = new ApiRegistryImpl(List.of(
-                new NewsApiClient(),
-                new TheNewsApiClient(),
-                new WeatherApiClient()
-        ));
-        CodecRegistryImpl codecRegistry = new CodecRegistryImpl(List.of(
-                new JsonCodec(),
-                new CsvCodec()
-        ));
+
+        ApiRegistry apiRegistry = ApiRegistryImpl.INSTANCE;
+        apiRegistry.put(new NewsApiClient());
+        apiRegistry.put(new TheNewsApiClient());
+        apiRegistry.put(new WeatherApiClient());
+
+        CodecRegistry codecRegistry = CodecRegistryImpl.INSTANCE;
+        codecRegistry.put(new CsvCodec());
+        codecRegistry.put(new JsonCodec());
+
         CliApp app = new CliApp(
                 args,
                 apiRegistry,

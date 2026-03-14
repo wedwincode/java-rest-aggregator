@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
-
+// todo problem: CliApp is in the 'in' adapters but there's no port
 public class CliApp {
     private static final Logger log = LogManager.getLogger(CliApp.class);
     private final String[] args;
@@ -30,7 +30,7 @@ public class CliApp {
     private final CodecRegistry codecRegistry;
     private final InputStream in;
     private final PrintStream out;
-    private final AggregationUseCase useCase; // todo think about interfaces
+    private final AggregationUseCase useCase;
 
     private boolean isInteractive = false;
 
@@ -53,12 +53,12 @@ public class CliApp {
     public void run() throws ApiResponseException, ResultSaveException, ResultViewException {
         // todo: delete resultviewer and print here
         RunConfig runConfig = getRunConfig();
-        Session handle = useCase.start(runConfig);
+        Session session = useCase.start(runConfig);
 
         try {
             waitForCompletion(runConfig);
         } finally {
-            useCase.stop(handle);
+            useCase.stop(session);
         }
 
         useCase.view(runConfig);
@@ -128,7 +128,7 @@ public class CliApp {
                 ).getRunConfig();
             }
 
-            return new ArgsRunConfigProvider(args, apiRegistry).getRunConfig(); // todo get duration of work from here
+            return new ArgsRunConfigProvider(args, apiRegistry).getRunConfig();
         } catch (ArgsParseException e) {
             log.error("arguments error: {}", e.getMessage());
 

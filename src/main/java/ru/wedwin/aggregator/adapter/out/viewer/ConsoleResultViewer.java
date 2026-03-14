@@ -43,7 +43,7 @@ public class ConsoleResultViewer implements ResultViewer {
 
     @Override
     public void byApi(OutputSpec spec, ApiId apiId) throws ResultViewException {
-        Codec codec = registry.getCodec(spec.codecId());
+        Codec codec = registry.get(spec.codecId());
         Path path = spec.path();
         try {
             if (!Files.exists(path) || Files.size(path) == 0) {

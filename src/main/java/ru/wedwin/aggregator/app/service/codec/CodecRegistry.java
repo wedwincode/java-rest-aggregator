@@ -6,6 +6,7 @@ import ru.wedwin.aggregator.port.out.Codec;
 import java.util.List;
 
 public interface CodecRegistry {
-    Codec getCodec(CodecId id);
+    void put(Codec codec);
+    Codec get(CodecId id);
     List<CodecId> list();
 }

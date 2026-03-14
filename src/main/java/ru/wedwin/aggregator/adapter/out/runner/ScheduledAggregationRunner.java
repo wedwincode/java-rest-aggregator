@@ -65,7 +65,7 @@ public class ScheduledAggregationRunner implements AggregationRunner {
         List<ApiTask> tasks = new ArrayList<>();
 
         for (ApiId id: queryParamsByApi.keySet()) {
-            ApiClient client = registry.getClient(id);
+            ApiClient client = registry.get(id);
             ApiParams params = queryParamsByApi.getOrDefault(id, ApiParams.of());
             tasks.add(new ApiTask(client, params));
         }

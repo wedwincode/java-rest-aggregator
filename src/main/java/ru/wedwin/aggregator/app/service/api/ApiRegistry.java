@@ -7,8 +7,9 @@ import ru.wedwin.aggregator.port.out.ApiClient;
 import java.util.List;
 
 public interface ApiRegistry {
+    void put(ApiClient client);
+    ApiClient get(ApiId id);
     ApiDefinition getDefinition(ApiId id);
-    boolean contains(ApiId id);
     List<ApiDefinition> list();
-    ApiClient getClient(ApiId id);
+    boolean contains(ApiId id);
 }

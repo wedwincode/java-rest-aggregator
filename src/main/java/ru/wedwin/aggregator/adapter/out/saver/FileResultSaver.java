@@ -27,7 +27,7 @@ public class FileResultSaver implements ResultSaver {
 
     @Override
     public void save(OutputSpec spec, List<AggregatedItem> items) throws ResultSaveException {
-        Codec codec = registry.getCodec(spec.codecId());
+        Codec codec = registry.get(spec.codecId());
         try {
             if (spec.path().getParent() != null) {
                 Files.createDirectories(spec.path().getParent());

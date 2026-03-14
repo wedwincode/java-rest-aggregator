@@ -7,7 +7,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-// todo move outside domain
 // todo разобраться
 public final class Session {
     private final List<ScheduledFuture<?>> scheduledTasks = Collections.synchronizedList(new ArrayList<>()); // todo is it necessary to use sync

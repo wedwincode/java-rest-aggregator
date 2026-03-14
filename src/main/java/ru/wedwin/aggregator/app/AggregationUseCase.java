@@ -39,7 +39,6 @@ public class AggregationUseCase implements StartAggregation, StopAggregation, Vi
 
     @Override
     public Session start(RunConfig runConfig) {
-        // todo phaser?
         return runner.start(
                 runConfig,
                 item -> handleResult(

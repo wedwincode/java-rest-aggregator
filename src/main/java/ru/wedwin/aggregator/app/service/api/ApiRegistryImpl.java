@@ -4,15 +4,37 @@ import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.model.api.ApiId;
 import ru.wedwin.aggregator.port.out.ApiClient;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-public class ApiRegistryImpl implements ApiRegistry {
+public enum ApiRegistryImpl implements ApiRegistry {
+    INSTANCE;
+
     private final Map<ApiId, ApiClient> byId;
 
-    public ApiRegistryImpl(List<ApiClient> clients) {
-        byId = clients.stream().collect(Collectors.toMap(ApiClient::id, c -> c));
+    ApiRegistryImpl() {
+        byId = new LinkedHashMap<>();
+    }
+
+    @Override
+    public void put(ApiClient client) {
+        byId.put(client.id(), client);
+    }
+
+    @Override
+    public ApiClient get(ApiId id) {
+        ApiClient client = byId.get(id);
+        if (client == null) {
+            throw new IllegalArgumentException("unknown API: " + id);
+        }
+
+        return client;
+    }
+
+    @Override
+    public ApiDefinition getDefinition(ApiId id) {
+        return get(id).definition();
     }
 
     @Override
@@ -23,20 +45,5 @@ public class ApiRegistryImpl implements ApiRegistry {
     @Override
     public boolean contains(ApiId id) {
         return byId.containsKey(id);
-    }
-
-    @Override
-    public ApiDefinition getDefinition(ApiId id) {
-        return getClient(id).definition();
-    }
-
-    @Override
-    public ApiClient getClient(ApiId id) {
-        ApiClient client = byId.get(id);
-        if (client == null) {
-            throw new IllegalArgumentException("unknown API: " + id);
-        }
-
-        return client;
     }
 }
