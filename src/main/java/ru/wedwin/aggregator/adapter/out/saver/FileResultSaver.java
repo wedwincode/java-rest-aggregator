@@ -26,7 +26,7 @@ public class FileResultSaver implements ResultSaver {
     }
 
     @Override
-    public void save(OutputSpec spec, List<AggregatedItem> items) throws ResultSaveException {
+    public void save(OutputSpec spec, List<AggregatedItem> items) {
         Codec codec = registry.get(spec.codecId());
         try {
             if (spec.path().getParent() != null) {

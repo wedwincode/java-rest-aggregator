@@ -4,11 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.app.api.ApiRegistry;
 import ru.wedwin.aggregator.app.session.Session;
-import ru.wedwin.aggregator.domain.api.exception.ApiResponseException;
 import ru.wedwin.aggregator.domain.config.RunConfig;
 import ru.wedwin.aggregator.app.codec.CodecRegistry;
-import ru.wedwin.aggregator.domain.result.exception.ResultSaveException;
-import ru.wedwin.aggregator.domain.result.exception.ResultViewException;
 import ru.wedwin.aggregator.port.in.StartAggregationUseCase;
 import ru.wedwin.aggregator.port.in.StopAggregationUseCase;
 import ru.wedwin.aggregator.port.in.ViewResultsUseCase;
@@ -57,8 +54,7 @@ public class CliApp {
         this.viewResultsUseCase = viewResultsUseCase;
     }
 
-    public void run() throws ApiResponseException, ResultSaveException, ResultViewException {
-        // todo: delete resultviewer and print here
+    public void run() {
         RunConfig runConfig = getRunConfig();
         Session session = startAggregationUseCase.start(runConfig);
 

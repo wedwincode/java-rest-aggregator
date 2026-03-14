@@ -28,7 +28,7 @@ public class ConsoleResultViewer implements ResultViewer {
     }
 
     @Override
-    public void all(OutputSpec spec) throws ResultViewException {
+    public void all(OutputSpec spec) {
         Path path = spec.path();
         try {
             if (!Files.exists(path) || Files.size(path) == 0) {
@@ -42,7 +42,7 @@ public class ConsoleResultViewer implements ResultViewer {
     }
 
     @Override
-    public void byApi(OutputSpec spec, ApiId apiId) throws ResultViewException {
+    public void byApi(OutputSpec spec, ApiId apiId) {
         Codec codec = registry.get(spec.codecId());
         Path path = spec.path();
         try {

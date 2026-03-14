@@ -7,5 +7,5 @@ import ru.wedwin.aggregator.domain.result.exception.ResultSaveException;
 import java.util.List;
 
 public interface ResultSaver {
-    void save(OutputSpec spec, List<AggregatedItem> items) throws ResultSaveException;
+    void save(OutputSpec spec, List<AggregatedItem> items);
 }

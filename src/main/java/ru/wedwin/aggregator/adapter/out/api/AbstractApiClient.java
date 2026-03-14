@@ -13,7 +13,7 @@ public abstract class AbstractApiClient<DTO> implements ApiClient {
     protected abstract Class<DTO> dtoClass();
 
     @Override
-    public AggregatedItem getApiResponse(ApiParams params, Executor executor) throws ApiResponseException {
+    public AggregatedItem getApiResponse(ApiParams params, Executor executor) {
         params.addDefaultParams(supportedParams());
 
         String response;

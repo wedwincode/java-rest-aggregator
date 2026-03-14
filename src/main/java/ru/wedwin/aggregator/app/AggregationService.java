@@ -6,8 +6,6 @@ import ru.wedwin.aggregator.domain.config.RunConfig;
 import ru.wedwin.aggregator.domain.output.OutputSpec;
 import ru.wedwin.aggregator.domain.output.WriteMode;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.result.exception.ResultSaveException;
-import ru.wedwin.aggregator.domain.result.exception.ResultViewException;
 import ru.wedwin.aggregator.port.in.StartAggregationUseCase;
 import ru.wedwin.aggregator.port.in.StopAggregationUseCase;
 import ru.wedwin.aggregator.port.in.ViewResultsUseCase;
@@ -44,20 +42,14 @@ public class AggregationService implements StartAggregationUseCase, StopAggregat
                 item -> handleResult(
                         item,
                         runConfig.outputSpec().path(),
-                        runConfig.outputSpec().codecId()
-                ),
+                        runConfig.outputSpec().codecId()),
                 viewer::error);
     }
 
     private void handleResult(AggregatedItem item, Path path, CodecId codecId) {
         viewer.progress(item.apiId());
         results.add(item);
-        try {
-            saver.save(new OutputSpec(path, codecId, WriteMode.NEW), results);
-        } catch (ResultSaveException e) {
-            // todo logs
-            throw new RuntimeException(e);
-        }
+        saver.save(new OutputSpec(path, codecId, WriteMode.NEW), results);
     }
 
     @Override
@@ -66,7 +58,7 @@ public class AggregationService implements StartAggregationUseCase, StopAggregat
     }
 
     @Override
-    public void view(RunConfig runConfig) throws ResultViewException {
+    public void view(RunConfig runConfig) {
         switch (runConfig.displaySpec().mode()) {
             case NONE -> {}
             case ALL -> viewer.all(runConfig.outputSpec());
