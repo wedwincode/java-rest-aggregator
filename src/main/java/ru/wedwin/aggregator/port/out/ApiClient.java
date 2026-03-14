@@ -1,11 +1,11 @@
 package ru.wedwin.aggregator.port.out;
 
-import ru.wedwin.aggregator.domain.model.api.exception.ApiResponseException;
-import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
-import ru.wedwin.aggregator.domain.model.api.ApiId;
-import ru.wedwin.aggregator.domain.model.api.ApiParams;
-import ru.wedwin.aggregator.domain.model.api.ParamMeta;
+import ru.wedwin.aggregator.domain.api.exception.ApiResponseException;
+import ru.wedwin.aggregator.domain.result.AggregatedItem;
+import ru.wedwin.aggregator.domain.api.ApiDefinition;
+import ru.wedwin.aggregator.domain.api.ApiId;
+import ru.wedwin.aggregator.domain.api.ApiParams;
+import ru.wedwin.aggregator.domain.api.ParamMeta;
 
 import java.net.URL;
 import java.util.List;

@@ -1,10 +1,10 @@
 package ru.wedwin.aggregator.adapter.out.saver;
 
-import ru.wedwin.aggregator.domain.model.output.OutputSpec;
-import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
+import ru.wedwin.aggregator.domain.output.OutputSpec;
+import ru.wedwin.aggregator.domain.result.AggregatedItem;
+import ru.wedwin.aggregator.domain.result.exception.ResultSaveException;
 import ru.wedwin.aggregator.port.out.Codec;
-import ru.wedwin.aggregator.app.service.codec.CodecRegistry;
+import ru.wedwin.aggregator.app.codec.CodecRegistry;
 import ru.wedwin.aggregator.port.out.ResultSaver;
 import tools.jackson.core.exc.StreamReadException;
 

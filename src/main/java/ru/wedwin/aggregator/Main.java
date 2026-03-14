@@ -10,17 +10,17 @@ import ru.wedwin.aggregator.adapter.out.api.weatherapi.WeatherApiClient;
 import ru.wedwin.aggregator.adapter.out.codec.CsvCodec;
 import ru.wedwin.aggregator.adapter.out.codec.JsonCodec;
 import ru.wedwin.aggregator.adapter.out.executor.OkHttpExecutor;
-import ru.wedwin.aggregator.adapter.out.runner.ScheduledAggregationRunner;
+import ru.wedwin.aggregator.adapter.out.runner.ScheduledRunner;
 import ru.wedwin.aggregator.adapter.out.saver.FileResultSaver;
 import ru.wedwin.aggregator.adapter.out.viewer.ConsoleResultViewer;
-import ru.wedwin.aggregator.app.AggregationUseCase;
-import ru.wedwin.aggregator.app.service.api.ApiRegistry;
-import ru.wedwin.aggregator.app.service.api.ApiRegistryImpl;
-import ru.wedwin.aggregator.app.service.codec.CodecRegistry;
-import ru.wedwin.aggregator.app.service.codec.CodecRegistryImpl;
-import ru.wedwin.aggregator.domain.model.api.exception.ApiResponseException;
-import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
-import ru.wedwin.aggregator.domain.model.result.exception.ResultViewException;
+import ru.wedwin.aggregator.app.AggregationService;
+import ru.wedwin.aggregator.app.api.ApiRegistry;
+import ru.wedwin.aggregator.app.api.ApiRegistryImpl;
+import ru.wedwin.aggregator.app.codec.CodecRegistry;
+import ru.wedwin.aggregator.app.codec.CodecRegistryImpl;
+import ru.wedwin.aggregator.domain.api.exception.ApiResponseException;
+import ru.wedwin.aggregator.domain.result.exception.ResultSaveException;
+import ru.wedwin.aggregator.domain.result.exception.ResultViewException;
 
 public class Main {
 
@@ -37,20 +37,21 @@ public class Main {
         codecRegistry.put(new CsvCodec());
         codecRegistry.put(new JsonCodec());
 
+        AggregationService service = new AggregationService(
+                new FileResultSaver(codecRegistry),
+                new ConsoleResultViewer(codecRegistry),
+                new ScheduledRunner(apiRegistry, new OkHttpExecutor())
+        );
+
         CliApp app = new CliApp(
                 args,
                 apiRegistry,
                 codecRegistry,
                 System.in,
                 System.out,
-                new AggregationUseCase(
-                        new FileResultSaver(codecRegistry),
-                        new ConsoleResultViewer(codecRegistry),
-                        new ScheduledAggregationRunner(
-                                apiRegistry,
-                                new OkHttpExecutor()
-                        )
-                )
+                service,
+                service,
+                service
         );
 
         try {

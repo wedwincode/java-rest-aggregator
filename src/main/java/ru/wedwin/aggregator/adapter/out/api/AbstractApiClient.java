@@ -2,10 +2,10 @@ package ru.wedwin.aggregator.adapter.out.api;
 
 import ru.wedwin.aggregator.adapter.out.common.JacksonObjectMapper;
 import ru.wedwin.aggregator.adapter.out.executor.ExecutorException;
-import ru.wedwin.aggregator.domain.model.api.exception.ApiResponseException;
-import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.model.api.ApiParams;
-import ru.wedwin.aggregator.domain.model.result.Payload;
+import ru.wedwin.aggregator.domain.api.exception.ApiResponseException;
+import ru.wedwin.aggregator.domain.result.AggregatedItem;
+import ru.wedwin.aggregator.domain.api.ApiParams;
+import ru.wedwin.aggregator.domain.result.Payload;
 import ru.wedwin.aggregator.port.out.ApiClient;
 import ru.wedwin.aggregator.port.out.Executor;
 

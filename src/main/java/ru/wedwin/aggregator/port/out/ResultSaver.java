@@ -1,8 +1,8 @@
 package ru.wedwin.aggregator.port.out;
 
-import ru.wedwin.aggregator.domain.model.output.OutputSpec;
-import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
+import ru.wedwin.aggregator.domain.output.OutputSpec;
+import ru.wedwin.aggregator.domain.result.AggregatedItem;
+import ru.wedwin.aggregator.domain.result.exception.ResultSaveException;
 
 import java.util.List;
 

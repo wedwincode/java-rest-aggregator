@@ -1,7 +1,7 @@
 package ru.wedwin.aggregator.port.out;
 
-import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.model.codec.CodecId;
+import ru.wedwin.aggregator.domain.result.AggregatedItem;
+import ru.wedwin.aggregator.domain.codec.CodecId;
 
 import java.io.IOException;
 import java.io.Reader;

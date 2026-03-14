@@ -1,10 +1,8 @@
 package ru.wedwin.aggregator.port.out;
 
-import ru.wedwin.aggregator.domain.model.api.ApiId;
-import ru.wedwin.aggregator.domain.model.output.OutputSpec;
-import ru.wedwin.aggregator.domain.model.result.exception.ResultViewException;
-
-import java.io.OutputStream;
+import ru.wedwin.aggregator.domain.api.ApiId;
+import ru.wedwin.aggregator.domain.output.OutputSpec;
+import ru.wedwin.aggregator.domain.result.exception.ResultViewException;
 
 public interface ResultViewer {
     void all(OutputSpec spec) throws ResultViewException;

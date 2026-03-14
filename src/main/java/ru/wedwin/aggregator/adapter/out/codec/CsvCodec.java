@@ -7,11 +7,11 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.adapter.out.common.PayloadFlattener;
-import ru.wedwin.aggregator.domain.model.api.ApiId;
-import ru.wedwin.aggregator.domain.model.codec.exception.CodecException;
-import ru.wedwin.aggregator.domain.model.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.model.codec.CodecId;
-import ru.wedwin.aggregator.domain.model.result.Payload;
+import ru.wedwin.aggregator.domain.api.ApiId;
+import ru.wedwin.aggregator.domain.codec.exception.CodecException;
+import ru.wedwin.aggregator.domain.result.AggregatedItem;
+import ru.wedwin.aggregator.domain.codec.CodecId;
+import ru.wedwin.aggregator.domain.result.Payload;
 import ru.wedwin.aggregator.port.out.Codec;
 
 import java.io.IOException;

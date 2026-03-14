@@ -1,18 +1,18 @@
 package ru.wedwin.aggregator.adapter.in.cli;
 
-import ru.wedwin.aggregator.app.service.api.ApiRegistry;
-import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
-import ru.wedwin.aggregator.domain.model.api.ApiId;
-import ru.wedwin.aggregator.domain.model.api.ApiParams;
-import ru.wedwin.aggregator.domain.model.api.ParamMeta;
-import ru.wedwin.aggregator.domain.model.config.RunConfig;
-import ru.wedwin.aggregator.domain.model.output.DisplayMode;
-import ru.wedwin.aggregator.domain.model.output.DisplaySpec;
-import ru.wedwin.aggregator.domain.model.output.ExecutionSpec;
-import ru.wedwin.aggregator.domain.model.output.OutputSpec;
-import ru.wedwin.aggregator.domain.model.output.WriteMode;
-import ru.wedwin.aggregator.domain.model.codec.CodecId;
-import ru.wedwin.aggregator.app.service.codec.CodecRegistry;
+import ru.wedwin.aggregator.app.api.ApiRegistry;
+import ru.wedwin.aggregator.domain.api.ApiDefinition;
+import ru.wedwin.aggregator.domain.api.ApiId;
+import ru.wedwin.aggregator.domain.api.ApiParams;
+import ru.wedwin.aggregator.domain.api.ParamMeta;
+import ru.wedwin.aggregator.domain.config.RunConfig;
+import ru.wedwin.aggregator.domain.output.DisplayMode;
+import ru.wedwin.aggregator.domain.output.DisplaySpec;
+import ru.wedwin.aggregator.domain.output.ExecutionSpec;
+import ru.wedwin.aggregator.domain.output.OutputSpec;
+import ru.wedwin.aggregator.domain.output.WriteMode;
+import ru.wedwin.aggregator.domain.codec.CodecId;
+import ru.wedwin.aggregator.app.codec.CodecRegistry;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;

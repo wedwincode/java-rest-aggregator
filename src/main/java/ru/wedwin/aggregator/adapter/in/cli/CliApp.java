@@ -2,14 +2,16 @@ package ru.wedwin.aggregator.adapter.in.cli;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.wedwin.aggregator.app.AggregationUseCase;
-import ru.wedwin.aggregator.app.service.api.ApiRegistry;
-import ru.wedwin.aggregator.app.service.session.Session;
-import ru.wedwin.aggregator.domain.model.api.exception.ApiResponseException;
-import ru.wedwin.aggregator.domain.model.config.RunConfig;
-import ru.wedwin.aggregator.app.service.codec.CodecRegistry;
-import ru.wedwin.aggregator.domain.model.result.exception.ResultSaveException;
-import ru.wedwin.aggregator.domain.model.result.exception.ResultViewException;
+import ru.wedwin.aggregator.app.api.ApiRegistry;
+import ru.wedwin.aggregator.app.session.Session;
+import ru.wedwin.aggregator.domain.api.exception.ApiResponseException;
+import ru.wedwin.aggregator.domain.config.RunConfig;
+import ru.wedwin.aggregator.app.codec.CodecRegistry;
+import ru.wedwin.aggregator.domain.result.exception.ResultSaveException;
+import ru.wedwin.aggregator.domain.result.exception.ResultViewException;
+import ru.wedwin.aggregator.port.in.StartAggregationUseCase;
+import ru.wedwin.aggregator.port.in.StopAggregationUseCase;
+import ru.wedwin.aggregator.port.in.ViewResultsUseCase;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,7 +24,6 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
-// todo problem: CliApp is in the 'in' adapters but there's no port
 public class CliApp {
     private static final Logger log = LogManager.getLogger(CliApp.class);
     private final String[] args;
@@ -30,7 +31,9 @@ public class CliApp {
     private final CodecRegistry codecRegistry;
     private final InputStream in;
     private final PrintStream out;
-    private final AggregationUseCase useCase;
+    private final StartAggregationUseCase startAggregationUseCase;
+    private final StopAggregationUseCase stopAggregationUseCase;
+    private final ViewResultsUseCase viewResultsUseCase;
 
     private boolean isInteractive = false;
 
@@ -40,28 +43,32 @@ public class CliApp {
             CodecRegistry codecRegistry,
             InputStream in,
             PrintStream out,
-            AggregationUseCase useCase
+            StartAggregationUseCase startAggregationUseCase,
+            StopAggregationUseCase stopAggregationUseCase,
+            ViewResultsUseCase viewResultsUseCase
     ) {
         this.args = args;
         this.apiRegistry = apiRegistry;
         this.codecRegistry = codecRegistry;
         this.in = in;
         this.out = out;
-        this.useCase = useCase;
+        this.startAggregationUseCase = startAggregationUseCase;
+        this.stopAggregationUseCase = stopAggregationUseCase;
+        this.viewResultsUseCase = viewResultsUseCase;
     }
 
     public void run() throws ApiResponseException, ResultSaveException, ResultViewException {
         // todo: delete resultviewer and print here
         RunConfig runConfig = getRunConfig();
-        Session session = useCase.start(runConfig);
+        Session session = startAggregationUseCase.start(runConfig);
 
         try {
             waitForCompletion(runConfig);
         } finally {
-            useCase.stop(session);
+            stopAggregationUseCase.stop(session);
         }
 
-        useCase.view(runConfig);
+        viewResultsUseCase.view(runConfig);
     }
 
     private void waitForCompletion(RunConfig runConfig) {
@@ -131,7 +138,6 @@ public class CliApp {
             return new ArgsRunConfigProvider(args, apiRegistry).getRunConfig();
         } catch (ArgsParseException e) {
             log.error("arguments error: {}", e.getMessage());
-
             throw e;
         }
     }

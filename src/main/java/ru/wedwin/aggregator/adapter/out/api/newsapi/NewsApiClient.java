@@ -3,8 +3,8 @@ package ru.wedwin.aggregator.adapter.out.api.newsapi;
 import ru.wedwin.aggregator.adapter.out.api.AbstractApiClient;
 import ru.wedwin.aggregator.adapter.out.api.newsapi.dto.NewsApiResponse;
 import ru.wedwin.aggregator.adapter.out.common.EnvReader;
-import ru.wedwin.aggregator.domain.model.api.ApiDefinition;
-import ru.wedwin.aggregator.domain.model.api.ParamMeta;
+import ru.wedwin.aggregator.domain.api.ApiDefinition;
+import ru.wedwin.aggregator.domain.api.ParamMeta;
 
 public class NewsApiClient extends AbstractApiClient<NewsApiResponse> {
     @Override
