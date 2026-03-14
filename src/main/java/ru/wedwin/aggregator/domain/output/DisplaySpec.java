@@ -7,6 +7,7 @@ public record DisplaySpec(
         ApiId apiId,
         DisplayMode mode
 ) {
+
     public DisplaySpec {
         if (mode == null) {
             throw new InvalidDisplaySpecException("mode is null");

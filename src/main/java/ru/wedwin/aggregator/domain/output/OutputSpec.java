@@ -10,6 +10,7 @@ public record OutputSpec(
         CodecId codecId,
         WriteMode mode
 ) {
+
     public OutputSpec {
         if (path == null) {
             throw new InvalidOutputSpecException("path is null");

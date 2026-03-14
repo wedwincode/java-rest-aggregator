@@ -9,6 +9,7 @@ public record ExecutionSpec (
         Duration pollInterval,
         Duration duration
 ){
+
     public ExecutionSpec {
         if (maxConcurrentTasks < 1) {
             throw new InvalidExecutionSpecException("number of concurrent tasks should be more than 0");

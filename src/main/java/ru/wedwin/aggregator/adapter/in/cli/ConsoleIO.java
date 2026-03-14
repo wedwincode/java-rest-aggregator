@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class ConsoleIO {
+
     private final Scanner scanner;
     private final PrintStream out;
 

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public enum ApiRegistryImpl implements ApiRegistry {
+
     INSTANCE;
 
     private final Map<ApiId, ApiClient> byId;

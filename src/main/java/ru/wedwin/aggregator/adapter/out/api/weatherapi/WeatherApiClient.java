@@ -7,6 +7,7 @@ import ru.wedwin.aggregator.domain.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.api.ParamMeta;
 
 public class WeatherApiClient extends AbstractApiClient<WeatherApiResponse> {
+
     @Override
     public ApiDefinition definition() {
         return new ApiDefinition(
@@ -23,5 +24,4 @@ public class WeatherApiClient extends AbstractApiClient<WeatherApiResponse> {
     protected Class<WeatherApiResponse> dtoClass() {
         return WeatherApiResponse.class;
     }
-
 }

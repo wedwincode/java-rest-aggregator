@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class CsvCodec implements Codec {
+
     private static final Logger log = LogManager.getLogger(CsvCodec.class);
 
     @Override

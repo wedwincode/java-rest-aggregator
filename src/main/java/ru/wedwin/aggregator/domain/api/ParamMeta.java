@@ -3,6 +3,7 @@ package ru.wedwin.aggregator.domain.api;
 import ru.wedwin.aggregator.domain.api.exception.InvalidParamMetaException;
 
 public record ParamMeta(String key, boolean required, String defaultValue, String description) {
+
     public ParamMeta {
         if (key == null) {
             throw new InvalidParamMetaException("param key is null");

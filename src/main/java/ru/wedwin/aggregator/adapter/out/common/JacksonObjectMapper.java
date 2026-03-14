@@ -6,6 +6,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 public class JacksonObjectMapper {
+
     private static final ObjectMapper mapper = new ObjectMapper();
 
     public static <T> T map(String content, Class<T> clazz) {

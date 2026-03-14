@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
 public class CliApp {
+
     private static final Logger log = LogManager.getLogger(CliApp.class);
     private final String[] args;
     private final ApiRegistry apiRegistry;

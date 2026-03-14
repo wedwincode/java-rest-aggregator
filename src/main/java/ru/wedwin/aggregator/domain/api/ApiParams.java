@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class ApiParams {
+
     private final Map<String, String> params;
 
     private ApiParams(Map<String, String> params) {

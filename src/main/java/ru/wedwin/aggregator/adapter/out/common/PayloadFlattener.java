@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class PayloadFlattener {
+
     private static final ObjectMapper om = new ObjectMapper();
 
     private PayloadFlattener() {

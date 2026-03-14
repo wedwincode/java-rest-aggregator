@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class ConsoleResultViewer implements ResultViewer {
+
     private static final Logger log = LogManager.getLogger(ConsoleResultViewer.class);
     private final CodecRegistry registry;
 

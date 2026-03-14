@@ -15,6 +15,7 @@ public record RunConfig(
         ExecutionSpec executionSpec,
         DisplaySpec displaySpec
 ) {
+
     public RunConfig {
         if (queryParamsByApi == null) {
             throw new InvalidRunConfigException("queryParamsByApi is null");

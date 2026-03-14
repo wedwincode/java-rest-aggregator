@@ -7,6 +7,7 @@ import ru.wedwin.aggregator.domain.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.api.ParamMeta;
 
 public class NewsApiClient extends AbstractApiClient<NewsApiResponse> {
+
     @Override
     public ApiDefinition definition() {
         return new ApiDefinition(

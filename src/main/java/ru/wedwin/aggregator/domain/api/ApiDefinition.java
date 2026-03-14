@@ -15,6 +15,7 @@ public record ApiDefinition(
         String displayName,
         List<ParamMeta> supportedParams
 ) {
+
     public ApiDefinition {
         if (url == null) {
             throw new InvalidApiDefinitionException("url is null");

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public enum CodecRegistryImpl implements CodecRegistry {
+
     INSTANCE;
 
     private final Map<CodecId, Codec> byId;

@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ArgsRunConfigProvider {
+
     private final String[] args;
     private final ApiRegistry registry;
     private final Map<ApiId, ApiParams> queryParamsByApi;

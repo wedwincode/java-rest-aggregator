@@ -12,6 +12,7 @@ public record AggregatedItem(
         Instant fetchedAt,
         Payload payload
 ) {
+
     public AggregatedItem {
         if (itemId == null) {
             throw new InvalidAggregatedItemException("itemId is null");

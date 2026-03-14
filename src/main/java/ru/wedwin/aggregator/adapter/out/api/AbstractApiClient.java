@@ -10,6 +10,7 @@ import ru.wedwin.aggregator.port.out.ApiClient;
 import ru.wedwin.aggregator.port.out.Executor;
 
 public abstract class AbstractApiClient<DTO> implements ApiClient {
+
     protected abstract Class<DTO> dtoClass();
 
     @Override

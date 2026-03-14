@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import static java.lang.Thread.sleep;
 
 public class ScheduledRunner implements Runner {
+
     private static final Logger log = LogManager.getLogger(ScheduledRunner.class);
     private final ScheduledExecutorService scheduler;
     private final ExecutorService workers;

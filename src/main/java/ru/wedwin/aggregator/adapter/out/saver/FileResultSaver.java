@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileResultSaver implements ResultSaver {
+
     private final CodecRegistry registry;
 
     public FileResultSaver(CodecRegistry registry) {

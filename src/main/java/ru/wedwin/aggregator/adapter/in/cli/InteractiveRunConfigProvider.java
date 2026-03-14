@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class InteractiveRunConfigProvider {
+
     private final ApiRegistry apiRegistry;
     private final CodecRegistry codecRegistry;
     private final ConsoleIO io;

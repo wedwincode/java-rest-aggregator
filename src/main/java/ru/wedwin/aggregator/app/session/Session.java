@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 // todo разобраться
 public final class Session {
+
     private final List<ScheduledFuture<?>> scheduledTasks = Collections.synchronizedList(new ArrayList<>()); // todo is it necessary to use sync
     private final AtomicBoolean acceptingNewTasks = new AtomicBoolean(true); // todo volatile vs atomic?
     private final Semaphore launches;

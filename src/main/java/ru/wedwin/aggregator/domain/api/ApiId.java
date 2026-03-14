@@ -3,6 +3,7 @@ package ru.wedwin.aggregator.domain.api;
 import ru.wedwin.aggregator.domain.api.exception.InvalidApiIdException;
 
 public record ApiId(String value) {
+
     public ApiId {
         if (value == null) {
             throw new InvalidApiIdException("value is null");

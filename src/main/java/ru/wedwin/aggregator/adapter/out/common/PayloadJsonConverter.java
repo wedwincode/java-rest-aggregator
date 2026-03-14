@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PayloadJsonConverter {
+
     private static final ObjectMapper om = new ObjectMapper();
 
     private PayloadJsonConverter() {

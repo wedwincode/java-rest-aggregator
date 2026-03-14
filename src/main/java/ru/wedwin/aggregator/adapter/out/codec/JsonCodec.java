@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class JsonCodec implements Codec {
+
     private static final Logger log = LogManager.getLogger(JsonCodec.class);
     private final ObjectMapper om;
 
