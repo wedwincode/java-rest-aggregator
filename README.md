@@ -42,4 +42,4 @@ java -jar dist/app.jar --params
 
 ### Project architecture
 
-![layered_scheme.png](layered_scheme.png)
+![hexagon.png](hexagon.png)
