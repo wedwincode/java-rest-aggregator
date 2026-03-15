@@ -1,61 +1,56 @@
 package ru.wedwin.aggregator.app.session;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-// todo разобраться
 public final class Session {
 
-    private final List<ScheduledFuture<?>> scheduledTasks = Collections.synchronizedList(new ArrayList<>()); // todo is it necessary to use sync
-    private final AtomicBoolean acceptingNewTasks = new AtomicBoolean(true); // todo volatile vs atomic?
-    private final Semaphore launches;
     private final int maxConcurrentTasks;
+    private final Semaphore executionSlots;
+
+    private Future<?> dispatchTrigger;
+    private volatile boolean acceptingNewTasks = true;
 
     public Session(int maxConcurrentTasks) {
         this.maxConcurrentTasks = maxConcurrentTasks;
-        this.launches = new Semaphore(maxConcurrentTasks);
+        this.executionSlots = new Semaphore(maxConcurrentTasks);
     }
 
-    public void addTask(ScheduledFuture<?> task) {
-        scheduledTasks.add(task);
+    public void setDispatchTrigger(Future<?> trigger) {
+        dispatchTrigger = trigger;
     }
 
-    public boolean tryAcquireLaunch() {
-        if (!acceptingNewTasks.get()) { // fast check if the system is not accepting tasks at all
+    public boolean tryAcquireExecutionSlot() {
+        if (!acceptingNewTasks) { // fast check if the system is not accepting tasks at all
             return false;
         }
 
-        boolean acquired = launches.tryAcquire();
+        boolean acquired = executionSlots.tryAcquire();
         if (!acquired) {
             return false;
         }
 
-        if (!acceptingNewTasks.get()) {
-            launches.release();
+        if (!acceptingNewTasks) {
+            executionSlots.release();
             return false;
         }
 
         return true;
     }
 
-    public void completeLaunch() {
-        launches.release();
+    public void releaseExecutionSlot() {
+        executionSlots.release();
     }
 
     public void stopScheduling() {
-        acceptingNewTasks.set(false);
-        synchronized (scheduledTasks) {
-            for (ScheduledFuture<?> task: scheduledTasks) {
-                task.cancel(false);
-            }
+        acceptingNewTasks = false;
+
+        if (dispatchTrigger != null) {
+            dispatchTrigger.cancel(false);
         }
     }
 
-    public boolean hasInFlightTasks() {
-        return launches.availablePermits() < maxConcurrentTasks;
+    public boolean hasRunningExecutions() {
+        return executionSlots.availablePermits() < maxConcurrentTasks;
     }
 }

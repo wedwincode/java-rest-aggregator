@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.adapter.out.executor;
+package ru.wedwin.aggregator.adapter.out.http;
 
 import okhttp3.Call;
 import okhttp3.HttpUrl;
@@ -6,18 +6,18 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import ru.wedwin.aggregator.port.out.Executor;
+import ru.wedwin.aggregator.port.out.HttpExecutor;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Map;
 
-public class OkHttpExecutor implements Executor {
+public class OkHttpHttpExecutor implements HttpExecutor {
 
     private final OkHttpClient client;
 
-    public OkHttpExecutor() {
+    public OkHttpHttpExecutor() {
         client = new OkHttpClient.Builder()
                 .connectTimeout(Duration.ofSeconds(5))
                 .readTimeout(Duration.ofSeconds(10))

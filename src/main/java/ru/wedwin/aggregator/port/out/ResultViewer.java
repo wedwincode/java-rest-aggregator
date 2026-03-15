@@ -1,7 +1,7 @@
 package ru.wedwin.aggregator.port.out;
 
 import ru.wedwin.aggregator.domain.api.ApiId;
-import ru.wedwin.aggregator.domain.output.OutputSpec;
+import ru.wedwin.aggregator.domain.config.OutputSpec;
 
 public interface ResultViewer {
     void all(OutputSpec spec);

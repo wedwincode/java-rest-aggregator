@@ -10,7 +10,7 @@ import ru.wedwin.aggregator.domain.config.RunConfig;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
 import ru.wedwin.aggregator.port.out.Runner;
 import ru.wedwin.aggregator.port.out.ApiClient;
-import ru.wedwin.aggregator.port.out.Executor;
+import ru.wedwin.aggregator.port.out.HttpExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,15 +31,15 @@ public class ScheduledRunner implements Runner {
     private final ScheduledExecutorService scheduler;
     private final ExecutorService workers;
     private final ApiRegistry registry;
-    private final Executor executor;
+    private final HttpExecutor httpExecutor;
     private int nextIndex = 0;
 
     private record ApiTask(ApiClient client, ApiParams params) {}
 
-    public ScheduledRunner(ApiRegistry registry, Executor executor) {
+    public ScheduledRunner(ApiRegistry registry, HttpExecutor httpExecutor) {
         this.registry = registry;
-        this.executor = executor;
-        this.scheduler = Executors.newScheduledThreadPool(1);
+        this.httpExecutor = httpExecutor;
+        this.scheduler = Executors.newSingleThreadScheduledExecutor();
         // number of threads is not restricted, so we use semaphore inside handle to explicitly restrict it
         this.workers = Executors.newVirtualThreadPerTaskExecutor();
     }
@@ -50,16 +50,16 @@ public class ScheduledRunner implements Runner {
             Consumer<AggregatedItem> onResult,
             Consumer<Throwable> onError
     ) {
-        Session handle = new Session(config.executionSpec().maxConcurrentTasks());
+        Session session = new Session(config.executionSpec().maxConcurrentTasks());
         List<ApiTask> tasks = buildTasks(config.queryParamsByApi());
-        ScheduledFuture<?> scheduledTask = scheduler.scheduleAtFixedRate(
-                () -> dispatch(handle, tasks, onResult, onError),
+        ScheduledFuture<?> trigger = scheduler.scheduleAtFixedRate(
+                () -> dispatch(session, tasks, onResult, onError),
                 0,
                 config.executionSpec().pollInterval().toMillis(),
                 TimeUnit.MILLISECONDS
         );
-        handle.addTask(scheduledTask);
-        return handle;
+        session.setDispatchTrigger(trigger);
+        return session;
     }
 
     private List<ApiTask> buildTasks(Map<ApiId, ApiParams> queryParamsByApi) {
@@ -75,7 +75,7 @@ public class ScheduledRunner implements Runner {
     }
 
     private void dispatch(
-            Session handle,
+            Session session,
             List<ApiTask> tasks,
             Consumer<AggregatedItem> onResult,
             Consumer<Throwable> onError
@@ -88,47 +88,68 @@ public class ScheduledRunner implements Runner {
         int size = tasks.size();
 
         while (checked < size) {
-            // todo: описание того что было: раньше был ++ до лока и поэтому thenewsapi имел приоритет
-            if (!handle.tryAcquireLaunch()) {
+            if (!session.tryAcquireExecutionSlot()) {
                 return;
             }
 
+            // initially this block was before the acquiring so the order of execution was random
+            // because index was changing no matter of the acquiring decision
             ApiTask task = tasks.get(nextIndex);
             nextIndex = (nextIndex + 1) % size;
             checked++;
 
-            launchTask(handle, task, onResult, onError);
+            launchTask(session, task, onResult, onError);
             log.debug("launched task {}", task.client().id());
         }
     }
 
     private void launchTask(
-            Session handle,
+            Session session,
             ApiTask task,
             Consumer<AggregatedItem> onResult,
             Consumer<Throwable> onError
-    ) { // todo print time when started and finished
-        CompletableFuture
-                .supplyAsync(() -> task.client().getApiResponse(task.params(), executor), workers)
+    ) {
+        CompletableFuture // workers.submit is an alternative but not so cool
+                .supplyAsync(() -> task.client().getApiResponse(task.params(), httpExecutor), workers)
                 .whenComplete((result, error) -> {
                     try {
                         if (error != null) {
-                            onError.accept(error.getCause());
+                            Throwable actualError = error.getCause() != null ? error.getCause() : error;
+                            onError.accept(actualError);
                             return;
                         }
                         onResult.accept(result);
                     } finally {
-                        handle.completeLaunch();
+                        session.releaseExecutionSlot();
                     }
                 });
     }
+
+//    private void launchTask(
+//            Session session,
+//            ApiTask task,
+//            Consumer<AggregatedItem> onResult,
+//            Consumer<Throwable> onError
+//    ) {
+//        workers.submit(() -> {
+//            try {
+//                AggregatedItem result = task.client().getApiResponse(task.params(), httpExecutor);
+//                onResult.accept(result);
+//            } catch (Throwable error) {
+//                onError.accept(error);
+//            } finally {
+//                session.completeTask();
+//            }
+//        });
+//    }
 
     @Override
     public void stop(Session session) {
         session.stopScheduling();
 
-        while (session.hasInFlightTasks()) {
+        while (session.hasRunningExecutions()) {
             try {
+                //noinspection BusyWait
                 sleep(50);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -140,9 +161,14 @@ public class ScheduledRunner implements Runner {
         workers.shutdown();
 
         try {
-            // todo разобраться
-            scheduler.awaitTermination(5, TimeUnit.SECONDS);
-            workers.awaitTermination(5, TimeUnit.SECONDS);
+            boolean schedulerStopped = scheduler.awaitTermination(5, TimeUnit.SECONDS);
+            boolean workersStopped = workers.awaitTermination(5, TimeUnit.SECONDS);
+            if (!schedulerStopped) {
+                log.warn("scheduler did not terminate within timeout");
+            }
+            if (!workersStopped) {
+                log.warn("workers did not terminate within timeout");
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

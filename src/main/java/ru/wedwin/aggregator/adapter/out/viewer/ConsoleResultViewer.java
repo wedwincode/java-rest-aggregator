@@ -3,7 +3,7 @@ package ru.wedwin.aggregator.adapter.out.viewer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.domain.api.ApiId;
-import ru.wedwin.aggregator.domain.output.OutputSpec;
+import ru.wedwin.aggregator.domain.config.OutputSpec;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.result.exception.ResultViewException;
 import ru.wedwin.aggregator.port.out.Codec;

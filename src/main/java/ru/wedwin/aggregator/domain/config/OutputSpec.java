@@ -1,7 +1,7 @@
-package ru.wedwin.aggregator.domain.output;
+package ru.wedwin.aggregator.domain.config;
 
 import ru.wedwin.aggregator.domain.codec.CodecId;
-import ru.wedwin.aggregator.domain.output.exception.InvalidOutputSpecException;
+import ru.wedwin.aggregator.domain.config.exception.InvalidOutputSpecException;
 
 import java.nio.file.Path;
 

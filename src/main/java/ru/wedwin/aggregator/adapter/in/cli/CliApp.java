@@ -82,7 +82,10 @@ public class CliApp {
             return;
         }
 
-        AtomicBoolean stopRequested = new AtomicBoolean(false); // todo read about atomic
+        // volatile is an alternative (to make sure another thread can see changes)
+        // but to use it we should create class field but in this case we want to keep flag local
+        // so we use atomic (non-blocking and thread-safe tool) to guarantee 'happens-before' principle
+        AtomicBoolean stopRequested = new AtomicBoolean(false);
         Thread consoleThread = startConsoleWatcher(stopRequested);
 
         try {

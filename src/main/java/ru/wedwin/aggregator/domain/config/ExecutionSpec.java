@@ -1,6 +1,6 @@
-package ru.wedwin.aggregator.domain.output;
+package ru.wedwin.aggregator.domain.config;
 
-import ru.wedwin.aggregator.domain.output.exception.InvalidExecutionSpecException;
+import ru.wedwin.aggregator.domain.config.exception.InvalidExecutionSpecException;
 
 import java.time.Duration;
 

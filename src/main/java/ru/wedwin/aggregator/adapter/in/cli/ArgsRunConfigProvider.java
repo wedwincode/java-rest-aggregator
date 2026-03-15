@@ -6,11 +6,11 @@ import ru.wedwin.aggregator.domain.api.ApiParams;
 import ru.wedwin.aggregator.domain.api.ParamMeta;
 import ru.wedwin.aggregator.domain.api.exception.InvalidApiIdException;
 import ru.wedwin.aggregator.domain.config.RunConfig;
-import ru.wedwin.aggregator.domain.output.DisplayMode;
-import ru.wedwin.aggregator.domain.output.DisplaySpec;
-import ru.wedwin.aggregator.domain.output.ExecutionSpec;
-import ru.wedwin.aggregator.domain.output.OutputSpec;
-import ru.wedwin.aggregator.domain.output.WriteMode;
+import ru.wedwin.aggregator.domain.config.DisplayMode;
+import ru.wedwin.aggregator.domain.config.DisplaySpec;
+import ru.wedwin.aggregator.domain.config.ExecutionSpec;
+import ru.wedwin.aggregator.domain.config.OutputSpec;
+import ru.wedwin.aggregator.domain.config.WriteMode;
 import ru.wedwin.aggregator.domain.codec.CodecId;
 import ru.wedwin.aggregator.domain.codec.exception.InvalidCodecIdException;
 

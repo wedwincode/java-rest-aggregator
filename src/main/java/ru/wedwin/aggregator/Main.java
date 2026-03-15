@@ -9,7 +9,7 @@ import ru.wedwin.aggregator.adapter.out.api.thenewsapi.TheNewsApiClient;
 import ru.wedwin.aggregator.adapter.out.api.weatherapi.WeatherApiClient;
 import ru.wedwin.aggregator.adapter.out.codec.CsvCodec;
 import ru.wedwin.aggregator.adapter.out.codec.JsonCodec;
-import ru.wedwin.aggregator.adapter.out.executor.OkHttpExecutor;
+import ru.wedwin.aggregator.adapter.out.http.OkHttpHttpExecutor;
 import ru.wedwin.aggregator.adapter.out.runner.ScheduledRunner;
 import ru.wedwin.aggregator.adapter.out.saver.FileResultSaver;
 import ru.wedwin.aggregator.adapter.out.viewer.ConsoleResultViewer;
@@ -40,7 +40,7 @@ public class Main {
         AggregationService service = new AggregationService(
                 new FileResultSaver(codecRegistry),
                 new ConsoleResultViewer(codecRegistry),
-                new ScheduledRunner(apiRegistry, new OkHttpExecutor())
+                new ScheduledRunner(apiRegistry, new OkHttpHttpExecutor())
         );
 
         CliApp app = new CliApp(

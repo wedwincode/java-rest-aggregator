@@ -3,8 +3,8 @@ package ru.wedwin.aggregator.app;
 import ru.wedwin.aggregator.app.session.Session;
 import ru.wedwin.aggregator.domain.codec.CodecId;
 import ru.wedwin.aggregator.domain.config.RunConfig;
-import ru.wedwin.aggregator.domain.output.OutputSpec;
-import ru.wedwin.aggregator.domain.output.WriteMode;
+import ru.wedwin.aggregator.domain.config.OutputSpec;
+import ru.wedwin.aggregator.domain.config.WriteMode;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
 import ru.wedwin.aggregator.port.in.StartAggregationUseCase;
 import ru.wedwin.aggregator.port.in.StopAggregationUseCase;
@@ -53,8 +53,8 @@ public class AggregationService implements StartAggregationUseCase, StopAggregat
     }
 
     @Override
-    public void stop(Session handle) {
-        runner.stop(handle);
+    public void stop(Session session) {
+        runner.stop(session);
     }
 
     @Override

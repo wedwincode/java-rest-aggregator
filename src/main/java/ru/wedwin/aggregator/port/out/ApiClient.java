@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ApiClient {
     ApiDefinition definition();
-    AggregatedItem getApiResponse(ApiParams params, Executor executor);
+    AggregatedItem getApiResponse(ApiParams params, HttpExecutor httpExecutor);
 
     default ApiId id() { return definition().id(); }
     default URL url() { return definition().url(); }

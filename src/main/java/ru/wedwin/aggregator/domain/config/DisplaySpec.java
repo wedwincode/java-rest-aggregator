@@ -1,7 +1,7 @@
-package ru.wedwin.aggregator.domain.output;
+package ru.wedwin.aggregator.domain.config;
 
 import ru.wedwin.aggregator.domain.api.ApiId;
-import ru.wedwin.aggregator.domain.output.exception.InvalidDisplaySpecException;
+import ru.wedwin.aggregator.domain.config.exception.InvalidDisplaySpecException;
 
 public record DisplaySpec(
         ApiId apiId,

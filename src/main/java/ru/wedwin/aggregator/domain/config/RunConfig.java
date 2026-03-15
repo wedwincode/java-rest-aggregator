@@ -3,9 +3,6 @@ package ru.wedwin.aggregator.domain.config;
 import ru.wedwin.aggregator.domain.api.ApiId;
 import ru.wedwin.aggregator.domain.api.ApiParams;
 import ru.wedwin.aggregator.domain.config.exception.InvalidRunConfigException;
-import ru.wedwin.aggregator.domain.output.DisplaySpec;
-import ru.wedwin.aggregator.domain.output.ExecutionSpec;
-import ru.wedwin.aggregator.domain.output.OutputSpec;
 
 import java.util.Map;
 

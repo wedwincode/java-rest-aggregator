@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.adapter.out.executor;
+package ru.wedwin.aggregator.adapter.out.http;
 
 public class ExecutorException extends RuntimeException {
     public ExecutorException(String message) {
