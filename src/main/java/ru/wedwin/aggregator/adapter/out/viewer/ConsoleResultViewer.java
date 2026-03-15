@@ -6,9 +6,9 @@ import ru.wedwin.aggregator.domain.api.ApiId;
 import ru.wedwin.aggregator.domain.config.OutputSpec;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.result.exception.ResultViewException;
-import ru.wedwin.aggregator.port.out.Codec;
+import ru.wedwin.aggregator.app.port.out.Codec;
 import ru.wedwin.aggregator.app.codec.CodecRegistry;
-import ru.wedwin.aggregator.port.out.ResultViewer;
+import ru.wedwin.aggregator.app.port.out.ResultViewer;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

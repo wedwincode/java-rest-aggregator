@@ -2,7 +2,7 @@ package ru.wedwin.aggregator.app.api;
 
 import ru.wedwin.aggregator.domain.api.ApiDefinition;
 import ru.wedwin.aggregator.domain.api.ApiId;
-import ru.wedwin.aggregator.port.out.ApiClient;
+import ru.wedwin.aggregator.app.port.out.ApiClient;
 
 import java.util.LinkedHashMap;
 import java.util.List;

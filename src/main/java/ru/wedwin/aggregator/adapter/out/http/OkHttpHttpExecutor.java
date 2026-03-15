@@ -6,7 +6,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import ru.wedwin.aggregator.port.out.HttpExecutor;
+import ru.wedwin.aggregator.app.port.out.HttpExecutor;
 
 import java.io.IOException;
 import java.net.URL;

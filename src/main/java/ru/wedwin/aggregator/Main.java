@@ -13,7 +13,7 @@ import ru.wedwin.aggregator.adapter.out.http.OkHttpHttpExecutor;
 import ru.wedwin.aggregator.adapter.out.runner.ScheduledRunner;
 import ru.wedwin.aggregator.adapter.out.saver.FileResultSaver;
 import ru.wedwin.aggregator.adapter.out.viewer.ConsoleResultViewer;
-import ru.wedwin.aggregator.app.AggregationService;
+import ru.wedwin.aggregator.app.service.AggregationService;
 import ru.wedwin.aggregator.app.api.ApiRegistry;
 import ru.wedwin.aggregator.app.api.ApiRegistryImpl;
 import ru.wedwin.aggregator.app.codec.CodecRegistry;

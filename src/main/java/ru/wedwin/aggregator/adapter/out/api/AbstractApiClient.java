@@ -6,8 +6,8 @@ import ru.wedwin.aggregator.domain.api.exception.ApiResponseException;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.api.ApiParams;
 import ru.wedwin.aggregator.domain.result.Payload;
-import ru.wedwin.aggregator.port.out.ApiClient;
-import ru.wedwin.aggregator.port.out.HttpExecutor;
+import ru.wedwin.aggregator.app.port.out.ApiClient;
+import ru.wedwin.aggregator.app.port.out.HttpExecutor;
 
 public abstract class AbstractApiClient<DTO> implements ApiClient {
 

@@ -8,9 +8,9 @@ import ru.wedwin.aggregator.domain.api.ApiId;
 import ru.wedwin.aggregator.domain.api.ApiParams;
 import ru.wedwin.aggregator.domain.config.RunConfig;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
-import ru.wedwin.aggregator.port.out.Runner;
-import ru.wedwin.aggregator.port.out.ApiClient;
-import ru.wedwin.aggregator.port.out.HttpExecutor;
+import ru.wedwin.aggregator.app.port.out.Runner;
+import ru.wedwin.aggregator.app.port.out.ApiClient;
+import ru.wedwin.aggregator.app.port.out.HttpExecutor;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -12,7 +12,7 @@ import ru.wedwin.aggregator.domain.codec.exception.CodecException;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.codec.CodecId;
 import ru.wedwin.aggregator.domain.result.Payload;
-import ru.wedwin.aggregator.port.out.Codec;
+import ru.wedwin.aggregator.app.port.out.Codec;
 
 import java.io.IOException;
 import java.io.Reader;

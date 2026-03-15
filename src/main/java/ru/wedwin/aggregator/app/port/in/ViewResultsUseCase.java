@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.port.in;
+package ru.wedwin.aggregator.app.port.in;
 
 import ru.wedwin.aggregator.domain.config.RunConfig;
 

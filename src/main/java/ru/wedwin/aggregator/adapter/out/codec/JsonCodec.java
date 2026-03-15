@@ -7,7 +7,7 @@ import ru.wedwin.aggregator.domain.api.ApiId;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.codec.CodecId;
 import ru.wedwin.aggregator.domain.result.Payload;
-import ru.wedwin.aggregator.port.out.Codec;
+import ru.wedwin.aggregator.app.port.out.Codec;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;

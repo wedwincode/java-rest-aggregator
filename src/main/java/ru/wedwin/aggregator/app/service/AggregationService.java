@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.app;
+package ru.wedwin.aggregator.app.service;
 
 import ru.wedwin.aggregator.app.session.Session;
 import ru.wedwin.aggregator.domain.codec.CodecId;
@@ -6,12 +6,12 @@ import ru.wedwin.aggregator.domain.config.RunConfig;
 import ru.wedwin.aggregator.domain.config.OutputSpec;
 import ru.wedwin.aggregator.domain.config.WriteMode;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
-import ru.wedwin.aggregator.port.in.StartAggregationUseCase;
-import ru.wedwin.aggregator.port.in.StopAggregationUseCase;
-import ru.wedwin.aggregator.port.in.ViewResultsUseCase;
-import ru.wedwin.aggregator.port.out.Runner;
-import ru.wedwin.aggregator.port.out.ResultSaver;
-import ru.wedwin.aggregator.port.out.ResultViewer;
+import ru.wedwin.aggregator.app.port.in.StartAggregationUseCase;
+import ru.wedwin.aggregator.app.port.in.StopAggregationUseCase;
+import ru.wedwin.aggregator.app.port.in.ViewResultsUseCase;
+import ru.wedwin.aggregator.app.port.out.Runner;
+import ru.wedwin.aggregator.app.port.out.ResultSaver;
+import ru.wedwin.aggregator.app.port.out.ResultViewer;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package ru.wedwin.aggregator.app.codec;
 
 import ru.wedwin.aggregator.domain.codec.CodecId;
-import ru.wedwin.aggregator.port.out.Codec;
+import ru.wedwin.aggregator.app.port.out.Codec;
 
 import java.util.List;
 

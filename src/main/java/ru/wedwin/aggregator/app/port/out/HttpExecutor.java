@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.port.out;
+package ru.wedwin.aggregator.app.port.out;
 
 import java.net.URL;
 import java.util.Map;

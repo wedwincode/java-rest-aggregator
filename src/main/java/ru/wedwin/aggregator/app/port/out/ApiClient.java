@@ -1,4 +1,4 @@
-package ru.wedwin.aggregator.port.out;
+package ru.wedwin.aggregator.app.port.out;
 
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.api.ApiDefinition;
