@@ -1,10 +1,8 @@
 package ru.wedwin.aggregator.app.service;
 
 import ru.wedwin.aggregator.app.session.Session;
-import ru.wedwin.aggregator.domain.codec.CodecId;
 import ru.wedwin.aggregator.domain.config.RunConfig;
 import ru.wedwin.aggregator.domain.config.OutputSpec;
-import ru.wedwin.aggregator.domain.config.WriteMode;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
 import ru.wedwin.aggregator.app.port.in.StartAggregationUseCase;
 import ru.wedwin.aggregator.app.port.in.StopAggregationUseCase;
@@ -13,7 +11,6 @@ import ru.wedwin.aggregator.app.port.out.Runner;
 import ru.wedwin.aggregator.app.port.out.ResultSaver;
 import ru.wedwin.aggregator.app.port.out.ResultViewer;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,17 +36,24 @@ public class AggregationService implements StartAggregationUseCase, StopAggregat
     public Session start(RunConfig runConfig) {
         return runner.start(
                 runConfig,
-                item -> handleResult(
-                        item,
-                        runConfig.outputSpec().path(),
-                        runConfig.outputSpec().codecId()),
+                item -> handleResult(item, runConfig.outputSpec()),
                 viewer::error);
     }
 
-    private void handleResult(AggregatedItem item, Path path, CodecId codecId) {
+    private void handleResult(AggregatedItem item, OutputSpec outputSpec) {
         viewer.progress(item.apiId());
         results.add(item);
-        saver.save(new OutputSpec(path, codecId, WriteMode.NEW), results);
+
+        switch (outputSpec.mode()) {
+            case NEW -> saver.save(outputSpec, snapshotResults());
+            case APPEND -> saver.save(outputSpec, List.of(item));
+        }
+    }
+
+    private List<AggregatedItem> snapshotResults() {
+        synchronized (results) {
+            return List.copyOf(results);
+        }
     }
 
     @Override

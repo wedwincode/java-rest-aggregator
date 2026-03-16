@@ -72,7 +72,7 @@ public class CsvCodec implements Codec {
 
         try {
             CSVPrinter printer = new CSVPrinter(w, format);
-            for (Map<String, String> row : rows) {
+            for (Map<String, String> row: rows) {
                 printer.printRecord(toRecord(header, row));
             }
 
