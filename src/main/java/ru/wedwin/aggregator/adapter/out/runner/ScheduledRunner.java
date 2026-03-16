@@ -99,7 +99,7 @@ public class ScheduledRunner implements Runner {
             checked++;
 
             launchTask(session, task, onResult, onError);
-            log.debug("launched task {}", task.client().id());
+            log.info("launched task {}", task.client().id());
         }
     }
 
