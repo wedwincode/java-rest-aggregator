@@ -97,6 +97,10 @@ public class InteractiveRunConfigProvider {
     }
 
     private Map<String, String> readParamsForApi(ApiId id, ApiDefinition api) {
+        if (api.supportedParams().isEmpty()) {
+            return Map.of();
+        }
+
         io.println("Available query params for " + id + ":");
         for (ParamMeta param : api.supportedParams()) {
             io.println(param);

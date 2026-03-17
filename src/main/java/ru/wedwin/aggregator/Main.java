@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.adapter.in.cli.ArgsParseException;
 import ru.wedwin.aggregator.adapter.in.cli.CliApp;
 import ru.wedwin.aggregator.adapter.out.api.newsapi.NewsApiClient;
+import ru.wedwin.aggregator.adapter.out.api.testapi.TestApiClient;
 import ru.wedwin.aggregator.adapter.out.api.thenewsapi.TheNewsApiClient;
 import ru.wedwin.aggregator.adapter.out.api.weatherapi.WeatherApiClient;
 import ru.wedwin.aggregator.adapter.out.codec.CsvCodec;
@@ -32,6 +33,7 @@ public class Main {
         apiRegistry.put(new NewsApiClient());
         apiRegistry.put(new TheNewsApiClient());
         apiRegistry.put(new WeatherApiClient());
+        apiRegistry.put(new TestApiClient());
 
         CodecRegistry codecRegistry = CodecRegistryImpl.INSTANCE;
         codecRegistry.put(new CsvCodec());
