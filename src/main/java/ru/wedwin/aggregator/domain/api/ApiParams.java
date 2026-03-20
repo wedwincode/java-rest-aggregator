@@ -61,11 +61,4 @@ public final class ApiParams {
     public Map<String, String> asMap() {
         return Collections.unmodifiableMap(params);
     }
-
-    @Override
-    public String toString() {
-        return "ApiParams{" +
-                "params=" + params +
-                '}';
-    }
 }

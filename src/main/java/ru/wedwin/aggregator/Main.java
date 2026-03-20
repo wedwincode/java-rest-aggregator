@@ -19,7 +19,7 @@ import ru.wedwin.aggregator.app.api.ApiRegistry;
 import ru.wedwin.aggregator.app.api.ApiRegistryImpl;
 import ru.wedwin.aggregator.app.codec.CodecRegistry;
 import ru.wedwin.aggregator.app.codec.CodecRegistryImpl;
-import ru.wedwin.aggregator.domain.api.exception.ApiResponseException;
+import ru.wedwin.aggregator.adapter.out.api.ApiResponseException;
 import ru.wedwin.aggregator.domain.result.exception.ResultSaveException;
 import ru.wedwin.aggregator.domain.result.exception.ResultViewException;
 

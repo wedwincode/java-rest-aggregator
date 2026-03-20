@@ -17,6 +17,9 @@ public record ApiDefinition(
 ) {
 
     public ApiDefinition {
+        if (id == null) {
+            throw new InvalidApiDefinitionException("id is null");
+        }
         if (url == null) {
             throw new InvalidApiDefinitionException("url is null");
         }
