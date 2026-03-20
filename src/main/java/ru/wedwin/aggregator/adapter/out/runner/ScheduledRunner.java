@@ -52,6 +52,7 @@ public class ScheduledRunner implements Runner {
     ) {
         Session session = new Session(config.executionSpec().maxConcurrentTasks());
         List<ApiTask> tasks = buildTasks(config.queryParamsByApi());
+
         ScheduledFuture<?> trigger = scheduler.scheduleAtFixedRate(
                 () -> dispatch(session, tasks, onResult, onError),
                 0,
@@ -59,6 +60,7 @@ public class ScheduledRunner implements Runner {
                 TimeUnit.MILLISECONDS
         );
         session.setDispatchTrigger(trigger);
+
         return session;
     }
 
