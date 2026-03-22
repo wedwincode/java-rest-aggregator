@@ -9,19 +9,19 @@ import static org.junit.jupiter.api.Assertions.*;
 class ApiIdTest {
 
     @Test
-    void normalizes_value() {
+    void normalizesValue() {
         ApiId id = new ApiId("  API1  ");
         assertEquals("api1", id.value());
         assertEquals("api1", id.toString());
     }
 
     @Test
-    void rejects_null() {
+    void rejectsNull() {
         assertThrows(InvalidApiIdException.class, () -> new ApiId(null));
     }
 
     @Test
-    void rejects_blank() {
+    void rejectsBlank() {
         assertThrows(InvalidApiIdException.class, () -> new ApiId("   "));
     }
 }

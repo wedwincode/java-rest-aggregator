@@ -8,7 +8,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.adapter.out.common.PayloadFlattener;
 import ru.wedwin.aggregator.domain.api.ApiId;
-import ru.wedwin.aggregator.domain.codec.exception.CodecException;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
 import ru.wedwin.aggregator.domain.codec.CodecId;
 import ru.wedwin.aggregator.domain.result.Payload;

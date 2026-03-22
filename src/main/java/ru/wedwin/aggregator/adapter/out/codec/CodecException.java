@@ -1,11 +1,8 @@
-package ru.wedwin.aggregator.domain.codec.exception;
+package ru.wedwin.aggregator.adapter.out.codec;
 
 import java.io.IOException;
 
 public class CodecException extends IOException {
-    public CodecException(String message) {
-        super(message);
-    }
     public CodecException(String message, Throwable cause) {
         super(message, cause);
     }
