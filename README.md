@@ -6,19 +6,29 @@ Console Java app for REST API data aggregation
 
 ---
 
-### Build:
+### Build
 
 ```shell
 ./gradlew clean build
 ```
 
-### Run:
+### Run
 
 ```shell
 java -jar dist/app.jar --params
 ```
 
-### Available params:
+### Coverage
+
+```shell
+./gradlew clean test jacocoTestReport
+```
+
+Coverage output path: [build/reports/jacoco/test/html/index.html](build/reports/jacoco/test/html/index.html)
+
+---
+
+### Available params
 
 `--interactive` - interactive mode
 
@@ -43,3 +53,9 @@ java -jar dist/app.jar --params
 ### Project architecture
 
 ![hexagon.png](hexagon.png)
+
+---
+
+### Coverage summary
+
+![coverage.png](coverage.png)
