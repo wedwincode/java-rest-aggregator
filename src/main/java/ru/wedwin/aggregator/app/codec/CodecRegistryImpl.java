@@ -8,14 +8,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public enum CodecRegistryImpl implements CodecRegistry {
-
-    INSTANCE;
+public class CodecRegistryImpl implements CodecRegistry {
 
     private final Map<CodecId, Codec> byId;
 
-    CodecRegistryImpl() {
-        byId = new LinkedHashMap<>();
+    public CodecRegistryImpl() {
+        this.byId = new LinkedHashMap<>();
     }
 
     @Override

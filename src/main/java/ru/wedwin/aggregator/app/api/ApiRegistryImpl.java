@@ -8,14 +8,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public enum ApiRegistryImpl implements ApiRegistry {
-
-    INSTANCE;
+public class ApiRegistryImpl implements ApiRegistry {
 
     private final Map<ApiId, ApiClient> byId;
 
-    ApiRegistryImpl() {
-        byId = new LinkedHashMap<>();
+    public ApiRegistryImpl() {
+        this.byId = new LinkedHashMap<>();
     }
 
     @Override

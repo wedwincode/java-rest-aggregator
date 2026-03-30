@@ -20,8 +20,8 @@ import ru.wedwin.aggregator.app.api.ApiRegistryImpl;
 import ru.wedwin.aggregator.app.codec.CodecRegistry;
 import ru.wedwin.aggregator.app.codec.CodecRegistryImpl;
 import ru.wedwin.aggregator.adapter.out.api.ApiResponseException;
-import ru.wedwin.aggregator.domain.result.exception.ResultSaveException;
-import ru.wedwin.aggregator.domain.result.exception.ResultViewException;
+import ru.wedwin.aggregator.adapter.out.saver.ResultSaveException;
+import ru.wedwin.aggregator.adapter.out.viewer.ResultViewException;
 
 public class Main {
 
@@ -29,13 +29,13 @@ public class Main {
 
     public static void main(String[] args) {
 
-        ApiRegistry apiRegistry = ApiRegistryImpl.INSTANCE;
+        ApiRegistry apiRegistry = new ApiRegistryImpl();
         apiRegistry.put(new NewsApiClient());
         apiRegistry.put(new TheNewsApiClient());
         apiRegistry.put(new WeatherApiClient());
         apiRegistry.put(new TestApiClient());
 
-        CodecRegistry codecRegistry = CodecRegistryImpl.INSTANCE;
+        CodecRegistry codecRegistry = new CodecRegistryImpl();
         codecRegistry.put(new CsvCodec());
         codecRegistry.put(new JsonCodec());
 

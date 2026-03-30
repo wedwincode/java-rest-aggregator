@@ -2,6 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("java")
+    id("jacoco")
     id("com.gradleup.shadow") version "9.3.2"
 }
 
@@ -42,6 +43,7 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.named<ShadowJar>("shadowJar") {
@@ -61,4 +63,32 @@ tasks.register<Copy>("copyAppJarToDist") {
 
 tasks.named("build") {
     dependsOn("copyAppJarToDist")
+}
+
+val jacocoExcludes = listOf(
+    "ru/wedwin/aggregator/adapter/out/api/newsapi/**",
+    "ru/wedwin/aggregator/adapter/out/api/testapi/**",
+    "ru/wedwin/aggregator/adapter/out/api/thenewsapi/**",
+    "ru/wedwin/aggregator/adapter/out/api/weatherapi/**",
+    "ru/wedwin/aggregator/Main*"
+)
+
+tasks.named<JacocoReport>("jacocoTestReport") {
+    dependsOn(tasks.test)
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+    }
+
+    classDirectories.setFrom(
+        files(
+            classDirectories.files.map { dir ->
+                fileTree(dir) {
+                    exclude(jacocoExcludes)
+                }
+            }
+        )
+    )
 }

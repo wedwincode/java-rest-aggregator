@@ -2,7 +2,6 @@ package ru.wedwin.aggregator.adapter.out.saver;
 
 import ru.wedwin.aggregator.domain.config.OutputSpec;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.result.exception.ResultSaveException;
 import ru.wedwin.aggregator.app.port.out.Codec;
 import ru.wedwin.aggregator.app.codec.CodecRegistry;
 import ru.wedwin.aggregator.app.port.out.ResultSaver;

@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import ru.wedwin.aggregator.domain.api.ApiId;
 import ru.wedwin.aggregator.domain.config.OutputSpec;
 import ru.wedwin.aggregator.domain.result.AggregatedItem;
-import ru.wedwin.aggregator.domain.result.exception.ResultViewException;
 import ru.wedwin.aggregator.app.port.out.Codec;
 import ru.wedwin.aggregator.app.codec.CodecRegistry;
 import ru.wedwin.aggregator.app.port.out.ResultViewer;

@@ -46,7 +46,7 @@ public record ApiDefinition(
     private static URL toUrl(String url) {
         try {
             return new URI(url).toURL();
-        } catch (URISyntaxException | MalformedURLException e) {
+        } catch (URISyntaxException | MalformedURLException  | IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid url: " + url, e);
         }
     }
