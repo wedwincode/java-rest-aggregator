@@ -36,7 +36,8 @@ public class ArgsRunConfigProvider {
     private Duration pollInterval = null;
     private Duration duration = null;
 
-    private record ParsedValues(Set<String> values, int nextIndex) {}
+    private record ParsedValues(Set<String> values, int nextIndex) {
+    }
 
     public ArgsRunConfigProvider(String[] args, ApiRegistry registry) {
         this.args = args;

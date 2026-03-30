@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
+
 public class CliApp {
 
     private static final Logger log = LogManager.getLogger(CliApp.class);
@@ -33,7 +34,7 @@ public class CliApp {
     private final StopAggregationUseCase stopAggregationUseCase;
     private final ViewResultsUseCase viewResultsUseCase;
 
-    private boolean isInteractive = false;
+    boolean isInteractive = false;
 
     public CliApp(
             String[] args,
@@ -120,7 +121,7 @@ public class CliApp {
         });
     }
 
-    private RunConfig getRunConfig() {
+    protected RunConfig getRunConfig() {
         try {
             if (args == null) {
                 throw new ArgsParseException("args are null");

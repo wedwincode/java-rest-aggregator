@@ -169,6 +169,5 @@ public final class PayloadFlattener {
 
         return new Payload.PString(s);
     }
-
 }
 

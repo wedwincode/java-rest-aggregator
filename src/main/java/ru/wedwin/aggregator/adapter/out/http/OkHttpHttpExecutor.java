@@ -26,6 +26,10 @@ public class OkHttpHttpExecutor implements HttpExecutor {
                 .build();
     }
 
+    OkHttpHttpExecutor(OkHttpClient client) {
+        this.client = client;
+    }
+
     @Override
     public String execute(URL url, Map<String, String> params) throws ExecutorException {
         Request request = buildGet(url, params);
@@ -61,7 +65,7 @@ public class OkHttpHttpExecutor implements HttpExecutor {
             for (Map.Entry<String, String> entry : params.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
-                if (key == null || key.isBlank() || value == null) {
+                if (key == null || key.isBlank() || value == null || value.isBlank()) {
                     continue;
                 }
 
@@ -95,5 +99,4 @@ public class OkHttpHttpExecutor implements HttpExecutor {
 
         return s.substring(0, max);
     }
-
 }

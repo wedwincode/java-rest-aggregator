@@ -34,7 +34,8 @@ public class ScheduledRunner implements Runner {
     private final HttpExecutor httpExecutor;
     private int nextIndex = 0;
 
-    private record ApiTask(ApiClient client, ApiParams params) {}
+    private record ApiTask(ApiClient client, ApiParams params) {
+    }
 
     public ScheduledRunner(ApiRegistry registry, HttpExecutor httpExecutor) {
         this.registry = registry;
@@ -126,24 +127,6 @@ public class ScheduledRunner implements Runner {
                     }
                 });
     }
-
-//    private void launchTask(
-//            Session session,
-//            ApiTask task,
-//            Consumer<AggregatedItem> onResult,
-//            Consumer<Throwable> onError
-//    ) {
-//        workers.submit(() -> {
-//            try {
-//                AggregatedItem result = task.client().getApiResponse(task.params(), httpExecutor);
-//                onResult.accept(result);
-//            } catch (Throwable error) {
-//                onError.accept(error);
-//            } finally {
-//                session.completeTask();
-//            }
-//        });
-//    }
 
     @Override
     public void stop(Session session) {
