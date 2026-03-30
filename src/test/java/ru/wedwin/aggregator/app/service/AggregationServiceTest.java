@@ -37,7 +37,7 @@ public class AggregationServiceTest {
     @InjectMocks AggregationService service;
 
     @Test
-    void start_shouldDelegateToRunnerAndReturnSession() {
+    void givenValidConfig_whenStart_thenDelegatesToRunnerAndReturnsSession() {
         Session session = mock(Session.class);
 
         when(runner.start(eq(runConfig), any(), any())).thenReturn(session);
@@ -49,7 +49,7 @@ public class AggregationServiceTest {
     }
 
     @Test
-    void start_shouldSaveSnapshotInNewMode() {
+    void givenNewMode_whenStart_thenSavesSnapshotResults() {
         AggregatedItem first = mock(AggregatedItem.class);
         AggregatedItem second = mock(AggregatedItem.class);
 
@@ -62,7 +62,7 @@ public class AggregationServiceTest {
         when(runner.start(eq(runConfig), any(), any())).thenAnswer(invocation -> {
             Consumer<AggregatedItem> onResult = invocation.getArgument(1);
             onResult.accept(first);
-            onResult.accept(second); // todo find out why there's accept
+            onResult.accept(second);
             return mock(Session.class);
         });
 
@@ -76,7 +76,7 @@ public class AggregationServiceTest {
     }
 
     @Test
-    void start_shouldSaveOnlyCurrentItemInAppendMode() {
+    void givenAppendMode_whenStart_thenSavesOnlyCurrentItem() {
         AggregatedItem first = mock(AggregatedItem.class);
         AggregatedItem second = mock(AggregatedItem.class);
 
@@ -104,7 +104,7 @@ public class AggregationServiceTest {
     }
 
     @Test
-    void start_shouldForwardErrorsToViewer() {
+    void givenRunnerError_whenStart_thenForwardsErrorToViewer() {
         RuntimeException error = new RuntimeException("boom");
 
         when(runner.start(eq(runConfig), any(), any())).thenAnswer(invocation -> {
@@ -119,7 +119,7 @@ public class AggregationServiceTest {
     }
 
     @Test
-    void stop_shouldDelegateToRunner() {
+    void givenSession_whenStop_thenDelegatesToRunner() {
         Session session = mock(Session.class);
 
         service.stop(session);
@@ -128,7 +128,7 @@ public class AggregationServiceTest {
     }
 
     @Test
-    void view_shouldDoNothingForNoneMode() {
+    void givenDisplayModeNone_whenView_thenDoesNothing() {
         DisplaySpec displaySpec = mock(DisplaySpec.class);
 
         when(runConfig.displaySpec()).thenReturn(displaySpec);
@@ -140,7 +140,7 @@ public class AggregationServiceTest {
     }
 
     @Test
-    void view_shouldShowAllForAllMode() {
+    void givenDisplayModeAll_whenView_thenShowsAllResults() {
         DisplaySpec displaySpec = mock(DisplaySpec.class);
 
         when(runConfig.displaySpec()).thenReturn(displaySpec);
@@ -153,7 +153,7 @@ public class AggregationServiceTest {
     }
 
     @Test
-    void view_shouldShowByApiForByApiMode() {
+    void givenDisplayModeByApi_whenView_thenShowsResultsForSpecificApi() {
         DisplaySpec displaySpec = mock(DisplaySpec.class);
 
         when(runConfig.displaySpec()).thenReturn(displaySpec);
